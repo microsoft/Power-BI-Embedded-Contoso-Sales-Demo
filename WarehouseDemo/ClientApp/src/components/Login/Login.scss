@@ -1,0 +1,36 @@
+﻿#back-btn, #login-btn {
+    background-color: #303778;
+    border: none;
+    color: #FFFFFF;
+    font: 400 14px "Segoe UI";
+    padding: 0.5rem 0;
+    opacity: 1;
+    text-align: center;
+}
+
+@media only screen and (max-width: 575px) {
+    #back-btn {
+        margin-bottom: 0.5rem;
+    }
+}
+
+#btn-wrapper {
+    margin-top: 1.5rem;
+    margin-bottom: 3.5rem;
+}
+
+.form-group {
+    position: relative;
+}
+
+.set-icon {
+    margin-left: 12%;
+    position: absolute;
+    top: 10%;
+}
+
+@media only screen and (max-width: 767px) {
+    .set-icon {
+        margin-left: 4%;
+    }
+}

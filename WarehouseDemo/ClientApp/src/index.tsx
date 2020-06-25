@@ -1,7 +1,7 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import './index.css';
+import ReactDOM from 'react-dom';
 import App from './App';
+import './index.scss';
 
 // Element to which the app component will be appended
 const rootElement = document.getElementById('root');

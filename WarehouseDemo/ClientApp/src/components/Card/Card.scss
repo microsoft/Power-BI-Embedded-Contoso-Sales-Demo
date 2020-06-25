@@ -1,0 +1,43 @@
+button {
+    background-color: #303778;
+    border: none;
+    color: #FFFFFF;
+    font: 400 14px "Segoe UI";
+    padding: 0.5rem 0;
+    opacity: 1;
+    text-align: center;
+}
+
+button:focus {
+    outline: none;
+}
+
+.card {
+    max-width: 400px;
+}
+
+.card-img {
+    padding-top: 2.5rem;
+    width: 70%;
+}
+
+.card-text {
+    color: #4A4A4A;
+    font: 400 13px "Segoe UI";
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.card-title {
+    color: #303778;
+    font: 600 18px "Segoe UI";
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
