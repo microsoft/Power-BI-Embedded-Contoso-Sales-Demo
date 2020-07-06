@@ -2,7 +2,7 @@ button {
     background-color: #303778;
     border: none;
     color: #FFFFFF;
-    font: 400 14px "Segoe UI";
+    font: 400 14px 'Segoe UI';
     padding: 0.5rem 0;
     opacity: 1;
     text-align: center;
@@ -23,14 +23,14 @@ button:focus {
 
 .card-text {
     color: #4A4A4A;
-    font: 400 13px "Segoe UI";
+    font: 400 13px 'Segoe UI';
     margin-bottom: 1rem;
     text-align: center;
 }
 
 .card-title {
     color: #303778;
-    font: 600 18px "Segoe UI";
+    font: 600 18px 'Segoe UI';
     margin-bottom: 0;
     text-align: center;
 }

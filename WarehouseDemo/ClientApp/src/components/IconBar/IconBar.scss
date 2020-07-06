@@ -1,0 +1,23 @@
+.dropdown-item {
+    padding-bottom: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.icon-bar {
+    margin-top: -1.5px;
+    position: absolute;
+    right: 2rem;
+}
+
+.setting {
+    cursor: pointer;
+    margin-right: 30px;
+}
+
+#settings-dropdown {
+    transform: translateX(10%);
+}
+
+.user-profile {
+    margin-right: 8px;
+}

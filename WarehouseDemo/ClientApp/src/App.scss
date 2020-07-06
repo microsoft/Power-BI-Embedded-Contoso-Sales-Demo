@@ -8,6 +8,15 @@ input.form-control {
     width: 16px;
 }
 
+.report-container {
+    margin: 30px;
+    height: 90vh;
+}
+
+.report-container > iframe {
+    border: 0;
+}
+
 .set-icon {
     color: #808080;
     opacity: 0.7;

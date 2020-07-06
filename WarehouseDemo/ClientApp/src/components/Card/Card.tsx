@@ -8,7 +8,6 @@ export interface CardProps extends LoginProps, HomeProps {
 	page: Page;
 }
 
-// TODO: use enum for page type
 export function Card(props: CardProps): JSX.Element {
 	let cardBody: JSX.Element;
 	if (props.page === Page.Home) {

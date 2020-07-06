@@ -1,0 +1,26 @@
+li {
+    margin: 0 .5rem;
+}
+
+.navbar {
+    background-color: white;
+    padding: 1rem;
+}
+
+.navbar-light .navbar-nav .active a {
+    border-bottom: 2.5px solid #303778;
+}
+
+.nav-link {
+    color: #303778;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.nav-item {
+    color: #303778;
+    font: 700 18px/21px 'Segoe UI';
+    letter-spacing: 0;
+    opacity: 1;
+    text-align: left;
+}

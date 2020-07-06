@@ -1,0 +1,4 @@
+files:
+  include: 'src/**/*.s+(a|c)ss'
+rules:
+  indentation: 0

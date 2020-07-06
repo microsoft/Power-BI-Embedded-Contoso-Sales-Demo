@@ -1,11 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import './App.scss';
 import React, { useState } from 'react';
 import { Card } from './components/Card/Card';
+import { EmbedPage } from './components/EmbedPage/EmbedPage';
+import { SalesManager, SalesPerson } from './constants';
 
 export enum Page {
 	Home = 'home',
 	Login = 'login',
+	Embed = 'embed',
 }
 
 export enum Profile {
@@ -30,9 +34,24 @@ export default function App(): React.FunctionComponentElement<null> {
 	};
 
 	const loginOnClick = (): void => {
-		// TODO: Add login logic
+		// TODO: Add login check
+		setState({ ...state, page: Page.Embed });
 	};
 
+	const logoutOnClick = (): void => {
+		setState({ ...state, page: Page.Home });
+	};
+
+	const firstName =
+		state.profile === Profile.SalesManager
+			? SalesManager.firstName
+			: SalesPerson.firstName;
+	const lastName =
+		state.profile === Profile.SalesManager
+			? SalesManager.lastName
+			: SalesPerson.lastName;
+
+	// Select page to display
 	let page: JSX.Element;
 	switch (state.page) {
 		case Page.Home:
@@ -45,7 +64,6 @@ export default function App(): React.FunctionComponentElement<null> {
 				/>
 			);
 			break;
-
 		case Page.Login:
 			page = (
 				<Card
@@ -53,6 +71,16 @@ export default function App(): React.FunctionComponentElement<null> {
 					setProfileType={setProfileType}
 					homeOnClick={homeOnClick}
 					loginOnClick={loginOnClick}
+				/>
+			);
+			break;
+		case Page.Embed:
+			page = (
+				<EmbedPage
+					profile={state.profile}
+					firstName={firstName}
+					lastName={lastName}
+					logoutOnClick={logoutOnClick}
 				/>
 			);
 			break;

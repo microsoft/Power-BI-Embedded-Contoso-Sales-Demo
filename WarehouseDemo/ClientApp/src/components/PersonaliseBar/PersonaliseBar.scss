@@ -1,0 +1,21 @@
+.personalise-bar {
+    align-content: space-between;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 16px 25px #D8D8D829;
+    display: flex;
+    flex-flow: column wrap;
+    height: 60px;
+    margin: 30px;
+    opacity: 1;
+}
+
+.personalise-icon {
+    background: transparent 0% 0% no-repeat padding-box;
+    cursor: pointer;
+    opacity: 1;
+    padding: 17px;
+}
+
+.personalise-icon-close {
+    padding: 22px;
+}

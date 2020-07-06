@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "powerbi-client": "^2.11.0",
+    "powerbi-client-react": "file:../powerbi-client-react-0.1.0.tgz",
     "react": "16.13.1",
     "react-dom": "^16.13.1"
   },
@@ -35,6 +37,7 @@
     "prettier": "^2.0.5",
     "react-scripts": "^3.4.1",
     "rimraf": "^2.6.2",
+    "sass-lint": "^1.13.1",
     "typescript": "^3.9.3"
   },
   "eslintConfig": {
@@ -45,7 +48,8 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix src/**/*.{ts,tsx}"
+    "lint": "eslint --fix src/**/*.{ts,tsx} && echo Linting complete.",
+    "scss-lint": "sass-lint -c .sass-lint.yml -v -q"
   },
   "browserslist": {
     "production": [
