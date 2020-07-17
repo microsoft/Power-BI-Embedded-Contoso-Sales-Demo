@@ -1,6 +1,10 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 .dropdown-item {
-    padding-bottom: 0.75rem;
-    padding-top: 0.75rem;
+    padding-bottom: .75rem;
+    padding-top: .75rem;
 }
 
 .icon-bar {
@@ -15,7 +19,7 @@
 }
 
 #settings-dropdown {
-    transform: translateX(10%);
+    transform: translateY(16px);
 }
 
 .user-profile {

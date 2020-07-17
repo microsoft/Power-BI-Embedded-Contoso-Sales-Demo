@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import './App.scss';
 import React, { useState } from 'react';
 import { Card } from './components/Card/Card';
 import { EmbedPage } from './components/EmbedPage/EmbedPage';
-import { SalesManager, SalesPerson } from './constants';
+import { SalesManager, SalesPerson, AnonymousUser } from './constants';
 
 export enum Page {
 	Home = 'home',
@@ -15,15 +19,15 @@ export enum Page {
 export enum Profile {
 	SalesPerson = 'Sales Person',
 	SalesManager = 'Sales Manager',
-	Anonymous = 'Anonymous',
 }
 
 export default function App(): React.FunctionComponentElement<null> {
-	// Check default for profile
 	const [state, setState] = useState({
 		page: Page.Home,
-		profile: Profile.Anonymous,
+		profile: undefined,
 	});
+
+	const [anonymousLogin, setAnonymousLogin] = useState(false);
 
 	const setProfileType = (profileType: Profile): void => {
 		setState({ page: Page.Login, profile: profileType });
@@ -36,20 +40,42 @@ export default function App(): React.FunctionComponentElement<null> {
 	const loginOnClick = (): void => {
 		// TODO: Add login check
 		setState({ ...state, page: Page.Embed });
+		setAnonymousLogin(false);
+	};
+
+	const anonymousLoginOnClick = (): void => {
+		setState({ ...state, page: Page.Embed });
+		setAnonymousLogin(true);
 	};
 
 	const logoutOnClick = (): void => {
 		setState({ ...state, page: Page.Home });
 	};
 
-	const firstName =
-		state.profile === Profile.SalesManager
-			? SalesManager.firstName
-			: SalesPerson.firstName;
-	const lastName =
-		state.profile === Profile.SalesManager
-			? SalesManager.lastName
-			: SalesPerson.lastName;
+	let firstName: string;
+	let lastName: string;
+	let profileImageName: string;
+
+	switch (state.profile) {
+		case Profile.SalesManager:
+			firstName = SalesManager.firstName;
+			lastName = SalesManager.lastName;
+			profileImageName = SalesManager.profileImageName;
+			break;
+
+		case Profile.SalesPerson:
+			if (anonymousLogin) {
+				firstName = AnonymousUser.firstName;
+				lastName = AnonymousUser.lastName;
+				profileImageName = AnonymousUser.profileImageName;
+				break;
+			}
+
+			firstName = SalesPerson.firstName;
+			lastName = SalesPerson.lastName;
+			profileImageName = SalesPerson.profileImageName;
+			break;
+	}
 
 	// Select page to display
 	let page: JSX.Element;
@@ -58,6 +84,7 @@ export default function App(): React.FunctionComponentElement<null> {
 			page = (
 				<Card
 					page={Page.Home}
+					profile={state.profile}
 					setProfileType={setProfileType}
 					homeOnClick={homeOnClick}
 					loginOnClick={loginOnClick}
@@ -68,9 +95,11 @@ export default function App(): React.FunctionComponentElement<null> {
 			page = (
 				<Card
 					page={Page.Login}
+					profile={state.profile}
 					setProfileType={setProfileType}
 					homeOnClick={homeOnClick}
 					loginOnClick={loginOnClick}
+					anonymousLoginOnClick={anonymousLoginOnClick}
 				/>
 			);
 			break;
@@ -80,6 +109,7 @@ export default function App(): React.FunctionComponentElement<null> {
 					profile={state.profile}
 					firstName={firstName}
 					lastName={lastName}
+					profileImageName={profileImageName}
 					logoutOnClick={logoutOnClick}
 				/>
 			);

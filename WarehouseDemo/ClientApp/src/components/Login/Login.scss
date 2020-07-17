@@ -1,36 +1,76 @@
-﻿#back-btn, #login-btn {
-    background-color: #303778;
-    border: none;
-    color: #FFFFFF;
-    font: 400 14px 'Segoe UI';
-    padding: 0.5rem 0;
-    opacity: 1;
-    text-align: center;
+﻿// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
+.back-btn, .login-btn {
+	background-color: #303778;
+	border: none;
+	color: #FFFFFF;
+	font: 400 14px 'Segoe UI';
+	height: 37px;
+	margin: 0;
+	opacity: 1;
+	padding: .5rem 0;
+	text-align: center;
+	width: 161px;
+}
+
+.login-btn {
+	margin-left: 15px;
 }
 
 @media only screen and (max-width: 575px) {
-    #back-btn {
-        margin-bottom: 0.5rem;
-    }
+	.back-btn {
+		margin-bottom: .5rem;
+	}
 }
 
-#btn-wrapper {
-    margin-top: 1.5rem;
-    margin-bottom: 3.5rem;
+$mar-left: 68px;
+
+.btn-wrapper {
+	margin-bottom: 1rem;
+	margin-left: $mar-left;
+	margin-top: 1.5rem;
 }
 
 .form-group {
-    position: relative;
+	margin-left: 35px;
+	margin-right: 35px;
+	position: relative;
+}
+
+$input-width: 335px;
+$input-height: 49px;
+$input-border-radius: 3px;
+
+.username-input {
+	border-radius: $input-border-radius;
+	height: $input-height;
+	margin-left: 34px;
+	margin-top: 16px;
+	width: $input-width;
+}
+
+.password-input {
+	border-radius: $input-border-radius;
+	height: $input-height;
+	margin-left: 34px;
+	width: $input-width;
 }
 
 .set-icon {
-    margin-left: 12%;
-    position: absolute;
-    top: 10%;
+	margin-left: 12%;
+	position: absolute;
+	top: 20%;
 }
 
-@media only screen and (max-width: 767px) {
-    .set-icon {
-        margin-left: 4%;
-    }
+.btn-anonymous {
+	color: #2A359A;
+	cursor: pointer;
+	font: Regular 14px/19px 'Segoe UI';
+	letter-spacing: 0;
+	margin-bottom: 2rem;
+	margin-left: $mar-left;
+	opacity: 1;
+	text-align: left;
 }

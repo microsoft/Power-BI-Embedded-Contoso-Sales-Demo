@@ -2,3 +2,12 @@ files:
   include: 'src/**/*.s+(a|c)ss'
 rules:
   indentation: 0
+  hex-notation:
+    - 2
+    -
+      style: uppercase
+  no-invalid-hex: 0
+  no-color-literals: 0
+  hex-length: 0
+  single-line-per-selector: 0
+  border-zero: 0

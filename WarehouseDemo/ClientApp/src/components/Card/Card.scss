@@ -1,43 +1,50 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 button {
-    background-color: #303778;
-    border: none;
-    color: #FFFFFF;
-    font: 400 14px 'Segoe UI';
-    padding: 0.5rem 0;
-    opacity: 1;
-    text-align: center;
+	background-color: #303778;
+	border: none;
+	color: #FFFFFF;
+	font: 400 14px 'Segoe UI';
+	margin: .5rem 66px;
+	opacity: 1;
+	text-align: center;
 }
 
 button:focus {
-    outline: none;
+	outline: none;
 }
 
 .card {
-    max-width: 400px;
+	border-radius: 8px;
+	height: 427px;
+	width: 514px;
 }
 
 .card-img {
-    padding-top: 2.5rem;
-    width: 70%;
-}
-
-.card-text {
-    color: #4A4A4A;
-    font: 400 13px 'Segoe UI';
-    margin-bottom: 1rem;
-    text-align: center;
+	height: 40px;
+	margin-top: 60px;
+	width: 112px;
 }
 
 .card-title {
-    color: #303778;
-    font: 600 18px 'Segoe UI';
-    margin-bottom: 0;
-    text-align: center;
+	color: #303778;
+	font: 600 18px 'Segoe UI';
+	margin-bottom: 1rem;
+	text-align: center;
 }
 
 .gradient-bg {
-    background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
-    height: 100%;
-    margin: 0;
-    padding: 0;
+	background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.horizontal-separator {
+	background-color: #CFCFCF;
+	height: 1px;
+	margin: 36px 87px 20px;
+	opacity: 1;
 }

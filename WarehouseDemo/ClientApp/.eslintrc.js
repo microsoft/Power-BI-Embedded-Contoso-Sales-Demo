@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 module.exports = {
 	parser: "@typescript-eslint/parser", // Specifies the ESLint parser
 	parserOptions: {

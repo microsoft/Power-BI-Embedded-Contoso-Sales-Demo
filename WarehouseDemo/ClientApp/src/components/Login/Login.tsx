@@ -1,13 +1,20 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import './Login.scss';
 import React from 'react';
+import { Profile } from '../../App';
 
 export interface LoginProps {
 	homeOnClick: {
-		(event?: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+		(event?: React.MouseEvent<HTMLElement, MouseEvent>): void;
 	};
 	loginOnClick: {
-		(event?: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+		(event?: React.MouseEvent<HTMLElement, MouseEvent>): void;
 	};
+	anonymousLoginOnClick?: { (): void };
+	profile: Profile;
 }
 
 export function Login(props: LoginProps): JSX.Element {
@@ -21,11 +28,7 @@ export function Login(props: LoginProps): JSX.Element {
 						className='input-icon'
 					/>
 				</span>
-				<input
-					type='text'
-					placeholder='Username'
-					className='col-lg-10 col-md-10 col-sm-12 form-control mb-3 offset-lg-1 offset-md-1'
-				/>
+				<input type='text' placeholder='Username' className='form-control username-input' />
 			</div>
 
 			<div className='form-group has-feedback'>
@@ -36,27 +39,25 @@ export function Login(props: LoginProps): JSX.Element {
 						className='input-icon'
 					/>
 				</span>
-				<input
-					type='password'
-					placeholder='***********'
-					className='col-lg-10 col-md-10 col-sm-12 form-control mb-3 offset-lg-1 offset-md-1'
-				/>
+				<input type='password' placeholder='***********' className='form-control password-input' />
 			</div>
 
-			<div id='btn-wrapper' className='no-gutters row'>
-				<button
-					id='back-btn'
-					onClick={props.homeOnClick}
-					className='col-lg-4 col-md-4 col-sm-5 offset-lg-1 offset-md-1'>
+			<div className='no-gutters row btn-wrapper'>
+				<button onClick={props.homeOnClick} className='offset-lg-1 offset-md-1 back-btn'>
 					BACK
 				</button>
 				<button
-					id='login-btn'
 					onClick={props.loginOnClick}
-					className='col-lg-4 col-md-4 col-sm-5 offset-lg-2 offset-md-2 offset-sm-2'>
-					SIGN IN
+					className='offset-lg-2 offset-md-2 offset-sm-2 login-btn'>
+					LOGIN
 				</button>
 			</div>
+
+			{props.profile === Profile.SalesPerson ? (
+				<div className='offset-lg-1 offset-md-1 btn-anonymous' onClick={props.anonymousLoginOnClick}>
+					Enter in demo mode
+				</div>
+			) : null}
 		</div>
 	);
 }

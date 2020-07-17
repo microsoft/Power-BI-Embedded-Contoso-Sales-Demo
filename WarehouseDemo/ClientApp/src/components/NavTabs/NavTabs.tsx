@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import './NavTabs.scss';
 import React from 'react';
 

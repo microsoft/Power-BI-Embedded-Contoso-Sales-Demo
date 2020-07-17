@@ -1,30 +1,17 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import './IconBar.scss';
 import React from 'react';
-import { SettingsDropdown, SettingsDropdownProps } from '../SettingsDropdown';
-import { ProfileInfo } from '../ProfileInfo/ProfileInfo';
-import { Profile } from '../../App';
+import { SettingsDropdown, SettingsDropdownProps } from '../SettingsDropdown/SettingsDropdown';
+import { ProfileInfo, ProfileInfoProps } from '../ProfileInfo/ProfileInfo';
 
-export interface IconBarProps extends SettingsDropdownProps {
-	firstName: string;
-	lastName: string;
-	profile: Profile;
+export interface IconBarProps extends SettingsDropdownProps, ProfileInfoProps {
+	profileImageName: string;
 }
 
 export function IconBar(props: IconBarProps): JSX.Element {
-	let profilePicName: string;
-
-	switch (props.profile) {
-		case Profile.SalesManager:
-			profilePicName = 'salesmanager-profile.svg';
-			break;
-		case Profile.SalesPerson:
-			profilePicName = 'salesperson-profile.svg';
-			break;
-		case Profile.Anonymous:
-			profilePicName = 'anonymous-profile.svg';
-			break;
-	}
-
 	return (
 		<div className='align-items-center d-flex flex-row icon-bar'>
 			<div className='setting'>
@@ -41,19 +28,17 @@ export function IconBar(props: IconBarProps): JSX.Element {
 					logoutOnClick={props.logoutOnClick}
 				/>
 			</div>
+
 			<div className='user-profile'>
 				<img
-					src={require(`../../assets/Images/${profilePicName}`)}
+					src={require(`../../assets/Images/${props.profileImageName}`)}
 					alt='Profile photo'
 					className='nav-icon'
 				/>
 			</div>
+
 			<div className='user-info'>
-				<ProfileInfo
-					firstName={props.firstName}
-					lastName={props.lastName}
-					profile={props.profile}
-				/>
+				<ProfileInfo firstName={props.firstName} lastName={props.lastName} profile={props.profile} />
 			</div>
 		</div>
 	);

@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import './index.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';

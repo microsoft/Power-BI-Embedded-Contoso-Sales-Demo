@@ -1,27 +1,27 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import './EmbedPage.scss';
-import React, { useState, useEffect, useRef } from 'react';
-import { Report, Embed, models, service } from 'powerbi-client';
-import { PowerBIEmbed, EmbedProps } from 'powerbi-client-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Report, Embed, models, service, IEmbedConfiguration } from 'powerbi-client';
 import { Profile } from '../../App';
 import { NavTabs, Tab } from '../NavTabs/NavTabs';
 import { IconBar } from '../IconBar/IconBar';
-import { PersonaliseBar } from '../PersonaliseBar/PersonaliseBar';
-import { getVisualsFromReport } from '../utils';
-import { Layout } from '../PersonaliseBar/PersonaliseBar';
+import { PowerBIEmbed } from 'powerbi-client-react';
+import { PersonaliseBar, Layout } from '../PersonaliseBar/PersonaliseBar';
+import { Footer } from '../Footer/Footer';
+import { getVisualsFromReport, getActivePage } from '../utils';
+import { VisualGroup, pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
 import { salesPersonTabs, salesManagerTabs, TabName } from '../tabConfig';
-import { appName, reportEmbedConfigUrl } from '../../constants';
+import { appName, reportEmbedConfigUrl, ReportMargin } from '../../constants';
 
 export interface EmbedPageProps {
 	profile: Profile;
 	firstName: string;
 	lastName: string;
+	profileImageName: string;
 	logoutOnClick: { (): void };
-}
-
-export interface ReportVisual {
-	id: string;
-	name: string;
-	checked: boolean;
 }
 
 export function EmbedPage(props: EmbedPageProps): JSX.Element {
@@ -37,9 +37,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	stateRef.current = powerbiReport;
 
 	// Report config state hook
-	const [sampleReportConfig, setReportConfig] = useState<
-		EmbedProps['embedConfig']
-	>({
+	const [sampleReportConfig, setReportConfig] = useState<IEmbedConfiguration>({
 		type: 'report',
 		embedUrl: undefined,
 		tokenType: models.TokenType.Embed,
@@ -48,14 +46,24 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			layoutType: models.LayoutType.Custom,
 			customLayout: {
 				displayOption: models.DisplayOption.FitToWidth,
+				pagesLayout: {},
+			},
+			panes: {
+				filters: {
+					visible: false,
+				},
+				pageNavigation: {
+					visible: false,
+				},
 			},
 		},
 	});
 
 	// State hook to toggle personalise bar
-	const [showPersonaliseBar, setShowPersonaliseBar] = useState<boolean>(
-		false
-	);
+	const [showPersonaliseBar, setShowPersonaliseBar] = useState<boolean>(false);
+
+	// State hook to set qna visual index
+	const [qnaVisualIndex, setQnaVisualIndex] = useState<number>(null);
 
 	// List of tabs' name
 	let tabNames: Array<Tab['name']> = [];
@@ -75,7 +83,11 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	});
 
 	// State hook for PowerBI Report
-	const [reportvisuals, setReportVisuals] = useState<ReportVisual[]>([]);
+	const [reportVisuals, setReportVisuals] = useState<VisualGroup[]>([]);
+
+	// State hook for the layout type to be rendered
+	// Three column layout is the default layout type selected
+	const [layoutType, setLayoutType] = useState<Layout>(Layout.threeColumnLayout);
 
 	/* End of state hooks declaration */
 
@@ -83,28 +95,30 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		[
 			'loaded',
 			function () {
+				console.log('Report has loaded');
 				getVisualsFromReport(stateRef.current, (visuals) => {
 					// Remove visuals without title
-					visuals = visuals.filter(
-						(visual) => visual.title !== undefined
-					);
+					visuals = visuals.filter((visual) => visual.title);
 
-					// TODO: Get only valid visuals with title
-					setReportVisuals(
-						visuals.map((visual) => {
-							return {
-								id: visual.name,
-								name: visual.title,
-								checked: true,
-							};
-						})
-					);
+					// Check if the report has a QnA visual from the list of visuals and get the index
+					let qnaVisualIndexSearch = visuals.findIndex((visual) => visual.type === 'qnaVisual');
+
+					// No QnA visual in the report
+					if (qnaVisualIndexSearch === -1) {
+						qnaVisualIndexSearch = null;
+					}
+
+					setQnaVisualIndex(qnaVisualIndexSearch);
+
+					// Build visual groups and update state
+					setReportVisuals(pairVisuals(visuals));
 				});
 			},
 		],
 		[
 			'rendered',
 			function () {
+				console.log('Report has rendered');
 				// Add logic to trigger after report is rendered
 			},
 		],
@@ -178,10 +192,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		setActiveTab(selectedTab);
 	}
 
-	function getReportPageName(
-		activeTab: Tab['name'],
-		profileType: Profile
-	): string {
+	function getReportPageName(activeTab: Tab['name'], profileType: Profile): string {
 		let pageName: string;
 
 		// Get report page name corresponding to active tab
@@ -212,10 +223,6 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		}
 	}, [activeTab, powerbiReport, props.profile]);
 
-	// State hook for the layout type to be rendered
-	// Three column layout is the default layout type selected
-	const [layoutType] = useState<Layout>(Layout.threeColumnLayout);
-
 	// Create array of Tab for rendering and set isActive as true for the active tab
 	const tabsDetails: Array<Tab> = tabNames.map(
 		(tabName: Tab['name']): Tab => {
@@ -226,16 +233,13 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const navTabs = <NavTabs tabsList={tabsDetails} tabOnClick={tabOnClick} />;
 
 	const navPane = (
-		<nav className='justify-content-center navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light'>
-			<img
-				className='app-name'
-				src={require('../../assets/Images/app-name.svg')}
-				alt={appName}
-			/>
+		<nav className='header justify-content-center navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light'>
+			<img className='app-name' src={require('../../assets/Images/app-name.svg')} alt={appName} />
 			{navTabs}
 			<IconBar
 				firstName={props.firstName}
 				lastName={props.lastName}
+				profileImageName={props.profileImageName}
 				profile={props.profile}
 				showPersonaliseBar={activeTab === TabName.Home} // Show personalise bar when Home tab is active
 				personaliseBarOnClick={togglePersonaliseBar}
@@ -244,14 +248,110 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		</nav>
 	);
 
-	useEffect(() => {
-		// TODO: Remove report visuals on checkbox here
-		// Re-arrange visuals in the custom layout
-	}, [reportvisuals, layoutType]);
+	/**
+	 * Rearranges the visuals in the custom layout and updates the custom layout setting in report config state
+	 */
+	const rearrangeAndRenderCustomLayout = useCallback(() => {
+		// Get active page and set the new calculated custom layout
+		getActivePage(powerbiReport).then((activePage) => {
+			// Calculate positions of visual groups
+			const newReportHeight = rearrangeVisualGroups(reportVisuals, layoutType, powerbiReport);
 
-	// TODO: add image styling
+			// Get layout details for selected visuals in the custom layout
+			// You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Custom-Layout
+			const customPageLayout = getPageLayout(activePage.name, reportVisuals);
+
+			// Update settings with new calculation of custom layout
+			setReportConfig((sampleReportConfig) => {
+				return {
+					...sampleReportConfig,
+					settings: {
+						// Set page height automatically
+						layoutType: models.LayoutType.Custom,
+						customLayout: {
+							pageSize: {
+								type: models.PageSizeType.Custom,
+								width: powerbiReport.element.clientWidth - ReportMargin,
+								height: newReportHeight,
+							},
+							displayOption: models.DisplayOption.ActualSize,
+							pagesLayout: customPageLayout,
+						},
+					},
+				};
+			});
+		});
+	}, [powerbiReport, layoutType, reportVisuals]);
+
+	// Attaches the rearrangeAndRenderCustomLayout function to resize event of window
+	// Thus whenever window is resized, visuals will get arranged as per the dimensions of the resized report-container
+	// For window.onresize the below function works as a normal function
+	window.onresize = rearrangeAndRenderCustomLayout;
+
+	// Update the layout of the embedded report
+	useEffect(() => {
+		if (!powerbiReport || activeTab !== TabName.Home) {
+			return;
+		}
+
+		// Rearrange the visuals when the active tab is Home
+		rearrangeAndRenderCustomLayout();
+	}, [powerbiReport, activeTab, rearrangeAndRenderCustomLayout]);
+
+	/**
+	 * Handle toggle of visual checkboxes
+	 * @param event
+	 */
+	function handleCheckboxInput(event: React.ChangeEvent<HTMLInputElement>): void {
+		const checkedValue = event.target.value;
+		const checked = event.target.checked;
+
+		if (reportVisuals.length === 0) {
+			return;
+		}
+
+		setReportVisuals(
+			reportVisuals.map((visual) => {
+				// Visual show/hide is managed using visual's title, hence, only visuals with title are rendered
+				// Update checkbox of visual group with title same as selected visual's title
+				if (visual.mainVisual.title === checkedValue) {
+					visual.checked = checked;
+				}
+				return visual;
+			})
+		);
+	}
+
+	// Handle toggle of QNA visual
+	function toggleQnaVisual(): void {
+		if (reportVisuals.length === 0) {
+			return;
+		}
+
+		if (!qnaVisualIndex) {
+			console.log('No Qna visual is present on this page of report');
+			return;
+		}
+
+		// Deep copy of reportVisuals array (required for updating state)
+		const reportVisualsQnaToggled = Array.from(reportVisuals);
+
+		// Toggle visible state of the qna visual
+		reportVisualsQnaToggled[qnaVisualIndex].checked = !reportVisualsQnaToggled[qnaVisualIndex].checked;
+
+		setReportVisuals(reportVisualsQnaToggled);
+	}
+
 	const personaliseBar = (
-		<PersonaliseBar togglePersonaliseBar={togglePersonaliseBar} />
+		<PersonaliseBar
+			visuals={reportVisuals}
+			handleCheckboxInput={handleCheckboxInput}
+			toggleQnaVisual={toggleQnaVisual}
+			qnaVisualIndex={qnaVisualIndex}
+			togglePersonaliseBar={togglePersonaliseBar}
+			setLayoutType={setLayoutType}
+			layoutType={layoutType}
+		/>
 	);
 
 	const reportContainer = (
@@ -266,10 +366,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	return (
 		<div className='embed-page-class flex-row'>
 			{navPane}
-			{showPersonaliseBar && activeTab === TabName.Home
-				? personaliseBar
-				: null}
+			{showPersonaliseBar && activeTab === TabName.Home ? personaliseBar : null}
 			{reportContainer}
+			<Footer />
 		</div>
 	);
 }

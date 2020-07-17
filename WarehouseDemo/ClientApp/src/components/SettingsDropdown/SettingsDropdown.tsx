@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 import React from 'react';
 
 export interface SettingsDropdownProps {
@@ -10,9 +14,7 @@ export function SettingsDropdown(props: SettingsDropdownProps): JSX.Element {
 	return (
 		<div id='settings-dropdown' className='border-0 dropdown-menu shadow'>
 			{props.showPersonaliseBar ? (
-				<div
-					className='dropdown-item'
-					onClick={props.personaliseBarOnClick}>
+				<div className='dropdown-item' onClick={props.personaliseBarOnClick}>
 					Personalize Home
 				</div>
 			) : null}
