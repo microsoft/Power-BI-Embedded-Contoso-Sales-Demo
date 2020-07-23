@@ -47,5 +47,31 @@ namespace WarehouseDemo.Controllers
 
 			return Ok(embedParams.ToString());
 		}
+
+		[HttpPost("/api/powerbi/ExportReport")]
+		public async Task<ActionResult<ExportParams>> GetExportedReport([FromBody] ExportParams exportParams)
+		{
+			// TODO: Extract JWT token from request header
+			// TODO: Add throttling by IP on this API
+
+			if (string.IsNullOrWhiteSpace(exportParams.PageName))
+			{
+				return BadRequest(Constant.MissingPageName);
+			}
+			else if (string.IsNullOrWhiteSpace(exportParams.FileFormat))
+			{
+				return BadRequest(Constant.MissingFileFormat);
+			}
+
+			// Generate AAD token
+			var authService = new AuthService(KeyVaultConfig, AuthConfig, Cache);
+			var aadToken = await authService.GetAadToken();
+
+			// Generated exported file
+			var exportService = new ExportService(aadToken);
+			var exportedFile = await exportService.GetExportedFile(new Guid(PowerBiConfig.Value.WorkspaceId), new Guid(PowerBiConfig.Value.ReportId), exportParams.PageName, exportParams.FileFormat, exportParams.PageState);
+
+			return Ok(File(exportedFile.MemoryStream.ToArray(), exportedFile.MimeType, exportedFile.FileName));
+		}
 	}
 }
