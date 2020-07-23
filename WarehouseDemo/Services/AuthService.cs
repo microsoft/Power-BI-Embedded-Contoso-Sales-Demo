@@ -83,20 +83,28 @@ namespace WarehouseDemo.Service
 			var serviceTokenProvider = new AzureServiceTokenProvider();
 			var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(serviceTokenProvider.KeyVaultTokenCallback));
 
-			var certificate = await keyVaultClient.GetCertificateAsync($"https://{KeyVaultConfig.Value.KeyVaultName}.vault.azure.net/", KeyVaultConfig.Value.CertificateName);
-			var secret = await keyVaultClient.GetSecretAsync(certificate.SecretIdentifier.Identifier);
+			try
+			{
+				var certificate = await keyVaultClient.GetCertificateAsync($"https://{KeyVaultConfig.Value.KeyVaultName}.vault.azure.net/", KeyVaultConfig.Value.CertificateName);
+				var secret = await keyVaultClient.GetSecretAsync(certificate.SecretIdentifier.Identifier);
+				
+				// MachineKeySet flag is required by Azure Web app
+				x509Certificate = new X509Certificate2(Convert.FromBase64String(secret.Value), string.Empty, X509KeyStorageFlags.MachineKeySet);
 
-			// MachineKeySet flag is required by Azure Web app
-			x509Certificate = new X509Certificate2(Convert.FromBase64String(secret.Value), string.Empty, X509KeyStorageFlags.MachineKeySet);
+				// Create cache options
+				var cacheOptions = new MemoryCacheEntryOptions()
+					// Keep in cache for this time, reset time if accessed
+					.SetSlidingExpiration(TimeSpan.FromDays(Constant.ExpireInDays));
 
-			// Create cache options
-			var cacheOptions = new MemoryCacheEntryOptions()
-				// Keep in cache for this time, reset time if accessed
-				.SetSlidingExpiration(TimeSpan.FromDays(Constant.ExpireInDays));
-
-			// Cache the certificate
-			Cache.Set(Constant.Certificate, x509Certificate, cacheOptions);
-			return x509Certificate;
+				// Cache the certificate
+				Cache.Set(Constant.Certificate, x509Certificate, cacheOptions);
+				return x509Certificate;
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine(ex.Message);
+				throw new Exception("Error while accessing Key Vault");
+			}
 		}
 	}
 }

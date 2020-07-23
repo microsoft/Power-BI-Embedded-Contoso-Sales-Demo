@@ -52,27 +52,42 @@ namespace WarehouseDemo.Service
 
 			using (var pbiClient = new PowerBIClient(new Uri(Constant.PowerBiApiUri), tokenCredentials))
 			{
-				var exportId = await InitExportRequest(pbiClient, workspaceId, reportId, pageName, exportFormat, pageState);
-				var fileExport = await GetFileExport(pbiClient, workspaceId, reportId, exportId);
-
-				if (fileExport.Status != ExportState.Succeeded)
+				try
 				{
-					throw new Exception("Failed to export report");	
+					var exportId = await InitExportRequest(pbiClient, workspaceId, reportId, pageName, exportFormat, pageState);
+					var fileExport = await GetFileExport(pbiClient, workspaceId, reportId, exportId);
+
+					if (fileExport.Status != ExportState.Succeeded)
+					{
+						throw new Exception("Failed to export report");	
+					}
+
+					// Get exported file as stream object
+					var memoryStream = new MemoryStream();
+					using (var exportStream = await pbiClient.Reports.GetFileOfExportToFileAsync(workspaceId, reportId, fileExport.Id))
+					{
+						await exportStream.CopyToAsync(memoryStream);
+					}
+
+					return new ExportedFile
+					{
+						MemoryStream = memoryStream,
+						FileName = $"{Constant.ExportFileName}{fileExport.ResourceFileExtension}",
+						MimeType = mimeType
+					};
 				}
-
-				// Get exported file as stream object
-				var memoryStream = new MemoryStream();
-				using (var exportStream = await pbiClient.Reports.GetFileOfExportToFileAsync(workspaceId, reportId, fileExport.Id))
+				catch (AggregateException ae)
 				{
-					await exportStream.CopyToAsync(memoryStream);
+					ae.Handle((ex) =>
+					{
+						if (ex is HttpOperationException)
+						{
+							return ex is HttpOperationException;
+						}
+						return false;
+					});
+					return null;
 				}
-
-				return new ExportedFile
-				{
-					MemoryStream = memoryStream,
-					FileName = $"{Constant.ExportFileName}{fileExport.ResourceFileExtension}",
-					MimeType = mimeType
-				};
 			}
 		}
 
