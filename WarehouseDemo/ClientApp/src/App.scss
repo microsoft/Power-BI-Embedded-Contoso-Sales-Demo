@@ -2,10 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-.active {
-	color: #303778 !important;
-}
-
 input.form-control {
 	box-shadow: none !important;
 	padding-left: 3rem !important;
@@ -22,7 +18,7 @@ input.form-control {
 }
 
 .report-container > iframe {
-    border: 0;
+	border: 0;
 }
 
 .set-icon {
@@ -34,10 +30,4 @@ input.form-control {
 .vertical-center {
 	top: 50%;
 	transform: translateY(-50%);
-}
-
-.visuals-list-dropdown {
-	border: 0;
-	padding: 20px;
-	transform: translate(30px, -30px);
 }

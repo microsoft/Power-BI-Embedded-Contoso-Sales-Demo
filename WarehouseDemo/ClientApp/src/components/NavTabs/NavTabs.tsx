@@ -3,7 +3,8 @@
 // ---------------------------------------------------------------------------
 
 import './NavTabs.scss';
-import React from 'react';
+import React, { useContext } from 'react';
+import ThemeContext from '../../themeContext';
 
 export interface Tab {
 	readonly name: string;
@@ -16,16 +17,17 @@ export interface NavTabsProps {
 }
 
 export function NavTabs(props: NavTabsProps): JSX.Element {
+	const theme = useContext(ThemeContext);
+
 	return (
-		<ul className='navbar-nav'>
+		<ul className={`navbar-nav ${theme}`}>
 			{props.tabsList.map((tab) => {
 				return (
-					<li
-						key={tab.name}
-						className={'nav-item ' + (tab.isActive ? 'active' : '')}
-						onClick={() => props.tabOnClick(tab.name)}>
-						<a className='nav-link pl-0 pr-0' href='#'>
-							{tab.name}
+					<li key={tab.name} className='nav-item' onClick={() => props.tabOnClick(tab.name)}>
+						<a
+							className={`nav-link pl-0 pr-0 ${tab.isActive ? 'active' : 'inactive'} ${theme}`}
+							href='#'>
+							{` ${tab.name} `}
 						</a>
 					</li>
 				);

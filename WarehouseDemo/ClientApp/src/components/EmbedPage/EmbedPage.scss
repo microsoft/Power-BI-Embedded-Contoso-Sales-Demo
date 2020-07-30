@@ -13,5 +13,10 @@ body {
 }
 
 .embed-page-class {
-	background: #EBEFF3 0% 0% no-repeat padding-box;
+	&.light {
+		background: #EBEFF3 0% 0% no-repeat padding-box;
+	}
+	&.dark {
+		background: #1F2128 0% 0% no-repeat padding-box;
+	}
 }

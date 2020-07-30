@@ -2,30 +2,62 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
+.active {
+	&.light {
+		border-bottom: 3px solid #303778;
+		color: #303778 !important;
+	}
+
+	&.dark {
+		border-bottom: 3px solid #A7AEFF;
+		color: #A7AEFF !important;
+	}
+}
+
+.inactive {
+	&.light {
+		color: #707070 !important;
+	}
+
+	&.dark {
+		color: #A7A7A7 !important;
+	}
+}
+
 li {
-    margin: 0 .5rem;
+	margin: 0 .5rem;
 }
 
 .header {
-    background-color: white;
-    height: 96px;
-    padding: 1rem;
+	height: 96px;
+	padding: 1rem;
 }
 
 .navbar-light .navbar-nav .active a {
-    border-bottom: 2.5px solid #303778;
+	border-bottom: 2.5px solid #303778;
 }
 
 .nav-link {
-    color: #303778;
-    margin-left: 15px;
-    margin-right: 15px;
+	color: #303778;
+	margin-left: 15px;
+	margin-right: 15px;
 }
 
 .nav-item {
-    color: #303778;
-    font: 700 18px/21px 'Segoe UI';
-    letter-spacing: 0;
-    opacity: 1;
-    text-align: left;
+	color: #303778;
+	font: 700 18px/21px 'Segoe UI';
+	letter-spacing: 0;
+	opacity: 1;
+	text-align: left;
+}
+
+.navbar,
+.navbar-nav,
+.options {
+	&.light {
+		background-color: #FFFFFF;
+	}
+	&.dark {
+		background-color: #343741;
+	}
 }

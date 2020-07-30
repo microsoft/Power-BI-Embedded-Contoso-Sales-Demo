@@ -22,6 +22,9 @@ client-react.test/build
 !client-react.test/build/client-react/styles/
 WarehouseDemo/ClientApp/src/react-app-env.d.ts
 
+# testing
+compiledTests/
+
 # ops
 ops/hosts
 ops/config.yml

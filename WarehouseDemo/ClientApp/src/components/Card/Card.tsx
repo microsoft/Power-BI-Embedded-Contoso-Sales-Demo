@@ -31,7 +31,7 @@ export function Card(props: CardProps): JSX.Element {
 		<div className='gradient-bg'>
 			<div className='card  mx-auto vertical-center'>
 				<img
-					src={require('../../assets/Images/app-name.svg')}
+					src={require('../../assets/Images/app-name-light.svg')}
 					alt='App name'
 					className='card-img mx-auto'
 				/>

@@ -2,7 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-import React from 'react';
+import React, { useContext } from 'react';
+import ThemeContext from '../../themeContext';
 
 export interface CheckBoxProps {
 	title: string;
@@ -12,10 +13,12 @@ export interface CheckBoxProps {
 }
 
 export const CheckBox = (props: CheckBoxProps): JSX.Element => {
+	const theme = useContext(ThemeContext);
+
 	return (
-		<li className='visual-checkbox-li'>
+		<li className={`visual-checkbox-li ${theme}`}>
 			<label>
-				<span className='visual-title'>{props.title}</span>
+				<span className={`visual-title ${theme}`}>{props.title}</span>
 				<input
 					id={props.name}
 					onChange={props.handleCheckboxInput}

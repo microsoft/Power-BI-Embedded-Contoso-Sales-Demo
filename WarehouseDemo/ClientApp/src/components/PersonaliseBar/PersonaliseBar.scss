@@ -20,15 +20,38 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 	width: 60px;
 }
 
+.layouts-list-dropdown,
+.visuals-list-dropdown {
+	&.light {
+		background: #FFFFFF 0 0 no-repeat padding-box;
+		box-shadow: 0 11px 16px #94949429;
+	}
+
+	&.dark {
+		background: #262830 0 0 no-repeat padding-box;
+		box-shadow: 0 11px 18px #00000030;
+	}
+}
+
+.personalise-icon-active {
+	background: #D7DAF9;
+}
+
 .personalise-bar {
 	align-content: space-between;
-	background: #FFFFFF 0 0 no-repeat padding-box;
+	background: 0 0 no-repeat padding-box;
 	box-shadow: 0 16px 25px #D8D8D829;
 	display: flex;
 	flex-flow: column wrap;
 	height: 60px;
 	margin: 30px;
 	opacity: 1;
+	&.light {
+		background-color: #FFFFFF;
+	}
+	&.dark {
+		background-color: #343741;
+	}
 }
 
 .personalise-icon {
@@ -85,17 +108,32 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 	position: absolute;
 }
 
-.visual-checkbox-li>label>input:checked~.visual-checkbox-checkmark {
+.visual-checkbox-li.light>label>input:checked~.visual-checkbox-checkmark {
+	border: 0;	
 	background-color: #303778;
+}
+
+.visual-checkbox-li.dark>label>input:checked~.visual-checkbox-checkmark {
 	border: 0;
+	background-color: #A7AEFF;
 }
 
 .visual-checkbox-li>label>input:checked~.visual-checkbox-checkmark::after {
 	display: block;
 }
 
-.visual-checkbox-li>label .visual-checkbox-checkmark::after {
+.visual-checkbox-li.light>label .visual-checkbox-checkmark::after {
 	border: 2px solid #FFF;
+	border-width: 0 1.5px 1.5px 0;
+	height: 13px;
+	left: 7px;
+	top: 2px;
+	transform: rotate(45deg);
+	width: 6px;
+}
+
+.visual-checkbox-li.dark>label .visual-checkbox-checkmark::after {
+	border: 2px solid #303778;
 	border-width: 0 1.5px 1.5px 0;
 	height: 13px;
 	left: 7px;
@@ -113,19 +151,31 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 	width: 325px;
 }
 
-.visual-list-title {
-	color: #303778;
+.visual-list-title {	
 	font: Bold 20px/21px Segoe UI;
 	letter-spacing: 0;
 	text-align: left;
+
+	&.light {
+		color: #303778;
+	}
+	&.dark {
+		color: #A7AEFF;
+	}
 }
 
 .visual-list-subtitle {
-	color: #33384B;
 	font: Regular 16px/21px Segoe UI;
 	letter-spacing: 0;
 	padding-bottom: 17px;
 	text-align: left;
+
+	&.light {
+		color: #33384B;
+	}
+	&.dark {
+		color: #D8D8D8;
+	}
 }
 
 .visual-title {
@@ -133,4 +183,11 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+
+	&.light {
+		color: #4A4A4A;
+	}
+	&.dark {
+		color: #D8D8D8;
+	}
 }

@@ -1,0 +1,64 @@
+.analytics-button {
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	border: 1px solid #BCBFDE;
+	cursor: pointer;
+	display: inline-block;
+	height: 40px;
+	margin-right: 20px;
+	opacity: 1;
+	padding: 6px 0;
+	text-align: center;
+	width: 160px;
+
+	&.light {
+		background-color: #FFFFFF;
+	}
+
+	&.dark {
+		background-color: #343741;
+	}
+}
+
+.analytics-button-icon {
+	background: transparent;
+	display: inline-block;
+}
+
+.analytics-button-text {
+	display: inline-block;
+	font: Semibold 17px 'Segoe UI';
+	letter-spacing: 0;
+	margin-left: 8px;
+	opacity: 1;
+	text-align: left;
+
+	&.light {
+		color: #303778;
+	}
+
+	&.dark {
+		color: #D8D8D8;
+	}
+}
+
+.horizontal-rule {
+	background-color: #D0D1E1;
+	border: 1px solid #D0D1E1;
+	opacity: 1;
+	width: 100%;
+	margin: 26px 0;
+}
+
+.analytics-button-container {
+	margin-top: 26px;
+	margin-left: 35px;
+	margin-right: 35px;
+
+	&.light {
+		background-color: #EBEFF3;
+	}
+
+	&.dark {
+		background-color: #1F2128;
+	}
+}

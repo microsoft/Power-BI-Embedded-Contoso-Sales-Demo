@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "powerbi-client": "^2.11.0",
-    "powerbi-client-react": "file:../powerbi-client-react-0.1.0.tgz",
+    "powerbi-client-react": "^1.0.1",
     "react": "16.13.1",
     "react-dom": "^16.13.1"
   },
@@ -38,7 +37,10 @@
     "react-scripts": "^3.4.1",
     "rimraf": "^2.6.2",
     "sass-lint": "^1.13.1",
-    "typescript": "^3.9.3"
+    "svg-url-loader": "^6.0.0",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.3",
+    "webpack-cli": "^3.3.12"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -46,7 +48,8 @@
   "scripts": {
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "pretest": "webpack --config webpack.test.config.js",
+    "test": "karma start karma.conf.js",
     "eject": "react-scripts eject",
     "lint": "eslint --fix src/**/*.{ts,tsx} && echo Linting complete.",
     "scss-lint": "sass-lint -c .sass-lint.yml -v -q"

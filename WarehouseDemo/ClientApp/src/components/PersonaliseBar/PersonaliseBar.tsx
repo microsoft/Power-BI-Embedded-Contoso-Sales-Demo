@@ -4,7 +4,8 @@
 
 import './PersonaliseBar.scss';
 import '../EmbedPage/EmbedPage.scss';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import ThemeContext, { Theme } from '../../themeContext';
 import { VisualGroup } from '../VisualGroup';
 import { CheckBox } from '../Checkbox/CheckBox';
 
@@ -32,6 +33,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 
 	// State hook to set a tab as active
 	const [layoutDropdown, setLayoutDropdown] = useState<boolean>(false);
+
+	const theme = useContext(ThemeContext);
 
 	function toggleVisualDropdown() {
 		setVisualDropdown((prevState) => !prevState);
@@ -73,32 +76,35 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			break;
 	}
 
+	const showQnAcheck =
+		props.qnaVisualIndex && props.visuals.length > 0 && props.visuals[props.qnaVisualIndex].checked;
+
 	const personaliseIcons = [
 		{
-			name: 'personalise-include-visuals',
+			name: `${
+				visualDropdown ? 'personalise-include-visuals-light' : 'personalise-include-visuals-' + theme
+			}`, //TODO - use template literal for false case
 			onClickHandler: toggleVisualDropdown,
 			className: `personalise-icon ${visualDropdown ? 'personalise-icon-active' : ''}`,
 		},
 		{
-			name: layoutImageName,
+			name: `${
+				layoutDropdown ? layoutImageName + '-light' : layoutImageName + '-personalise-' + theme
+			}`, //TODO - use template literal
 			onClickHandler: toggleLayoutDropdown,
 			className: `personalise-icon ${layoutDropdown ? 'personalise-icon-active' : ''}`,
 		},
 		{
-			name: 'personalise-qna',
+			name: `${
+				showQnAcheck ? 'personalise-question-answer-light' : 'personalise-question-answer-' + theme
+			}`, //TODO - use template literal
 			onClickHandler: props.toggleQnaVisual,
-			className: `personalise-icon ${
-				props.qnaVisualIndex &&
-				props.visuals.length > 0 &&
-				props.visuals[props.qnaVisualIndex].checked
-					? 'personalise-icon-active'
-					: ''
-			}`,
+			className: `personalise-icon ${showQnAcheck ? 'personalise-icon-active' : ''}`,
 		},
 	];
 
 	const personaliseCloseIcon = {
-		name: 'personalise-close',
+		name: `personalise-close-${theme}`,
 		onClickHandler: props.togglePersonaliseBar,
 		className: 'personalise-icon personalise-icon-close',
 	};
@@ -107,30 +113,35 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 		{
 			name: 'three-column',
 			selectedName: 'three-column-selected',
+			dropdownName: `three-column-selected-${theme}`,
 			layout: Layout.threeColumnLayout,
 			className: 'layout-img',
 		},
 		{
 			name: 'two-column',
 			selectedName: 'two-column-selected',
+			dropdownName: `two-column-selected-${theme}`,
 			layout: Layout.twoColumnLayout,
 			className: 'layout-img',
 		},
 		{
 			name: 'one-column',
 			selectedName: 'one-column-selected',
+			dropdownName: `one-column-selected-${theme}`,
 			layout: Layout.oneColumnLayout,
 			className: 'layout-img',
 		},
 		{
 			name: 'rowspan',
 			selectedName: 'rowspan-selected',
+			dropdownName: `rowspan-selected-${theme}`,
 			layout: Layout.twoColumnRowspanLayout,
 			className: 'layout-img',
 		},
 		{
 			name: 'colspan',
 			selectedName: 'colspan-selected',
+			dropdownName: `colspan-selected-${theme}`,
 			layout: Layout.twoColumnColspanLayout,
 			className: 'layout-img',
 		},
@@ -160,14 +171,14 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 	);
 
 	const personaliseBar = (
-		<div className='personalise-bar'>
+		<div className={`personalise-bar ${theme}`}>
 			<div>{iconList}</div>
 			<div>{closeIcon}</div>
 		</div>
 	);
 
-	const visualListTitle = <div className='visual-list-title'> Configure Report View </div>;
-	const visualListSubtitle = <div className='visual-list-subtitle'> (Show/Hide) </div>;
+	const visualListTitle = <div className={`visual-list-title ${theme}`}>{' Configure Report View '}</div>;
+	const visualListSubtitle = <div className={`visual-list-subtitle ${theme}`}> (Show/Hide) </div>;
 
 	let visualsCheckboxList: JSX.Element[] = null;
 
@@ -190,7 +201,7 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 	// Visuals dropdown element
 	const visualsCheckbox: JSX.Element = visualDropdown ? (
 		<div className='dropdown'>
-			<ul className='dropdown-menu checkbox-menu allow-focus show visuals-list-dropdown'>
+			<ul className={`dropdown-menu checkbox-menu allow-focus show visuals-list-dropdown ${theme}`}>
 				{visualListTitle}
 				{visualListSubtitle}
 				{visualsCheckboxList}
@@ -201,11 +212,11 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 	// Layouts dropdown element
 	const layoutsElement: JSX.Element = layoutDropdown ? (
 		<div className='dropdown'>
-			<ul className='dropdown-menu checkbox-menu allow-focus layouts-list-dropdown'>
+			<ul className={`dropdown-menu checkbox-menu allow-focus layouts-list-dropdown ${theme}`}>
 				{layoutTypes.map((layoutType, idx) => {
 					let imgName = undefined;
 					if (props.layoutType === layoutType.layout) {
-						imgName = layoutType.selectedName;
+						imgName = theme === Theme.Light ? layoutType.selectedName : layoutType.dropdownName;
 					} else {
 						imgName = layoutType.name;
 					}

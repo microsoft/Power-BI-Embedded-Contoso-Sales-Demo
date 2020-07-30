@@ -1,0 +1,111 @@
+$radio-size: 15px;
+$radio-innerradius: 9px;
+$radio-padding: 2px;
+$radio-fillColor_light: #303778;
+$radio-fillColor_dark: #D8D8D8;
+
+.dropdown-item:hover {
+	background-color: transparent;
+}
+
+.dropdown-menu {
+	&.light {
+		background: #FFFFFF;
+	}
+
+	&.dark {
+		background: #262830;
+	}
+}
+
+.dropdown-item {
+	&.light {
+		color: #707070;
+	}
+
+	&.dark {
+		color: #D8D8D8;
+	}
+
+	&:active {
+		color: #303778;
+		background-color: #D7DAF9;
+	}
+}
+
+.theme-selector-container {
+	padding-bottom: 12px;
+	padding-left: 25px;
+	padding-top: 12px;
+
+	&.light {
+		color: #707070;
+	}
+
+	&.dark {
+		color: #D8D8D8;
+	}
+}
+
+.theme-selector {
+	background: #606384;
+	display: inline-block;
+	margin-right: 6px;
+	opacity: 0;
+	position: absolute;
+}
+
+.theme-label {
+	display: inline;
+	letter-spacing: 0;
+	opacity: 1;
+	padding-left: 15px;
+	position: relative;
+	text-align: left;
+}
+
+.label {
+	display: inline-block;
+	font: 14px 'Segoe UI';
+	margin: 0 4% 0 2%;
+}
+
+.checkmark {
+	height: $radio-size;
+	border-radius: 50%;
+	left: 0;
+	position: absolute;
+	top: 4px;
+	width: $radio-size;
+
+	&.light {
+		border: 1px solid $radio-fillColor_light;
+	}
+
+	&.dark {
+		border: 1px solid $radio-fillColor_dark;
+	}
+}
+
+.checkmark:after {
+	border-radius: 50%;
+	content: "";
+	display: none;
+	height: $radio-innerradius;
+	left: $radio-padding;
+	position: absolute;
+	width: $radio-innerradius;
+	top: $radio-padding;
+}
+
+.checkmark.light:after {
+	background: $radio-fillColor_light;
+}
+
+.checkmark.dark:after {
+	background: $radio-fillColor_dark;
+}
+
+.theme-selector:checked~.checkmark:after {
+	display: block;
+}

@@ -5,16 +5,35 @@
 import './EmbedPage.scss';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Report, Embed, models, service, IEmbedConfiguration } from 'powerbi-client';
+import { PowerBIEmbed } from 'powerbi-client-react';
 import { Profile } from '../../App';
 import { NavTabs, Tab } from '../NavTabs/NavTabs';
 import { IconBar } from '../IconBar/IconBar';
-import { PowerBIEmbed } from 'powerbi-client-react';
+import { AnalyticsButton } from '../AnalyticsButton/AnalyticsButton';
 import { PersonaliseBar, Layout } from '../PersonaliseBar/PersonaliseBar';
+import ThemeContext, { Theme } from '../../themeContext';
 import { Footer } from '../Footer/Footer';
 import { getVisualsFromReport, getActivePage } from '../utils';
 import { VisualGroup, pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
 import { salesPersonTabs, salesManagerTabs, TabName } from '../tabConfig';
 import { appName, reportEmbedConfigUrl, ReportMargin } from '../../constants';
+
+/**
+ * Shape for the response from server end point constants.reportEmbedConfigUrl
+ */
+export interface EmbedParamsResponse {
+	Id: string;
+	EmbedUrl: string;
+	Type: string;
+	EmbedToken: {
+		Token: string;
+		TokenId: string;
+		Expiration: string;
+	};
+	MinutesToExpiration: string;
+	DefaultPage: string | null;
+	MobileDefaultPage: string | null;
+}
 
 export interface EmbedPageProps {
 	profile: Profile;
@@ -36,6 +55,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const stateRef = useRef<Report | null>();
 	stateRef.current = powerbiReport;
 
+	// State hook to toggle personalise bar
+	const [theme, setTheme] = useState<Theme>(Theme.Light);
+
 	// Report config state hook
 	const [sampleReportConfig, setReportConfig] = useState<IEmbedConfiguration>({
 		type: 'report',
@@ -56,6 +78,11 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 					visible: false,
 				},
 			},
+		},
+		theme: {
+			themeJson: require(`../../assets/ReportThemes/${
+				theme === Theme.Light ? `lightTheme` : `darkTheme`
+			}.json`),
 		},
 	});
 
@@ -130,26 +157,27 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		],
 	]);
 
-	// Fetch config for sample report
+	// Fetch params for embed config for the report
 	async function fetchReportConfig(): Promise<void> {
 		try {
-			// Fetch report's embed config
-			const serverRes = await fetch(reportEmbedConfigUrl);
+			// Fetch report's embed params
+			const serverRes = await fetch(reportEmbedConfigUrl, { method: 'POST' });
 
 			if (!serverRes.ok) {
 				console.error(
-					`Failed to fetch config for report. Status: ${serverRes.status} ${serverRes.statusText}`
+					`Failed to fetch params for report. Status: ${serverRes.status} ${serverRes.statusText}`
 				);
 				return;
 			}
+
 			const serverResString = await serverRes.text();
-			const { embedToken, embedUrl } = await JSON.parse(serverResString);
+			const embedParams: EmbedParamsResponse = await JSON.parse(serverResString);
 
 			// Update the state "sampleReportConfig" and re-render component to embed report
 			setReportConfig({
 				...sampleReportConfig,
-				embedUrl: embedUrl,
-				accessToken: embedToken,
+				embedUrl: embedParams.EmbedUrl,
+				accessToken: embedParams.EmbedToken.Token,
 			});
 		} catch (error) {
 			console.error('Error in fetching embed configuration', error);
@@ -179,6 +207,21 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	function getReport(embeddedReport: Embed): void {
 		setReport(embeddedReport as Report);
 	}
+
+	// Change the theme of the embedded report
+	useEffect(() => {
+		if (powerbiReport) {
+			powerbiReport
+				.applyTheme({
+					themeJson: require(`../../assets/ReportThemes/${
+						theme === Theme.Light ? `lightTheme` : `darkTheme`
+					}.json`),
+				})
+				.then(function () {
+					console.log('Theme applied in the report');
+				});
+		}
+	}, [theme, powerbiReport]);
 
 	function togglePersonaliseBar(): void {
 		setShowPersonaliseBar((prevState) => !prevState);
@@ -233,8 +276,13 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const navTabs = <NavTabs tabsList={tabsDetails} tabOnClick={tabOnClick} />;
 
 	const navPane = (
-		<nav className='header justify-content-center navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light'>
-			<img className='app-name' src={require('../../assets/Images/app-name.svg')} alt={appName} />
+		<nav
+			className={`header justify-content-center navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light ${theme}`}>
+			<img
+				src={require(`../../assets/Images/app-name-${theme}.svg`)}
+				className='app-name'
+				alt={appName}
+			/>
 			{navTabs}
 			<IconBar
 				firstName={props.firstName}
@@ -244,6 +292,8 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				showPersonaliseBar={activeTab === TabName.Home} // Show personalise bar when Home tab is active
 				personaliseBarOnClick={togglePersonaliseBar}
 				logoutOnClick={props.logoutOnClick}
+				theme={theme}
+				applyTheme={setTheme}
 			/>
 		</nav>
 	);
@@ -354,6 +404,24 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		/>
 	);
 
+	const analyticsButtonContainer = (
+		<div className={`analytics-button-container ${theme}`}>
+			{
+				<AnalyticsButton icon={require(`../../assets/Icons/analytics-myviews-${theme}.svg`)}>
+					My Views
+				</AnalyticsButton>
+			}
+
+			{
+				<AnalyticsButton icon={require(`../../assets/Icons/analytics-captureview-${theme}.svg`)}>
+					Capture View
+				</AnalyticsButton>
+			}
+
+			<div className='horizontal-rule' />
+		</div>
+	);
+
 	const reportContainer = (
 		<PowerBIEmbed
 			embedConfig={sampleReportConfig}
@@ -364,11 +432,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	);
 
 	return (
-		<div className='embed-page-class flex-row'>
-			{navPane}
-			{showPersonaliseBar && activeTab === TabName.Home ? personaliseBar : null}
-			{reportContainer}
-			<Footer />
-		</div>
+		<ThemeContext.Provider value={theme}>
+			<div className={`embed-page-class flex-row ${theme}`}>
+				{navPane}
+				{showPersonaliseBar && activeTab === TabName.Home ? personaliseBar : null}
+				{activeTab === TabName.Analytics ? analyticsButtonContainer : null}
+				{reportContainer}
+				<Footer />
+			</div>
+		</ThemeContext.Provider>
 	);
 }
