@@ -3,12 +3,15 @@
 // ---------------------------------------------------------------------------
 
 import './Footer.scss';
-import React from 'react';
+import React, { useContext } from 'react';
 import { powerBiIconAltName, gitHubIconAltName } from '../../constants';
+import ThemeContext from '../../themeContext';
 
 export function Footer(): JSX.Element {
+	const theme = useContext(ThemeContext);
+
 	return (
-		<div className='d-flex justify-content-center align-items-center footer'>
+		<div className={`d-flex justify-content-center align-items-center footer ${theme}`}>
 			<p>This sample is powered by Power BI Embedded |</p>
 			<img src={require('../../assets/Icons/powerbi.svg')} alt={powerBiIconAltName} />
 			<p>

@@ -48,6 +48,17 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 		setLayoutDropdown((prevState) => !prevState);
 	}
 
+	// This function will be used to close the layouts and visuals dropdown and also toggle the QnaVisual
+	function toggleQna() {
+		// Close the layout dropdown
+		setLayoutDropdown(false);
+
+		// Close the visuals dropdown
+		setVisualDropdown(false);
+
+		props.toggleQnaVisual();
+	}
+
 	useEffect(() => {
 		// TODO: Remove report visuals on checkbox here
 		// Re-arrange visuals in the custom layout
@@ -98,7 +109,7 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			name: `${
 				showQnAcheck ? 'personalise-question-answer-light' : 'personalise-question-answer-' + theme
 			}`, //TODO - use template literal
-			onClickHandler: props.toggleQnaVisual,
+			onClickHandler: toggleQna,
 			className: `personalise-icon ${showQnAcheck ? 'personalise-icon-active' : ''}`,
 		},
 	];
@@ -213,23 +224,27 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 	const layoutsElement: JSX.Element = layoutDropdown ? (
 		<div className='dropdown'>
 			<ul className={`dropdown-menu checkbox-menu allow-focus layouts-list-dropdown ${theme}`}>
-				{layoutTypes.map((layoutType, idx) => {
-					let imgName = undefined;
+				{layoutTypes.map((layoutType) => {
+					let imgName: string;
 					if (props.layoutType === layoutType.layout) {
 						imgName = theme === Theme.Light ? layoutType.selectedName : layoutType.dropdownName;
 					} else {
 						imgName = layoutType.name;
 					}
 					return (
-						<img
-							src={require(`../../assets/Icons/${imgName}.svg`)}
-							alt={layoutType.name}
-							className={layoutType.className}
+						<span
+							className='layout-span d-flex justify-content-center'
 							onClick={() => {
 								props.setLayoutType(layoutType.layout);
 							}}
-							key={idx}
-						/>
+							key={layoutType.name}>
+							<img
+								src={require(`../../assets/Icons/${imgName}.svg`)}
+								alt={layoutType.name}
+								className={layoutType.className}
+								key={layoutType.name}
+							/>
+						</span>
 					);
 				})}
 			</ul>

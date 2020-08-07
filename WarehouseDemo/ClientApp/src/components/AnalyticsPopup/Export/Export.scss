@@ -1,0 +1,67 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
+.input-container {
+	margin-bottom: 10.5px;
+}
+
+.label-radio {
+	cursor: pointer;
+	font: 400 14px 'Segoe UI';
+	letter-spacing: 0;
+	opacity: 1;
+	text-align: left;
+
+	&.light {
+		color: #303778;
+	}
+
+	&.dark {
+		color: #FFFFFF;
+	}
+}
+
+// Radio-button fix for the report export options by giving margins on before and after selectors
+.export-type-label::after {
+	margin: -2px 0.5px;
+}
+
+.export-type-label::before {
+	margin-top: -2px;
+}
+
+.download-anchor {
+	display: none;
+}
+
+.spinner-border {
+	height: 34px;
+	margin: 1px 19px 0 0;
+	width: 34px;
+
+	&.light {
+		border-color: #303778 #303778 #303778 transparent;
+	}
+
+	&.dark {
+		border-color: #A7AEFF #A7AEFF #A7AEFF transparent;
+	}
+}
+
+.wait-container {
+	height: 225.5px;
+}
+
+.wait-message {
+	font: 400 18px/22px 'Segoe UI';
+	margin-bottom: 2px;
+
+	&.light {
+		color: #000000;
+	}
+
+	&.dark {
+		color: #FFFFFF;
+	}
+}

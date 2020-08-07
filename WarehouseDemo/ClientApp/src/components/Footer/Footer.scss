@@ -3,19 +3,37 @@
 // ---------------------------------------------------------------------------
 
 .footer {
-	background: #F7F8FA 0% 0% no-repeat padding-box;
+	bottom: 0;
 	height: 42px;
+	position: relative;
+	width: 100%;
+
+	&.light {
+		background: #F7F8FA 0% 0% no-repeat padding-box;
+
+		>p, >p>a {
+			color: #3A3A3A;
+		}
+	}
+
+	&.dark {
+		background: #494C55 0% 0% no-repeat padding-box;
+
+		>p, >p>a{
+			color: #D8D8D8;
+		}
+	}
+}
+
+.footer>p,
+.footer>p>a {
+	display: contents;
+	font: 400 16px 'Segoe UI';
 }
 
 .footer>img {
 	height: 22px;
 	width: 30px;
-}
-
-.footer>p, .footer>p>a {
-	color: #3A3A3A;
-	display: contents;
-	font: normal 16px 'Segoe UI';
 }
 
 .footer>p>a {

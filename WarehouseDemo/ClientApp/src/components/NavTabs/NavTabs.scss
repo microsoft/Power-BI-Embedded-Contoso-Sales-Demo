@@ -2,7 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
+.m-left {
+	margin-left: 120px;
+}
+
 .active {
+	font: 700 18px/24px 'Segoe UI';
+
 	&.light {
 		border-bottom: 3px solid #303778;
 		color: #303778 !important;
@@ -15,6 +21,8 @@
 }
 
 .inactive {
+	font: 400 18px/24px 'Segoe UI';
+
 	&.light {
 		color: #707070 !important;
 	}
@@ -31,6 +39,9 @@ li {
 .header {
 	height: 96px;
 	padding: 1rem;
+	position: sticky;
+	top: 0;
+	z-index: 2;
 }
 
 .navbar-light .navbar-nav .active a {
@@ -57,6 +68,7 @@ li {
 	&.light {
 		background-color: #FFFFFF;
 	}
+	
 	&.dark {
 		background-color: #343741;
 	}

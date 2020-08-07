@@ -2,20 +2,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-.app-name {
-	left: 2rem;
-	position: absolute;
-}
-
 body {
 	background: #EBEFF3 0% 0% no-repeat padding-box;
+	height: 100vh;
+	min-width: 955px;
 	opacity: 1;
+	overflow: auto hidden;
 }
 
 .embed-page-class {
+	height: 100vh;
+
 	&.light {
 		background: #EBEFF3 0% 0% no-repeat padding-box;
 	}
+	
 	&.dark {
 		background: #1F2128 0% 0% no-repeat padding-box;
 	}

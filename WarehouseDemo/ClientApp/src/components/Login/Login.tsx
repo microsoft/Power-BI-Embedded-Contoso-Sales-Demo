@@ -28,7 +28,7 @@ export function Login(props: LoginProps): JSX.Element {
 						className='input-icon'
 					/>
 				</span>
-				<input type='text' placeholder='Username' className='form-control username-input' />
+				<input type='text' placeholder='Username' className='form-control form-input m-top' />
 			</div>
 
 			<div className='form-group has-feedback'>
@@ -39,7 +39,7 @@ export function Login(props: LoginProps): JSX.Element {
 						className='input-icon'
 					/>
 				</span>
-				<input type='password' placeholder='***********' className='form-control password-input' />
+				<input type='password' placeholder='***********' className='form-control form-input' />
 			</div>
 
 			<div className='no-gutters row btn-wrapper'>

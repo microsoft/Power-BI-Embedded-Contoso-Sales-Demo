@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// ---------------------------------------------------------------------------
+
 .analytics-button {
 	background: #FFFFFF 0% 0% no-repeat padding-box;
 	border: 1px solid #BCBFDE;
@@ -19,14 +23,25 @@
 	}
 }
 
+.analytics-button[aria-expanded='true'] {
+	&.light {
+		background-color: #D7DAF9;
+	}
+
+	&.dark {
+		background-color: #252D4E;
+	}
+}
+
 .analytics-button-icon {
 	background: transparent;
 	display: inline-block;
+	margin-top: -2px;
 }
 
 .analytics-button-text {
 	display: inline-block;
-	font: Semibold 17px 'Segoe UI';
+	font: 600 17px/9px 'Segoe UI';
 	letter-spacing: 0;
 	margin-left: 8px;
 	opacity: 1;
@@ -37,16 +52,16 @@
 	}
 
 	&.dark {
-		color: #D8D8D8;
+		color: #A7AEFF;
 	}
 }
 
 .horizontal-rule {
 	background-color: #D0D1E1;
-	border: 1px solid #D0D1E1;
+	border-top: 1px solid #D0D1E1;
 	opacity: 1;
 	width: 100%;
-	margin: 26px 0;
+	margin: 26px 0 -8px 0;
 }
 
 .analytics-button-container {
@@ -57,7 +72,7 @@
 	&.light {
 		background-color: #EBEFF3;
 	}
-
+	
 	&.dark {
 		background-color: #1F2128;
 	}

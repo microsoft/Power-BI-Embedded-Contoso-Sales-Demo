@@ -43,19 +43,16 @@ $input-width: 335px;
 $input-height: 49px;
 $input-border-radius: 3px;
 
-.username-input {
+.form-input {
 	border-radius: $input-border-radius;
 	height: $input-height;
 	margin-left: 34px;
-	margin-top: 16px;
+	padding-left: 3rem !important;
 	width: $input-width;
 }
 
-.password-input {
-	border-radius: $input-border-radius;
-	height: $input-height;
-	margin-left: 34px;
-	width: $input-width;
+.m-top {
+	margin-top: 16px;
 }
 
 .set-icon {

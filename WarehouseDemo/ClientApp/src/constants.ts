@@ -30,6 +30,27 @@ export const AnonymousUser = {
 };
 
 /**
+ * Export parameters: Name of the exported file and
+ * URL of server side API for exporting
+ */
+export const exportedFileName = 'ExportedFile';
+export const exportServerApi = '/api/powerbi/ExportReport';
+
+/**
+ * Types of export supported in Power BI Embedded
+ */
+export const exportTypes: Array<string> = ['pdf', 'ppt', 'png'];
+
+/**
+ * Content type used to convert the file stream to required file format
+ */
+export enum contentTypeMapping {
+	PDF = 'application/pdf',
+	PPT = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+	PNG = 'image/png',
+}
+
+/**
  * API end-point url to get embed config for a sample report
  */
 export const reportEmbedConfigUrl = '/api/powerbi/EmbedParams';
@@ -87,3 +108,13 @@ export const gitHubIconAltName = 'github';
  * Name of the application
  */
 export const appName = 'Contoso';
+
+/**
+ * CSS Class to show the report-container
+ */
+export const visibleClass = 'report-visible';
+
+/**
+ * CSS class to hide the report-container
+ */
+export const hiddenClass = 'report-hidden';

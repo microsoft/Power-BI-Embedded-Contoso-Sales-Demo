@@ -17,7 +17,9 @@ export function ProfileInfo(props: ProfileInfoProps): JSX.Element {
 	const theme = useContext(ThemeContext);
 	return (
 		<div className='d-flex flex-column justify-content-start'>
-			<div className={`username ${theme}`}>{props.firstName + ' ' + props.lastName}</div>
+			<div className={`username d-inline-block text-truncate ${theme}`}>
+				{props.firstName + ' ' + props.lastName}
+			</div>
 			<div className={`profile-info ${theme}`}>{props.profile}</div>
 		</div>
 	);

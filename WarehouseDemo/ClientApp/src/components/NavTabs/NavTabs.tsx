@@ -20,18 +20,22 @@ export function NavTabs(props: NavTabsProps): JSX.Element {
 	const theme = useContext(ThemeContext);
 
 	return (
-		<ul className={`navbar-nav ${theme}`}>
-			{props.tabsList.map((tab) => {
-				return (
-					<li key={tab.name} className='nav-item' onClick={() => props.tabOnClick(tab.name)}>
-						<a
-							className={`nav-link pl-0 pr-0 ${tab.isActive ? 'active' : 'inactive'} ${theme}`}
-							href='#'>
-							{` ${tab.name} `}
-						</a>
-					</li>
-				);
-			})}
-		</ul>
+		<div className='d-flex m-left'>
+			<ul className={`navbar-nav ${theme}`}>
+				{props.tabsList.map((tab) => {
+					return (
+						<li key={tab.name} className='nav-item' onClick={() => props.tabOnClick(tab.name)}>
+							<a
+								className={`nav-link pl-0 pr-0 ${
+									tab.isActive ? 'active' : 'inactive'
+								} ${theme}`}
+								href='#'>
+								{` ${tab.name} `}
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</div>
 	);
 }

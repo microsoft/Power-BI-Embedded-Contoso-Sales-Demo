@@ -32,15 +32,15 @@ export enum TabName {
 export const salesPersonTabs: TabConfig[] = [
 	{
 		name: TabName.Home,
-		reportPageName: 'ReportSection2',
+		reportPageName: '',
 	},
 	{
 		name: TabName.Leads,
-		reportPageName: 'ReportSection',
+		reportPageName: '',
 	},
 	{
 		name: TabName.Opportunities,
-		reportPageName: 'ReportSection1',
+		reportPageName: '',
 	},
 	{
 		name: TabName.Accounts,

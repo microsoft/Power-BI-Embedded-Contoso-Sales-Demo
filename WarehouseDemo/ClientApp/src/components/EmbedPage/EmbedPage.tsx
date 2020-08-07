@@ -12,11 +12,15 @@ import { IconBar } from '../IconBar/IconBar';
 import { AnalyticsButton } from '../AnalyticsButton/AnalyticsButton';
 import { PersonaliseBar, Layout } from '../PersonaliseBar/PersonaliseBar';
 import ThemeContext, { Theme } from '../../themeContext';
+import { getVisualsFromPage, getActivePage, getBookmarksFromReport, getSelectedBookmark } from '../utils';
 import { Footer } from '../Footer/Footer';
-import { getVisualsFromReport, getActivePage } from '../utils';
 import { VisualGroup, pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
+import { Modal } from '../AnalyticsPopup/Modal/Modal';
+import { Error } from '../ErrorPopup/Error';
+import { BookmarksList } from '../BookmarksList/BookmarksList';
 import { salesPersonTabs, salesManagerTabs, TabName } from '../tabConfig';
-import { appName, reportEmbedConfigUrl, ReportMargin } from '../../constants';
+import { appName, reportEmbedConfigUrl, ReportMargin, visibleClass, hiddenClass } from '../../constants';
+import $ from 'jquery';
 
 /**
  * Shape for the response from server end point constants.reportEmbedConfigUrl
@@ -43,7 +47,24 @@ export interface EmbedPageProps {
 	logoutOnClick: { (): void };
 }
 
+export interface Bookmark extends models.IReportBookmark {
+	checked?: boolean;
+}
+
 export function EmbedPage(props: EmbedPageProps): JSX.Element {
+	// Cache DOM element
+	const reportDiv = $('.report-container');
+
+	// Hide the report-container on the initial load
+	if (!reportDiv.hasClass(visibleClass)) {
+		reportDiv.addClass(hiddenClass);
+	}
+
+	// State hook for error
+	const [error, setError] = useState<string>('');
+
+	const errorPopup = <Error error={error} setError={setError} />;
+
 	// State hook for PowerBI Report
 	const [powerbiReport, setReport] = useState<Report>(null);
 
@@ -61,7 +82,8 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// Report config state hook
 	const [sampleReportConfig, setReportConfig] = useState<IEmbedConfiguration>({
 		type: 'report',
-		embedUrl: undefined,
+		// TODO: Patch for powerbi-client bug
+		embedUrl: '',
 		tokenType: models.TokenType.Embed,
 		accessToken: undefined,
 		settings: {
@@ -80,9 +102,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			},
 		},
 		theme: {
-			themeJson: require(`../../assets/ReportThemes/${
-				theme === Theme.Light ? `lightTheme` : `darkTheme`
-			}.json`),
+			themeJson: require(`../../assets/ReportThemes/${theme}Theme.json`),
 		},
 	});
 
@@ -116,6 +136,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// Three column layout is the default layout type selected
 	const [layoutType, setLayoutType] = useState<Layout>(Layout.threeColumnLayout);
 
+	// State hook for the list of bookmarks of the report
+	const [bookmarks, updateBookmarks] = useState<Bookmark[]>([]);
+
 	/* End of state hooks declaration */
 
 	const eventHandlersMap = new Map([
@@ -123,7 +146,15 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			'loaded',
 			function () {
 				console.log('Report has loaded');
-				getVisualsFromReport(stateRef.current, (visuals) => {
+
+				// Get the page for the Home tab
+				const pageName = getReportPageName(TabName.Home, props.profile);
+				const page = stateRef.current.page(pageName);
+
+				// Set the page active
+				page?.setActive().catch((reason) => console.error(reason));
+
+				getVisualsFromPage(page, (visuals) => {
 					// Remove visuals without title
 					visuals = visuals.filter((visual) => visual.title);
 
@@ -139,12 +170,22 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 					// Build visual groups and update state
 					setReportVisuals(pairVisuals(visuals));
+
+					// Get bookmarks from the report
+					getBookmarksFromReport(stateRef.current, updateBookmarks);
 				});
 			},
 		],
 		[
 			'rendered',
 			function () {
+				// Cache DOM element
+				const reportDiv = $('.report-container');
+
+				// Show the report-container when the visuals are arranged
+				reportDiv.removeClass(hiddenClass);
+				reportDiv.addClass(visibleClass);
+
 				console.log('Report has rendered');
 				// Add logic to trigger after report is rendered
 			},
@@ -164,6 +205,8 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			const serverRes = await fetch(reportEmbedConfigUrl, { method: 'POST' });
 
 			if (!serverRes.ok) {
+				// Show error popup if request fails
+				setError(await serverRes.text());
 				console.error(
 					`Failed to fetch params for report. Status: ${serverRes.status} ${serverRes.statusText}`
 				);
@@ -180,6 +223,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				accessToken: embedParams.EmbedToken.Token,
 			});
 		} catch (error) {
+			setError(error.message);
 			console.error('Error in fetching embed configuration', error);
 		}
 	}
@@ -200,13 +244,39 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// Update title of the report iframe
 	useEffect(() => {
 		if (powerbiReport) {
+			// Set iframe title
 			powerbiReport.setComponentTitle('Report');
 		}
 	}, [powerbiReport]);
 
 	function getReport(embeddedReport: Embed): void {
-		setReport(embeddedReport as Report);
+		const report = embeddedReport as Report;
+		setReport(report);
 	}
+
+	// Change the theme of the embedded report
+	useEffect(() => {
+		if (powerbiReport) {
+			powerbiReport
+				.applyTheme({
+					themeJson: require(`../../assets/ReportThemes/${theme}Theme.json`),
+				})
+				.then(function () {
+					console.log('Theme applied in the report');
+				});
+		}
+	}, [theme, powerbiReport]);
+
+	// Apply the currently selected bookmark
+	useEffect(() => {
+		if (powerbiReport && bookmarks.length > 0) {
+			const selectedBookmark = getSelectedBookmark(bookmarks);
+
+			if (selectedBookmark) {
+				powerbiReport.bookmarksManager.applyState(selectedBookmark.state);
+			}
+		}
+	}, [bookmarks, powerbiReport]);
 
 	// Change the theme of the embedded report
 	useEffect(() => {
@@ -225,6 +295,27 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	function togglePersonaliseBar(): void {
 		setShowPersonaliseBar((prevState) => !prevState);
+	}
+
+	async function captureNewBookmark(capturedBookmarkName: string): Promise<void> {
+		// Capture current state of report in a bookmark
+		// Refer: https://github.com/microsoft/PowerBI-JavaScript/wiki/Bookmarks
+		const capturedBookmark: Bookmark = await powerbiReport.bookmarksManager.capture();
+
+		// default
+		capturedBookmark.checked = true;
+
+		// Update name of bookmark displayed in the list
+		capturedBookmark.displayName = capturedBookmarkName;
+
+		// Uncheck all other bookmarks
+		const bookmarkList = bookmarks.map((bookmark) => {
+			bookmark.checked = false;
+			return bookmark;
+		});
+
+		// Update the bookmarks' list with current bookmarks as selected
+		updateBookmarks([...bookmarkList, capturedBookmark]);
 	}
 
 	function tabOnClick(selectedTab: Tab['name']): void {
@@ -263,6 +354,23 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			// Set given page as active in the embedded report
 			const page = powerbiReport.page(pageName);
 			page?.setActive().catch((reason) => console.error(reason));
+
+			// Remove the customLayout property fron the Settings object
+			setReportConfig((sampleReportConfig) => {
+				return {
+					...sampleReportConfig,
+					settings: {
+						panes: {
+							filters: {
+								visible: false,
+							},
+							pageNavigation: {
+								visible: false,
+							},
+						},
+					},
+				};
+			});
 		}
 	}, [activeTab, powerbiReport, props.profile]);
 
@@ -277,7 +385,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	const navPane = (
 		<nav
-			className={`header justify-content-center navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light ${theme}`}>
+			className={`header justify-content-between navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light ${theme}`}>
 			<img
 				src={require(`../../assets/Images/app-name-${theme}.svg`)}
 				className='app-name'
@@ -302,6 +410,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	 * Rearranges the visuals in the custom layout and updates the custom layout setting in report config state
 	 */
 	const rearrangeAndRenderCustomLayout = useCallback(() => {
+		// Rearrange the visuals only if the activeTab is Home
+		if (activeTab !== TabName.Home) return;
+
 		// Get active page and set the new calculated custom layout
 		getActivePage(powerbiReport).then((activePage) => {
 			// Calculate positions of visual groups
@@ -331,7 +442,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				};
 			});
 		});
-	}, [powerbiReport, layoutType, reportVisuals]);
+	}, [powerbiReport, layoutType, reportVisuals, activeTab]);
 
 	// Attaches the rearrangeAndRenderCustomLayout function to resize event of window
 	// Thus whenever window is resized, visuals will get arranged as per the dimensions of the resized report-container
@@ -340,11 +451,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// Update the layout of the embedded report
 	useEffect(() => {
-		if (!powerbiReport || activeTab !== TabName.Home) {
+		if (!powerbiReport) {
 			return;
 		}
-
-		// Rearrange the visuals when the active tab is Home
 		rearrangeAndRenderCustomLayout();
 	}, [powerbiReport, activeTab, rearrangeAndRenderCustomLayout]);
 
@@ -404,16 +513,25 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		/>
 	);
 
+	const bookmarksList = <BookmarksList bookmarks={bookmarks} updateBookmarks={updateBookmarks} />;
+
 	const analyticsButtonContainer = (
 		<div className={`analytics-button-container ${theme}`}>
 			{
-				<AnalyticsButton icon={require(`../../assets/Icons/analytics-myviews-${theme}.svg`)}>
+				<AnalyticsButton
+					className={`${theme}`}
+					dataToggle={'dropdown'}
+					icon={require(`../../assets/Icons/analytics-myviews-${theme}.svg`)}>
 					My Views
 				</AnalyticsButton>
 			}
-
+			{bookmarksList}
 			{
-				<AnalyticsButton icon={require(`../../assets/Icons/analytics-captureview-${theme}.svg`)}>
+				<AnalyticsButton
+					className={`${theme}`}
+					dataToggle={'modal'}
+					dataTarget={'#modal-capture-view'}
+					icon={require(`../../assets/Icons/analytics-captureview-${theme}.svg`)}>
 					Capture View
 				</AnalyticsButton>
 			}
@@ -431,13 +549,31 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		/>
 	);
 
+	const [isExportInProgress, setIsExportInProgress] = useState<boolean>(false);
+
+	function toggleExportProgressState() {
+		setIsExportInProgress((prevState) => !prevState);
+	}
+
+	const captureViewPopup = (
+		<Modal
+			report={powerbiReport}
+			captureBookmarkWithName={captureNewBookmark}
+			isExportInProgress={isExportInProgress}
+			setError={setError}
+			toggleExportProgressState={toggleExportProgressState}
+			selectedBookmark={getSelectedBookmark(bookmarks)}
+		/>
+	);
+
 	return (
 		<ThemeContext.Provider value={theme}>
-			<div className={`embed-page-class flex-row ${theme}`}>
+			<div className={`embed-page-class d-flex flex-column ${theme}`}>
 				{navPane}
 				{showPersonaliseBar && activeTab === TabName.Home ? personaliseBar : null}
-				{activeTab === TabName.Analytics ? analyticsButtonContainer : null}
+				{activeTab === TabName.Analytics ? [analyticsButtonContainer, captureViewPopup] : null}
 				{reportContainer}
+				{errorPopup}
 				<Footer />
 			</div>
 		</ThemeContext.Provider>
