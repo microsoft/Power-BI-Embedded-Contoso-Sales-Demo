@@ -73,3 +73,13 @@ export const salesManagerTabs: TabConfig[] = [
 		reportPageName: '',
 	},
 ];
+
+/**
+ * Names of tabs in edit opportunity popup
+ */
+export const opportunityPopupTabNames = ['Edit Topic', 'Schedule a Meeting', 'Quote', 'Set Status'];
+
+/**
+ * Names of tabs in edit lead popup
+ */
+export const editLeadPopupTabNames = ['Add Activity', 'Qualify Lead', 'Disqualify Lead'];

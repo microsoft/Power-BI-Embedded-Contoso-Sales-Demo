@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------
 
 import { Report, VisualDescriptor, Page } from 'powerbi-client';
+import Moment from 'moment';
 import { Bookmark } from './EmbedPage/EmbedPage';
 import { TabConfig } from './tabConfig';
 
@@ -141,13 +142,52 @@ export function downloadFile(fileData: { [key: string]: string }): void {
 }
 
 /**
- * General function to captialize first letter of every word
- * @params {string} words
- * @returns {string}
+ * General function to captialize first letter of every space separated word
+ * @param words sentence of words
+ * @returns first letter capital for each word in the string
  */
 export function captializeFirstLetterOfWords(words: string): string {
 	return words
 		.split(' ')
 		.map((word) => word.substring(0, 1).toUpperCase() + word.substring(1))
 		.join(' ');
+}
+
+/**
+ * Returns the formatted date required by the forms
+ * @param date date to be formatted
+ * @returns formatted date in the form of string
+ */
+export function getFormattedDate(date: Date): string {
+	return Moment(date).format('dddd, MMMM DD, yyyy');
+}
+
+/**
+ * Returns the time array with 12-hour format
+ * @returns array of time options as string
+ */
+export function createTimeOptions(): Array<string> {
+	const timeOptions: Array<string> = [];
+	let hours = 12;
+	let mins = 0;
+	let minsText = '';
+	let meridiem = 'AM';
+	for (let i = 0; i < 48; i++) {
+		minsText = '';
+		if (hours > 12) {
+			hours = 1;
+		}
+		if (i >= 24) {
+			meridiem = 'PM';
+		}
+		if (mins == 0) minsText += mins + '0';
+		else minsText += mins;
+		timeOptions.push(hours + ':' + minsText + ' ' + meridiem);
+		mins += 30;
+		if (i % 2 != 0) {
+			hours++;
+			mins = 0;
+		}
+	}
+	return timeOptions;
 }

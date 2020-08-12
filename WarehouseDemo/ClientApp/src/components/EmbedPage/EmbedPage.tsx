@@ -19,7 +19,20 @@ import { Modal } from '../AnalyticsPopup/Modal/Modal';
 import { Error } from '../ErrorPopup/Error';
 import { BookmarksList } from '../BookmarksList/BookmarksList';
 import { salesPersonTabs, salesManagerTabs, TabName } from '../tabConfig';
-import { appName, reportEmbedConfigUrl, ReportMargin, visibleClass, hiddenClass } from '../../constants';
+import {
+	appName,
+	reportEmbedConfigUrl,
+	ReportMargin,
+	visualCommands,
+	visualSelectorSchema,
+	visualButtons,
+	visibleClass,
+	hiddenClass,
+} from '../../constants';
+import { AddActivityForm } from '../Forms/AddActivityForm';
+import { EditLeadForm } from '../Forms/EditLeadForm';
+import { AddLeadForm } from '../Forms/AddLead';
+import { UpdateOpportunityForm } from '../Forms/UpdateOpportunityForm';
 import $ from 'jquery';
 
 /**
@@ -100,6 +113,38 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 					visible: false,
 				},
 			},
+			extensions: [
+				{
+					command: {
+						name: visualCommands.editLeads.name,
+						title: visualCommands.editLeads.displayName,
+						selector: {
+							$schema: visualSelectorSchema,
+							visualName: visualCommands.editLeads.visualGuid,
+						},
+						extend: {
+							visualContextMenu: {
+								menuLocation: models.MenuLocation.Top,
+							},
+						},
+					},
+				},
+				{
+					command: {
+						name: visualCommands.editOpportunity.name,
+						title: visualCommands.editOpportunity.displayName,
+						selector: {
+							$schema: visualSelectorSchema,
+							visualName: visualCommands.editOpportunity.visualGuid,
+						},
+						extend: {
+							visualContextMenu: {
+								menuLocation: models.MenuLocation.Top,
+							},
+						},
+					},
+				},
+			],
 		},
 		theme: {
 			themeJson: require(`../../assets/ReportThemes/${theme}Theme.json`),
@@ -108,6 +153,18 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// State hook to toggle personalise bar
 	const [showPersonaliseBar, setShowPersonaliseBar] = useState<boolean>(false);
+
+	// State hook to toggle add activity form
+	const [addActivityFormPopup, setAddActivityFormPopup] = useState<boolean>(false);
+
+	// State hook to toggle add activity form
+	const [editLeadFormPopup, setEditLeadFormPopup] = useState<boolean>(false);
+
+	// State hook to toggle edit add lead form
+	const [addLeadFormPopup, setAddLeadFormPopup] = useState<boolean>(false);
+
+	// State hook to toggle edit opportunity form
+	const [updateOpportunityFormPopup, setUpdateOpportunityFormPopup] = useState<boolean>(false);
 
 	// State hook to set qna visual index
 	const [qnaVisualIndex, setQnaVisualIndex] = useState<number>(null);
@@ -188,6 +245,31 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 				console.log('Report has rendered');
 				// Add logic to trigger after report is rendered
+			},
+		],
+		[
+			'commandTriggered',
+			function (event) {
+				console.log('Command triggered');
+
+				if (event.detail.command === visualCommands.editLeads.name) {
+					toggleEditLeadFormPopup();
+				} else if (event.detail.command === visualCommands.editOpportunity.name) {
+					toggleUpdateOpportunityFormPopup();
+				}
+			},
+		],
+		[
+			'buttonClicked',
+			function (event) {
+				console.log('Button Clicked');
+
+				// Use id here if title is not unique
+				if (event.detail.title === visualButtons.addLeadsTitle) {
+					toggleAddLeadFormPopup();
+				} else if (event.detail.title === visualButtons.addActivityTitle) {
+					toggleAddActivityFormPopup();
+				}
 			},
 		],
 		[
@@ -277,21 +359,6 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			}
 		}
 	}, [bookmarks, powerbiReport]);
-
-	// Change the theme of the embedded report
-	useEffect(() => {
-		if (powerbiReport) {
-			powerbiReport
-				.applyTheme({
-					themeJson: require(`../../assets/ReportThemes/${
-						theme === Theme.Light ? `lightTheme` : `darkTheme`
-					}.json`),
-				})
-				.then(function () {
-					console.log('Theme applied in the report');
-				});
-		}
-	}, [theme, powerbiReport]);
 
 	function togglePersonaliseBar(): void {
 		setShowPersonaliseBar((prevState) => !prevState);
@@ -566,6 +633,22 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		/>
 	);
 
+	function toggleAddActivityFormPopup(): void {
+		setAddActivityFormPopup((prevState) => !prevState);
+	}
+
+	function toggleEditLeadFormPopup(): void {
+		setEditLeadFormPopup((prevState) => !prevState);
+	}
+
+	function toggleUpdateOpportunityFormPopup(): void {
+		setUpdateOpportunityFormPopup((prevState) => !prevState);
+	}
+
+	function toggleAddLeadFormPopup(): void {
+		setAddLeadFormPopup((prevState) => !prevState);
+	}
+
 	return (
 		<ThemeContext.Provider value={theme}>
 			<div className={`embed-page-class d-flex flex-column ${theme}`}>
@@ -576,6 +659,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				{errorPopup}
 				<Footer />
 			</div>
+			{addActivityFormPopup ? (
+				<AddActivityForm toggleActivityFormPopup={toggleAddActivityFormPopup} />
+			) : null}
+			{editLeadFormPopup ? <EditLeadForm toggleEditLeadFormPopup={toggleEditLeadFormPopup} /> : null}
+			{addLeadFormPopup ? <AddLeadForm toggleAddLeadFormPopup={toggleAddLeadFormPopup} /> : null}
+			{updateOpportunityFormPopup ? (
+				<UpdateOpportunityForm toggleUpdateOpportunityFormPopup={toggleUpdateOpportunityFormPopup} />
+			) : null}
 		</ThemeContext.Provider>
 	);
 }

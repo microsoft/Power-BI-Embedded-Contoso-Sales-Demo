@@ -11,3 +11,4 @@ rules:
   hex-length: 0
   single-line-per-selector: 0
   border-zero: 0
+  leading-zero: 0

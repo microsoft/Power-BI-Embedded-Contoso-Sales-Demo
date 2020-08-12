@@ -30,6 +30,31 @@ export const AnonymousUser = {
 };
 
 /**
+ * Commands:
+ * Visual commands to edit leads and opportunities
+ * Button action to add a new lead
+ */
+export const visualCommands = {
+	editLeads: {
+		name: 'EditLeads',
+		displayName: 'Edit Leads',
+		visualGuid: 'af17cf8ee4edb070965c',
+	},
+	editOpportunity: {
+		name: 'EditOpportunities',
+		displayName: 'Edit Opportunities',
+		visualGuid: 'deec664ea882e0097381',
+	},
+};
+
+export enum visualButtons {
+	addLeadsTitle = 'Add Lead',
+	addActivityTitle = 'Add Activity',
+}
+
+export const visualSelectorSchema = 'http://powerbi.com/product/schema#visualSelector';
+
+/**
  * Export parameters: Name of the exported file and
  * URL of server side API for exporting
  */
@@ -118,3 +143,8 @@ export const visibleClass = 'report-visible';
  * CSS class to hide the report-container
  */
 export const hiddenClass = 'report-hidden';
+
+/**
+ * Error message to be displayed against invalid user input
+ */
+export const formInputErrorMessage = 'Please provide a valid value';
