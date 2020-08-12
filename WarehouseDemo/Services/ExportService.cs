@@ -26,7 +26,7 @@ namespace WarehouseDemo.Service
 		/// Get exported report file
 		/// </summary>
 		/// <returns>Wrapper object with exported file as a stream object and its extension</returns>
-		public async Task<ExportedFile> GetExportedFile(Guid workspaceId, Guid reportId, string pageName, string fileFormat, string pageState = null)
+		public async Task<ExportedFile> GetExportedFile(Guid workspaceId, Guid reportId, string pageName, string fileFormat, string pageState = null, string username = null, string role = null)
 		{
 			FileFormat exportFormat;
 			string mimeType;
@@ -54,7 +54,7 @@ namespace WarehouseDemo.Service
 			{
 				try
 				{
-					var exportId = await InitExportRequest(pbiClient, workspaceId, reportId, pageName, exportFormat, pageState);
+					var exportId = await InitExportRequest(pbiClient, workspaceId, reportId, pageName, exportFormat, pageState, username, role);
 					var fileExport = await GetFileExport(pbiClient, workspaceId, reportId, exportId);
 
 					if (fileExport.Status != ExportState.Succeeded)
@@ -95,7 +95,7 @@ namespace WarehouseDemo.Service
 		/// Initialize export request for report
 		/// </summary>
 		/// <returns>Id of Export request</returns>
-		private async Task<string> InitExportRequest(PowerBIClient pbiClient, Guid workspaceId, Guid reportId, string pageName, FileFormat fileFormat, string pageState = null)
+		private async Task<string> InitExportRequest(PowerBIClient pbiClient, Guid workspaceId, Guid reportId, string pageName, FileFormat fileFormat, string pageState = null, string username = null, string role = null)
 		{
 			PageBookmark pageBookmark = null;
 
@@ -104,6 +104,17 @@ namespace WarehouseDemo.Service
 				// To export report page with current bookmark
 				pageBookmark = new PageBookmark(null, pageState);
 			}
+
+			// Get Power BI report object
+			var pbiReport = pbiClient.Reports.GetReportInGroup(workspaceId, reportId);
+
+			// Create effective identity for current user
+			List<EffectiveIdentity> identities = null;
+			// TODO: Uncomment below 4 lines when RLS is implemented in report
+			// if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(role))
+			// {
+			// 	identities = new List<EffectiveIdentity> { new EffectiveIdentity(username: username, roles: new List<string> { role }, datasets: new List<string> { pbiReport.DatasetId }) };
+			// }
 
 			var powerBIReportExportConfiguration = new PowerBIReportExportConfiguration
 			{
@@ -114,6 +125,8 @@ namespace WarehouseDemo.Service
 
 				// Initialize list of pages along with their state to be exported
 				Pages = new List<ExportReportPage>() { new ExportReportPage(pageName, pageBookmark) },
+
+				Identities = identities
 			};
 
 			var exportRequest = new ExportReportRequest

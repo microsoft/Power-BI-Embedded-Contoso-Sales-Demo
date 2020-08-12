@@ -9,6 +9,7 @@ namespace WarehouseDemo.Service
 	using Microsoft.Rest;
 	using Newtonsoft.Json.Linq;
 	using System;
+	using System.Collections.Generic;
 
 	public class EmbedService
 	{
@@ -23,10 +24,8 @@ namespace WarehouseDemo.Service
 		/// Generate Embed token and Embed URL
 		/// </summary>
 		/// <returns></returns>
-		public JObject GenerateEmbedParams(Guid workspaceId, Guid reportId)
+		public JObject GenerateEmbedParams(Guid workspaceId, Guid reportId, string username = null, string role = null)
 		{
-			// TODO: Pass effective identity once roles are implemented in the report
-
 			using (var pbiClient = new PowerBIClient(new Uri(Constant.PowerBiApiUri), tokenCredentials))
 			{
 				// Get report info
@@ -41,8 +40,16 @@ namespace WarehouseDemo.Service
 				// Create list of workspaces
 				var workspaces = new GenerateTokenRequestV2TargetWorkspace[] { new GenerateTokenRequestV2TargetWorkspace(workspaceId) };
 
+				// Create effective identity for current user
+				List<EffectiveIdentity> identities = null;
+				// TODO: Uncomment below 4 lines when RLS is implemented in report
+				// if (!string.IsNullOrWhiteSpace(username) || !string.IsNullOrWhiteSpace(role))
+				// {
+				// 	identities = new List<EffectiveIdentity> { new EffectiveIdentity(username: username, roles: new List<string> { role }, datasets: new List<string> { pbiReport.DatasetId }) };
+				// }
+
 				// Create a request for getting Embed token 
-				var tokenRequest = new GenerateTokenRequestV2(datasets: datasets, reports: reports, targetWorkspaces: workspaces);
+				var tokenRequest = new GenerateTokenRequestV2(datasets: datasets, reports: reports, targetWorkspaces: workspaces, identities: identities);
 
 				// Get Embed token
 				var embedToken = pbiClient.EmbedToken.GenerateToken(tokenRequest);
