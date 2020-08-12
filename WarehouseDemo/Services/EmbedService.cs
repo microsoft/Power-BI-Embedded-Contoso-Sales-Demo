@@ -66,7 +66,6 @@ namespace WarehouseDemo.Service
 							{ "Expiration", embedToken.Expiration.ToString() }
 						}
 					},
-					{ "MinutesToExpiration",(int)embedToken.Expiration.Subtract(DateTime.UtcNow).TotalMinutes },
 					{ "DefaultPage", null },
 					{ "MobileDefaultPage", null }
 				};
