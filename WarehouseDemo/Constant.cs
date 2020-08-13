@@ -12,6 +12,9 @@ public class Constant
 	public const string SalesPersonUsername = "SalesPersonUsername";
 	public const string SalesPersonPassword = "SalesPersonPassword";
 
+	// Used while fetching AAD token
+	public const string PowerBiScope = "https://analysis.windows.net/powerbi/api/.default";
+
 	// Used to renew AAD token minutes before expiry
 	public const int RenewBeforeMinutes = 10;
 

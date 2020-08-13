@@ -9,6 +9,7 @@ namespace WarehouseDemo.Controllers
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Options;
 	using Microsoft.Identity.Client;
+	using Microsoft.Identity.Web;
 	using Microsoft.Rest;
 	using Newtonsoft.Json.Linq;
 	using System;
@@ -22,15 +23,15 @@ namespace WarehouseDemo.Controllers
 	[Route("[controller]")]
 	public class PowerBiController : ControllerBase
 	{
+		private readonly ITokenAcquisition TokenAcquisition;
 		private static IConfiguration Configuration { get; set; }
-		private static IOptions<AuthConfig> AuthConfig { get; set; }
 		private static IOptions<PowerBiConfig> PowerBiConfig { get; set; }
 		private IMemoryCache Cache { get; set; }
 
-		public PowerBiController(IConfiguration configuration, IOptions<AuthConfig> authConfig, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache)
+		public PowerBiController(IConfiguration configuration, ITokenAcquisition tokenAcquisition, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache)
 		{
 			Configuration = configuration;
-			AuthConfig = authConfig;
+			TokenAcquisition = tokenAcquisition;
 			PowerBiConfig = powerBiConfig;
 
 			// Get service cache
@@ -73,9 +74,8 @@ namespace WarehouseDemo.Controllers
 			// Not found in cache or token is close to expiry, generate new embed params
 			try
 			{
-				// Generate AAD token
-				var authService = new AuthService(AuthConfig);
-				var aadToken = await authService.GetAadToken(Configuration[Constant.Certificate]);
+				// Get AAD token. This request will check memory cache first
+				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.PowerBiScope });
 
 				// Generate Embed token
 				var embedService = new EmbedService(aadToken);
@@ -97,7 +97,16 @@ namespace WarehouseDemo.Controllers
 			}
 			catch (MsalClientException ex)
 			{
-				return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+				try
+				{
+					return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+				}
+				catch (Exception)
+				{
+					// ErrorCode is not parsable when client certificate/secret is missing
+					// Return with Forbidden status in cases where request does not have either client certificate/secret
+					return StatusCode(403, ex.Message);
+				}
 			}
 			catch (HttpOperationException ex)
 			{
@@ -126,9 +135,8 @@ namespace WarehouseDemo.Controllers
 
 			try
 			{
-				// Generate AAD token
-				var authService = new AuthService(AuthConfig);
-				var aadToken = await authService.GetAadToken(Configuration[Constant.Certificate]);
+				// Get AAD token. This request will check memory cache first
+				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.PowerBiScope });
 
 				// Get username and role of user 
 				var userInfo = JwtAuthHelper.GetUsernameAndRole(User.Identity as ClaimsIdentity);
@@ -145,7 +153,16 @@ namespace WarehouseDemo.Controllers
 			}
 			catch (MsalClientException ex)
 			{
-				return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+				try
+				{
+					return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+				}
+				catch (Exception)
+				{
+					// ErrorCode is not parsable when client certificate/secret is missing
+					// Return with Forbidden status in cases where request does not have either client certificate/secret
+					return StatusCode(403, ex.Message);
+				}
 			}
 			catch (HttpOperationException ex)
 			{

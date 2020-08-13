@@ -12,6 +12,8 @@ namespace WarehouseDemo
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
+	using Microsoft.Identity.Web;
+	using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 	using Microsoft.IdentityModel.Tokens;
 	using System.Text;
 	using WarehouseDemo.Models;
@@ -29,9 +31,10 @@ namespace WarehouseDemo
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddMemoryCache();
+			services.AddHttpClient();
 			services.AddAuthentication("OAuth")
-				.AddJwtBearer("OAuth", options => {
-
+				.AddJwtBearer("OAuth", options =>
+				{
 					// Create signature for JWT token
 					var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[Constant.SigningKey]));
 
@@ -49,7 +52,27 @@ namespace WarehouseDemo
 						ValidAudience = audience,
 						IssuerSigningKey = signingKey
 					};
-				});
+				})
+				.AddMicrosoftWebApiCallsWebApi(
+
+					// Populate confidential client properties
+					confidentialClientOptions =>
+					{
+						confidentialClientOptions.Instance = Configuration["AzureAd:Instance"];
+						confidentialClientOptions.ClientId = Configuration["AzureAd:ClientId"];
+						confidentialClientOptions.TenantId = Configuration["AzureAd:TenantId"];
+					},
+
+					// Load certificate in options for client assertion
+					microsoftIdentityOptions =>
+					{
+						microsoftIdentityOptions.ClientCertificates = new CertificateDescription[]
+						{
+							CertificateDescription.FromBase64Encoded(Configuration[Constant.Certificate])
+						};
+					}
+				)
+				.AddInMemoryTokenCaches();
 
 			// Get user roles
 			var salesManagerRole = Configuration.GetSection("Users:SalesManager:Role").Value;
@@ -70,9 +93,6 @@ namespace WarehouseDemo
 			{
 				configuration.RootPath = "ClientApp/build";
 			});
-
-			// Load Auth configuration
-			services.Configure<AuthConfig>(Configuration.GetSection("Auth"));
 
 			// Load Power BI configuration
 			services.Configure<PowerBiConfig>(Configuration.GetSection("PowerBi"));
