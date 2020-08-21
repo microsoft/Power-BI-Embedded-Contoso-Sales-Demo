@@ -2,24 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-import { Layout } from './PersonaliseBar/PersonaliseBar';
-
-export interface LayoutMapping {
-	spanType: SpanType;
-	columns: number;
-}
-
-export enum SpanType {
-	None = 0,
-	RowSpan = 1,
-	ColSpan = 2,
-}
-
-export enum LayoutColumns {
-	One = 1,
-	Two = 2,
-	Three = 3,
-}
+import { Layout, LayoutMapping, SpanType } from '../models';
 
 export const layoutMap = new Map<Layout, LayoutMapping>([
 	[

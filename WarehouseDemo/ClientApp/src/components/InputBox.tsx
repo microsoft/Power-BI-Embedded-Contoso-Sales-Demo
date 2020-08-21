@@ -12,6 +12,7 @@ export interface InputBoxProps {
 	errorMessage: string;
 	value?: string;
 	disabled?: boolean;
+	onBlur?: { (event): void };
 }
 
 export const InputBox = React.forwardRef((props: InputBoxProps, ref: React.LegacyRef<HTMLInputElement>) => (
@@ -25,6 +26,7 @@ export const InputBox = React.forwardRef((props: InputBoxProps, ref: React.Legac
 			placeholder={props.placeHolder}
 			ref={ref}
 			disabled={props.disabled}
+			onBlur={props.onBlur}
 		/>
 		<div className='invalid-feedback'>{props.errorMessage}</div>
 	</div>

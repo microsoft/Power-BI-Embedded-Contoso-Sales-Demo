@@ -46,13 +46,26 @@
 	}
 }
 
+.modal {
+	background: rgba(32, 32, 32, 0.64);
+}
+
+.modal-backdrop {
+	display: none;
+}
+
 .modal-body {
-	padding: 40px 45px;
+	padding: 40.5px 45px;
+	
+	&.dark {
+		padding: 40px 45px 8px;
+	}
 }
 
 .modal-content {
 	border-color: transparent;
 	border-radius: 0;
+	height: 300px;
 
 	&.light {
 		background-color: #FFFFFF;

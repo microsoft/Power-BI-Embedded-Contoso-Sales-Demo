@@ -7,29 +7,17 @@ import 'react-datepicker/dist/react-datepicker.css';
 import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
-import { editLeadPopupTabNames } from '../tabConfig';
-import { NavTabs, Tab } from '../NavTabs/NavTabs';
+import { NavTabs } from '../NavTabs/NavTabs';
 import { InputBox } from '../InputBox';
-import { formInputErrorMessage } from '../../constants';
-import { getFormattedDate } from '../utils';
+import { Icon } from '../Icon/Icon';
+import { editLeadPopupTabNames, formInputErrorMessage } from '../../constants';
+import { getFormattedDate, trimInput } from '../utils';
 import ThemeContext from '../../themeContext';
+import { EditLeadFormData, Tab } from '../../models';
 
 const activityTypeOptions = ['Appointment', 'Email', 'Letter', 'Phone Call', 'Task'];
 
 const activityPriorityOptions = ['Low', 'Normal', 'High'];
-
-interface EditLeadFormData {
-	accountName: string;
-	contactFullName: string;
-	topic: string;
-	activityType: string;
-	subject: string;
-	priority: string;
-	description: string;
-	dueDate: string;
-	estimatedRevenue: string;
-	estimatedCloseDate: string;
-}
 
 interface EditLeadFormProps {
 	toggleEditLeadFormPopup: { (): void };
@@ -37,8 +25,13 @@ interface EditLeadFormProps {
 
 export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	const theme = useContext(ThemeContext);
+	const errorIconDimension = 30;
 	const [dueDate, setDueDate] = useState({
 		dueDate: new Date(),
+	});
+
+	const [estimateCloseDate, setEstimateCloseDate] = useState({
+		estimateCloseDate: new Date(),
 	});
 
 	// List of tabs' name
@@ -98,6 +91,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	const addActivityInputListBeforeSelect = addActivityInputBoxesBeforeSelect.map((input) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -112,6 +106,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 
 	const subjectBox = (
 		<InputBox
+			onBlur={(event) => trimInput(event)}
 			title='Subject'
 			name='subject'
 			className={`form-control form-element ${errors.subject && `is-invalid`}`}
@@ -124,6 +119,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 
 	const descriptionBox = (
 		<InputBox
+			onBlur={(event) => trimInput(event)}
 			title='Description'
 			name='description'
 			className={`form-control form-element ${errors.description && `is-invalid`}`}
@@ -151,7 +147,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 						ref={register({ required: true })}>
 						{activityTypeOptions.map((option, idx) => {
 							return (
-								<option value={option} key={idx}>
+								<option className={`select-list ${theme}`} value={option} key={idx}>
 									{option}
 								</option>
 							);
@@ -170,7 +166,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 						ref={register({ required: true })}>
 						{activityPriorityOptions.map((option, idx) => {
 							return (
-								<option value={option} key={idx}>
+								<option className={`select-list ${theme}`} value={option} key={idx}>
 									{option}
 								</option>
 							);
@@ -235,19 +231,12 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
-		{
-			title: 'Estimated Close Date',
-			name: 'estimatedCloseDate',
-			className: `form-control form-element ${errors.estimatedCloseDate && `is-invalid`}`,
-			placeHolder: 'Enter Estimated Close Date, e.g., Monday, May 4, 2020',
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
-		},
 	];
 
 	const qualifyLeadInputList = qualifyLeadInputBoxes.map((input) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -264,7 +253,22 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			className={`d-flex flex-column justify-content-between popup-form ${theme}`}
 			noValidate
 			onSubmit={handleSubmit(onSubmit)}>
-			<div className='form-content'>{qualifyLeadInputList}</div>
+			<div className='form-content'>
+				{qualifyLeadInputList}
+				<div>
+					<label className='input-label'>Estimated Close Date</label>
+					<div className='date-container'>
+						<DatePicker
+							className='form-control form-element date-picker'
+							name='estimatedCloseDate'
+							selected={estimateCloseDate.estimateCloseDate}
+							value={getFormattedDate(estimateCloseDate.estimateCloseDate)}
+							onChange={(date: Date) => setEstimateCloseDate({ estimateCloseDate: date })}
+							ref={register({ required: true })}
+						/>
+					</div>
+				</div>
+			</div>
 			<div className='d-flex justify-content-center button-container'>
 				<button className='btn btn-form' type='submit'>
 					Qualify Lead
@@ -280,11 +284,13 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			onSubmit={handleSubmit(onSubmit)}>
 			<div className='form-content'>
 				<div className={`d-flex flex-row warning ${theme}`}>
-					<img
-						src={require(`../../assets/Icons/error-${theme}.svg`)}
+					<Icon
 						className='warning-icon'
-						alt='warning'></img>
-					<div>Are you sure you want to disqualify this lead?</div>
+						iconId={`error-${theme}`}
+						height={errorIconDimension}
+						width={errorIconDimension}
+					/>
+					<div className='warning-message'>Are you sure you want to disqualify this lead?</div>
 				</div>
 			</div>
 			<div className='d-flex justify-content-center button-container'>
@@ -296,7 +302,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	);
 
 	return (
-		<div className={`d-flex flex-column justify-content-center align-items-center overlay ${theme}`}>
+		<div className={`d-flex flex-column align-items-center overlay ${theme}`}>
 			<div className={`popup ${theme}`}>
 				<div className={`d-flex justify-content-between popup-header ${theme}`}>
 					<div className='tab-container'>{navTabs}</div>

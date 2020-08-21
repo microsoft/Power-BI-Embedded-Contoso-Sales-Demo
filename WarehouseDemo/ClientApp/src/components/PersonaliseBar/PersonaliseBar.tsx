@@ -5,9 +5,10 @@
 import './PersonaliseBar.scss';
 import '../EmbedPage/EmbedPage.scss';
 import React, { useState, useEffect, useContext } from 'react';
-import ThemeContext, { Theme } from '../../themeContext';
-import { VisualGroup } from '../VisualGroup';
+import ThemeContext from '../../themeContext';
+import { Icon } from '../Icon/Icon';
 import { CheckBox } from '../Checkbox/CheckBox';
+import { VisualGroup, Layout, Theme } from '../../models';
 
 interface PersonaliseBarProps {
 	togglePersonaliseBar: { (): void };
@@ -17,14 +18,6 @@ interface PersonaliseBarProps {
 	qnaVisualIndex: number;
 	setLayoutType: { (layoutType: Layout): void };
 	layoutType: Layout;
-}
-
-export enum Layout {
-	oneColumnLayout,
-	twoColumnLayout,
-	threeColumnLayout,
-	twoColumnColspanLayout,
-	twoColumnRowspanLayout,
 }
 
 export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
@@ -65,25 +58,37 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 	}, [layoutDropdown]);
 
 	let layoutImageName = 'three-column-selected';
+	let layoutIconWidth = 25;
+	let layoutIconHeight = 25;
 	switch (props.layoutType) {
 		case Layout.oneColumnLayout:
 			layoutImageName = 'one-column-selected';
+			layoutIconWidth = 7;
+			layoutIconHeight = 25;
 			break;
 
 		case Layout.twoColumnLayout:
 			layoutImageName = 'two-column-selected';
+			layoutIconWidth = 16;
+			layoutIconHeight = 25;
 			break;
 
 		case Layout.threeColumnLayout:
 			layoutImageName = 'three-column-selected';
+			layoutIconWidth = 25;
+			layoutIconHeight = 25;
 			break;
 
 		case Layout.twoColumnRowspanLayout:
 			layoutImageName = 'rowspan-selected';
+			layoutIconWidth = 21;
+			layoutIconHeight = 16;
 			break;
 
 		case Layout.twoColumnColspanLayout:
 			layoutImageName = 'colspan-selected';
+			layoutIconWidth = 16;
+			layoutIconHeight = 21;
 			break;
 	}
 
@@ -97,6 +102,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			}`, //TODO - use template literal for false case
 			onClickHandler: toggleVisualDropdown,
 			className: `personalise-icon ${visualDropdown ? 'personalise-icon-active' : ''}`,
+			width: 29,
+			height: 19,
 		},
 		{
 			name: `${
@@ -104,6 +111,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			}`, //TODO - use template literal
 			onClickHandler: toggleLayoutDropdown,
 			className: `personalise-icon ${layoutDropdown ? 'personalise-icon-active' : ''}`,
+			width: layoutIconWidth,
+			height: layoutIconHeight,
 		},
 		{
 			name: `${
@@ -111,6 +120,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			}`, //TODO - use template literal
 			onClickHandler: toggleQna,
 			className: `personalise-icon ${showQnAcheck ? 'personalise-icon-active' : ''}`,
+			width: 25,
+			height: 25,
 		},
 	];
 
@@ -127,6 +138,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			dropdownName: `three-column-selected-${theme}`,
 			layout: Layout.threeColumnLayout,
 			className: 'layout-img',
+			width: 25,
+			height: 25,
 		},
 		{
 			name: 'two-column',
@@ -134,6 +147,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			dropdownName: `two-column-selected-${theme}`,
 			layout: Layout.twoColumnLayout,
 			className: 'layout-img',
+			width: 16,
+			height: 25,
 		},
 		{
 			name: 'one-column',
@@ -141,6 +156,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			dropdownName: `one-column-selected-${theme}`,
 			layout: Layout.oneColumnLayout,
 			className: 'layout-img',
+			width: 7,
+			height: 25,
 		},
 		{
 			name: 'rowspan',
@@ -148,6 +165,8 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			dropdownName: `rowspan-selected-${theme}`,
 			layout: Layout.twoColumnRowspanLayout,
 			className: 'layout-img',
+			width: 21,
+			height: 16,
 		},
 		{
 			name: 'colspan',
@@ -155,28 +174,32 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 			dropdownName: `colspan-selected-${theme}`,
 			layout: Layout.twoColumnColspanLayout,
 			className: 'layout-img',
+			width: 16,
+			height: 21,
 		},
 	];
 
 	const iconList = personaliseIcons.map((icon, idx) => {
 		return (
-			<img
+			<Icon
 				id={icon.name}
-				src={require(`../../assets/Icons/${icon.name}.svg`)}
-				alt={icon.name}
 				className={icon.className}
-				onClick={icon.onClickHandler}
+				iconId={icon.name}
+				height={icon.height}
+				width={icon.width}
 				key={idx}
+				onClick={icon.onClickHandler}
 			/>
 		);
 	});
 
 	const closeIcon = (
-		<img
+		<Icon
 			id={personaliseCloseIcon.name}
-			src={require(`../../assets/Icons/${personaliseCloseIcon.name}.svg`)}
-			alt={personaliseCloseIcon.name}
 			className={personaliseCloseIcon.className}
+			iconId={personaliseCloseIcon.name}
+			height={17}
+			width={17}
 			onClick={personaliseCloseIcon.onClickHandler}
 		/>
 	);
@@ -232,19 +255,16 @@ export function PersonaliseBar(props: PersonaliseBarProps): JSX.Element {
 						imgName = layoutType.name;
 					}
 					return (
-						<span
-							className='layout-span d-flex justify-content-center'
+						<Icon
+							className={layoutType.className}
+							iconId={imgName}
+							width={layoutType.width}
+							height={layoutType.height}
+							key={layoutType.name}
 							onClick={() => {
 								props.setLayoutType(layoutType.layout);
 							}}
-							key={layoutType.name}>
-							<img
-								src={require(`../../assets/Icons/${imgName}.svg`)}
-								alt={layoutType.name}
-								className={layoutType.className}
-								key={layoutType.name}
-							/>
-						</span>
+						/>
 					);
 				})}
 			</ul>

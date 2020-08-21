@@ -4,7 +4,7 @@
 
 import './Home.scss';
 import React from 'react';
-import { Profile } from '../../App';
+import { Profile } from '../../models';
 
 export interface HomeProps {
 	setProfileType: { (profileType: Profile): void };

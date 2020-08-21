@@ -6,52 +6,26 @@
  * SalesPerson details
  */
 export const SalesPerson = {
-	firstName: 'June',
-	lastName: 'Smith',
-	profileImageName: 'salesperson-profile.svg',
+	profileImageName: 'salesperson-profile',
 };
 
 /**
  * SalesManager details
  */
 export const SalesManager = {
-	firstName: 'Donna',
-	lastName: 'Paul',
-	profileImageName: 'salesmanager-profile.svg',
+	profileImageName: 'salesmanager-profile',
 };
 
 /**
  * Anonymous user details
  */
 export const AnonymousUser = {
-	firstName: 'Anonymous',
-	lastName: '',
-	profileImageName: 'anonymous-profile.svg',
+	profileImageName: 'anonymous-profile',
 };
 
 /**
- * Commands:
- * Visual commands to edit leads and opportunities
- * Button action to add a new lead
+ * Link to the Power BI visual selector schema
  */
-export const visualCommands = {
-	editLeads: {
-		name: 'EditLeads',
-		displayName: 'Edit Leads',
-		visualGuid: 'af17cf8ee4edb070965c',
-	},
-	editOpportunity: {
-		name: 'EditOpportunities',
-		displayName: 'Edit Opportunities',
-		visualGuid: 'deec664ea882e0097381',
-	},
-};
-
-export enum visualButtons {
-	addLeadsTitle = 'Add Lead',
-	addActivityTitle = 'Add Activity',
-}
-
 export const visualSelectorSchema = 'http://powerbi.com/product/schema#visualSelector';
 
 /**
@@ -59,33 +33,11 @@ export const visualSelectorSchema = 'http://powerbi.com/product/schema#visualSel
  * URL of server side API for exporting
  */
 export const exportedFileName = 'ExportedFile';
-export const exportServerApi = '/api/powerbi/ExportReport';
 
 /**
  * Types of export supported in Power BI Embedded
  */
 export const exportTypes: Array<string> = ['pdf', 'ppt', 'png'];
-
-/**
- * Content type used to convert the file stream to required file format
- */
-export enum contentTypeMapping {
-	PDF = 'application/pdf',
-	PPT = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-	PNG = 'image/png',
-}
-
-/**
- * API end-point url to get embed config for a sample report
- */
-export const reportEmbedConfigUrl = '/api/powerbi/EmbedParams';
-
-/**
- * Pairs of visuals to be grouped together in the custom layout
- * Format: ['main visual title', 'overlapping visual title']
- */
-// TODO: Add titles of visuals to be paired in custom layout
-export const visualPairs = [['', '']];
 
 /**
  * Margin around each visual
@@ -120,14 +72,14 @@ export const rowsPerSpanTypeSection = 2;
 export const visualsPerSpanTypeSection = 3;
 
 /**
- * Alternative name for PowerBI icon
+ * Names of tabs in edit opportunity popup
  */
-export const powerBiIconAltName = 'powerbi';
+export const opportunityPopupTabNames = ['Edit Topic', 'Schedule a Meeting', 'Quote', 'Set Status'];
 
 /**
- * Alternative name for GitHub icon
+ * Names of tabs in edit lead popup
  */
-export const gitHubIconAltName = 'github';
+export const editLeadPopupTabNames = ['Add Activity', 'Qualify Lead', 'Disqualify Lead'];
 
 /**
  * Name of the application
@@ -135,16 +87,21 @@ export const gitHubIconAltName = 'github';
 export const appName = 'Contoso';
 
 /**
- * CSS Class to show the report-container
+ * Session storage key for stored JWT token
  */
-export const visibleClass = 'report-visible';
+export const storageKeyJWT = 'jwt';
 
 /**
- * CSS class to hide the report-container
+ * Key for token expiry time in JWT token's payload
  */
-export const hiddenClass = 'report-hidden';
+export const tokenExpiryKey = 'exp';
 
 /**
  * Error message to be displayed against invalid user input
  */
 export const formInputErrorMessage = 'Please provide a valid value';
+
+/**
+ * Embed token to be refreshed before expiration
+ */
+export const minutesToRefreshBeforeExpiration = 2;

@@ -2,29 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-/**
- * Config for tabs in EmbedPage
- *
- * Get reportPageName from the report's URL
- * https://app.powerbi.com/groups/GroupId/reports/ReportId/ReportPageName
- */
-export interface TabConfig {
-	name: string;
-	reportPageName: string;
-}
-
-/**
- * Names of all tabs
- */
-export enum TabName {
-	Home = 'Home',
-	Leads = 'Leads',
-	Opportunities = 'Opportunities',
-	Accounts = 'Accounts',
-	MyActivities = 'My Activities',
-	Sellers = 'Sellers',
-	Analytics = 'Analytics',
-}
+import { TabConfig, TabName } from './models';
 
 /**
  * List of tabs for sales person
@@ -75,11 +53,34 @@ export const salesManagerTabs: TabConfig[] = [
 ];
 
 /**
- * Names of tabs in edit opportunity popup
+ * Pairs of visuals to be grouped together in the custom layout
+ * Format: ['main visual title', 'overlapping visual title']
  */
-export const opportunityPopupTabNames = ['Edit Topic', 'Schedule a Meeting', 'Quote', 'Set Status'];
+// Add titles of visuals to be paired in custom layout
+export const visualPairs = [['', '']];
 
 /**
- * Names of tabs in edit lead popup
+ * Commands:
+ * Visual commands to edit leads and opportunities
+ * Guid values of visuals on which the context menu should show up
  */
-export const editLeadPopupTabNames = ['Add Activity', 'Qualify Lead', 'Disqualify Lead'];
+export const visualCommands = {
+	editLeads: {
+		name: 'EditLeads',
+		displayName: 'Edit Lead',
+		visualGuid: '',
+	},
+	editOpportunity: {
+		name: 'EditOpportunities',
+		displayName: 'Edit Opportunity',
+		visualGuid: '',
+	},
+};
+
+/**
+ * Title of Power BI buttons on which custom action is to be set
+ */
+export const visualButtons = {
+	addLeadsTitle: '',
+	addActivityTitle: '',
+};

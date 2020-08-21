@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
+$form-element-dark-theme-font-color: #D8D8D8;
+
 .popup {
 	&.light {
 		background: #FFFFFF 0 0 no-repeat padding-box;
@@ -9,6 +11,11 @@
 	&.dark {
 		background: #343741 0 0 no-repeat padding-box;
 	}
+	margin-top: 120px;
+}
+
+.popup > * {
+	width: 860px;
 }
 
 .popup-form {
@@ -27,17 +34,14 @@
 			color: #A7AEFF;
 		}
 		.form-element {
-			color: #D8D8D8;
+			color: $form-element-dark-theme-font-color;
 			&:focus {
-				color: #383838;
+				background-color: #343741;
 			}
 		}
 	}
-	max-height: 90vh;
 	min-height: 683px;
-	overflow: auto;
 	padding: 0 40px 40px;
-	width: 860px;
 }
 
 .form-content > * {
@@ -53,6 +57,7 @@
 		background: rgba(33, 33, 33, 0.64);
 	}
 	height: 100%;
+	overflow: auto;
 	position: fixed;
 	top: 0;
 	width: 100%;
@@ -74,7 +79,6 @@
 	}
 	height: 107px;
 	padding: 40px;
-	width: 860px;
 }
 
 .form-element,
@@ -92,6 +96,20 @@
 
 .form-element::placeholder {
 	color: #777777;
+}
+
+.opportunity-status-radio {
+	margin-left: 20px;
+}
+
+.opportunity-status-text {
+	&.dark {
+		color: #D8D8D8;
+	}
+}
+
+.status-radio {
+	margin-top: 0.42rem;
 }
 
 .input-label {
@@ -170,10 +188,6 @@
 	max-width: 156px;
 }
 
-.right-arrow {
-	padding: 0 10px;
-}
-
 .close-button {
 	&.tabbed-form-close-button {
 		margin: 3px 6px;
@@ -196,9 +210,30 @@
 	}
 	font: 400 20px 'Segoe UI';
 	margin-top: 20px;
-	padding: 0;
+	padding: 16px 22px;
 }
 
-.warning > * {
-	padding: 16px 0 16px 22px;
+.warning-message {
+	padding-left: 22px;
+}
+
+select:focus {
+	border-color: #A7AEFF !important;
+}
+
+.select-list {
+	&.dark {
+		background-color: #262830;
+		color: $form-element-dark-theme-font-color;
+	}
+}
+
+@media only screen and (max-width: 1100px) {
+	.tab-container {
+		margin-left: -21px;
+	}
+
+	.popup > * {
+		width: 700px;
+	}
 }

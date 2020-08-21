@@ -2,10 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
+import React, { MutableRefObject } from 'react';
 import { Report, VisualDescriptor, Page } from 'powerbi-client';
+import { decode } from 'jsonwebtoken';
+import { storageKeyJWT, tokenExpiryKey } from '../constants';
 import Moment from 'moment';
-import { Bookmark } from './EmbedPage/EmbedPage';
-import { TabConfig } from './tabConfig';
+import { Bookmark, TabConfig } from '../models';
 
 /**
  * Get all the visuals for the given powerbi report page.
@@ -89,6 +91,82 @@ export function getSelectedBookmark(bookmarks: Bookmark[]): Bookmark {
 	return bookmarks.find((bookmark) => {
 		return bookmark.checked;
 	});
+}
+
+/**
+ * Returns stored jwt token from session storage or null when no token found
+ */
+export function getStoredToken(): string | null {
+	const storageValueJWT = sessionStorage.getItem(storageKeyJWT);
+
+	return storageValueJWT;
+}
+
+/**
+ * Returns true when the given token is currently active (not expired), false otherwise
+ * @param jwt Token
+ */
+export function checkTokenValidity(jwt: string): boolean {
+	// JWT token not present
+	if (!jwt) {
+		return false;
+	}
+
+	// Get token expiry property from token payload
+	const tokenExpiryString = getTokenPayloadProperty(jwt, tokenExpiryKey);
+
+	// Expiry time not found on the token payload
+	if (!tokenExpiryString) {
+		return false;
+	}
+
+	// Convert to number
+	const tokenExpiry: number = +tokenExpiryString;
+
+	// Check if token expiry property is not a number
+	if (Number.isNaN(tokenExpiry)) {
+		return false;
+	}
+
+	// Convert to milliseconds
+	const tokenExpiryMS = tokenExpiry * 1000;
+
+	// Check if token is expired
+	return Date.now() <= tokenExpiryMS;
+}
+
+/**
+ * Returns the decoded object of payload/claim of the given token
+ * @param jwt Token
+ */
+export function getTokenPayload(jwt: string): { [key: string]: string } {
+	// JWT token not present
+	if (!jwt) {
+		return null;
+	}
+
+	return decode(jwt, { json: true });
+}
+
+/**
+ * Returns the given property value in token payload if it exists, null otherwise
+ * @param jwt Token
+ */
+export function getTokenPayloadProperty(jwt: string, property: string): string | null {
+	// JWT token not present
+	if (!jwt) {
+		return null;
+	}
+
+	const decodedPayloadObject: Record<string, string> = getTokenPayload(jwt);
+
+	// Return null if decodedPayloadObject or given property in decodedPayloadObject does not exists
+	if (!decodedPayloadObject || !(property in decodedPayloadObject)) {
+		return null;
+	}
+
+	// Return the given property value
+	return decodedPayloadObject[property];
 }
 
 /**
@@ -180,14 +258,41 @@ export function createTimeOptions(): Array<string> {
 		if (i >= 24) {
 			meridiem = 'PM';
 		}
-		if (mins == 0) minsText += mins + '0';
+		if (mins === 0) minsText += mins + '0';
 		else minsText += mins;
 		timeOptions.push(hours + ':' + minsText + ' ' + meridiem);
 		mins += 30;
-		if (i % 2 != 0) {
+		if (i % 2 !== 0) {
 			hours++;
 			mins = 0;
 		}
 	}
 	return timeOptions;
+}
+
+/**
+ * Custom hook for components who require an action when clicked outside them
+ * @param ref Wrapper component
+ * @param callback Action to perform when clicked outside
+ */
+export const useClickOutside = (ref: MutableRefObject<HTMLDivElement>, callback: { (): void }): void => {
+	const handleClick = (event) => {
+		if (ref.current && !ref.current.contains(event.target)) {
+			callback();
+		}
+	};
+	React.useEffect(() => {
+		document.addEventListener('click', handleClick);
+		return () => {
+			document.removeEventListener('click', handleClick);
+		};
+	});
+};
+
+/**
+ * Function to trim the values entered in the textbox
+ * @param event Get the event instance
+ */
+export function trimInput(event: React.FocusEvent<HTMLInputElement>): void {
+	event.target.value = event.target.value.trim();
 }

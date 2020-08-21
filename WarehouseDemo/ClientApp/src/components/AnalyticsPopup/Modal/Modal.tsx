@@ -3,26 +3,18 @@
 // ---------------------------------------------------------------------------
 
 import './Modal.scss';
-import '../../../App.scss';
 import React, { useState, useContext } from 'react';
 import { Report } from 'powerbi-client';
 import { Bookmark, BookmarkProp } from '../Bookmark/Bookmark';
 import { Export, ExportProp } from '../Export/Export';
-import { Tab } from '../../NavTabs/NavTabs';
+import { Tab, ModalTab } from '../../../models';
 import ThemeContext from '../../../themeContext';
+import $ from 'jquery';
 
-enum ModalTab {
-	Bookmark = 'bookmark',
-	Export = 'export',
-}
-
-// TODO: Use report object from props to capture and export report states
 export interface ModalProps extends BookmarkProp, ExportProp {
 	report: Report;
+	resetAnalyticsBtn: { (): void };
 }
-
-// List of tabs' name
-const tabNames: Array<ModalTab> = [ModalTab.Bookmark, ModalTab.Export];
 
 /**
  * Render Capture View popup
@@ -33,16 +25,29 @@ export function Modal(props: ModalProps): JSX.Element {
 
 	// State hook to set first tab as active
 	const [activeTab, setActiveTab] = useState<Tab['name']>(() => {
-		if (tabNames?.length > 0) {
-			return tabNames[0];
-		} else {
-			return null;
-		}
+		return ModalTab.Bookmark;
 	});
+
+	/**
+	 * Close Capture view popup
+	 */
+	function closePopup() {
+		$('#modal-capture-view').modal('hide');
+
+		// Reset Capture view button background
+		props.resetAnalyticsBtn();
+
+		// Reset tab selection if export is not in progress
+		if (props.isExportInProgress) {
+			setActiveTab(ModalTab.Export);
+		} else {
+			setActiveTab(ModalTab.Bookmark);
+		}
+	}
 
 	let modalBody: JSX.Element;
 	if (activeTab === ModalTab.Bookmark) {
-		modalBody = <Bookmark captureBookmarkWithName={props.captureBookmarkWithName} />;
+		modalBody = <Bookmark captureBookmarkWithName={props.captureBookmarkWithName} onClick={closePopup} />;
 	} else if (activeTab === ModalTab.Export) {
 		modalBody = (
 			<Export
@@ -50,6 +55,7 @@ export function Modal(props: ModalProps): JSX.Element {
 				setError={props.setError}
 				toggleExportProgressState={props.toggleExportProgressState}
 				selectedBookmark={props.selectedBookmark}
+				updateApp={props.updateApp}
 			/>
 		);
 	}
@@ -78,8 +84,8 @@ export function Modal(props: ModalProps): JSX.Element {
 						<button
 							type='button'
 							className={`close p-0 ${theme}`}
-							data-dismiss='modal'
-							aria-label='Close'>
+							aria-label='Close'
+							onClick={closePopup}>
 							<span aria-hidden='true'>&times;</span>
 						</button>
 					</div>

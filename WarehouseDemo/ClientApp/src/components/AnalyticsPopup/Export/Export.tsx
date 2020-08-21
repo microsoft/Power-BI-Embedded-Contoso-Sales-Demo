@@ -4,17 +4,19 @@
 
 import './Export.scss';
 import React, { useState, useContext } from 'react';
-import { exportTypes, exportServerApi, exportedFileName, contentTypeMapping } from '../../../constants';
-import { Bookmark } from '../../EmbedPage/EmbedPage';
+import { exportTypes, storageKeyJWT } from '../../../constants';
+import { Bookmark, TabName, Theme, ServiceAPI } from '../../../models';
 import ThemeContext from '../../../themeContext';
-import { getPageName, downloadFile } from '../../utils';
-import { TabName, salesManagerTabs } from '../../tabConfig';
+import { getPageName, getStoredToken, checkTokenValidity, downloadFile } from '../../utils';
+import { salesManagerTabs } from '../../../reportConfig';
+import { Icon } from '../../Icon/Icon';
 
 export interface ExportProp {
 	isExportInProgress: boolean;
 	setError: { (error: string): void };
 	toggleExportProgressState: { (): void };
 	selectedBookmark: Bookmark;
+	updateApp: Function;
 }
 
 /**
@@ -34,6 +36,18 @@ export function Export(props: ExportProp): JSX.Element {
 	 * Fetches exported file from server and downloads it
 	 */
 	async function exportService(): Promise<void> {
+		// Get token from storage
+		const storedToken = getStoredToken();
+
+		// Check token expiry before making API request, redirect back to login page
+		if (!checkTokenValidity(storedToken)) {
+			alert('Session expired');
+
+			// Re-render App component
+			props.updateApp((prev: number) => prev + 1);
+			return;
+		}
+
 		// To show waiting experience
 		props.toggleExportProgressState();
 
@@ -46,10 +60,11 @@ export function Export(props: ExportProp): JSX.Element {
 				pageState: props.selectedBookmark ? props.selectedBookmark.state : null,
 			});
 
-			const serverRes = await fetch(exportServerApi, {
+			const serverRes = await fetch(ServiceAPI.ExportReport, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Bearer ${sessionStorage.getItem(storageKeyJWT)}`,
 				},
 				body: reqParamsBody,
 			});
@@ -76,29 +91,44 @@ export function Export(props: ExportProp): JSX.Element {
 		return <ExportInProgressView />;
 	}
 
+	let exportInfo: JSX.Element;
+	if (theme === Theme.Dark) {
+		exportInfo = (
+			<div className='export-info d-flex align-items-center'>
+				<div className='icon-export-info'>
+					<Icon iconId='export-notice-dark' height={14} width={14} />
+				</div>
+				<div className='text-export-info align-items-center'>
+					The color theme in light mode will be applied to the exported file.
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<React.Fragment>
-			<div className='modal-body'>
+			<div className={`modal-body ${theme}`}>
 				<div className='input-container'>
 					<p className={`input-title ${theme}`}>Select format:</p>
 					{exportTypes.map((type: string, index: number) => (
-						<div className='custom-control custom-radio custom-control-inline mr-3' key={index}>
+						<div className='form-check form-check-inline mr-3' key={index}>
 							<input
 								type='radio'
 								name='export-type'
 								id={`radio-${type}`}
-								className='custom-control-input'
+								className='form-check-input'
 								checked={type === radioSelection}
 								onClick={() => setRadioSelection(type)}
 							/>
 							<label
-								className={`custom-control-label export-type-label label-radio text-uppercase ${theme}`}
+								className={`form-check-label export-type-label label-radio text-uppercase ${theme}`}
 								htmlFor={`radio-${type}`}>
 								{type}
 							</label>
 						</div>
 					))}
 				</div>
+				{exportInfo}
 			</div>
 			<div className='modal-footer'>
 				<button type='button' className='btn btn-submit' onClick={exportService}>
@@ -110,7 +140,7 @@ export function Export(props: ExportProp): JSX.Element {
 }
 
 /**
- * View for export in progress
+ * Component for export in progress view
  */
 function ExportInProgressView(): JSX.Element {
 	const theme = useContext(ThemeContext);

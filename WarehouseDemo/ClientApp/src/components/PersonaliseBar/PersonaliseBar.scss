@@ -5,7 +5,9 @@
 $personalise-dropdown-shadow: 0 11px 16px #94949430;
 
 .layout-img {
-	margin: 10px;
+	padding: 17px;
+	height: 60px;
+	width: 60px;
 }
 
 .layouts-list-dropdown {
@@ -31,11 +33,6 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 		background: #262830 0 0 no-repeat padding-box;
 		box-shadow: 0 11px 18px #00000030;
 	}
-}
-
-.layout-span {
-	height: 60px;
-	width: 60px;
 }
 
 .personalise-icon-active {
@@ -65,7 +62,7 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 .personalise-icon {
 	background: transparent 0% 0% no-repeat padding-box;
 	cursor: pointer;
-	height: 60px;
+	height: 59px;
 	opacity: 1;
 	padding: 17px;
 	width: 60px;

@@ -18,7 +18,9 @@ export const CheckBox = (props: CheckBoxProps): JSX.Element => {
 	return (
 		<li className={`visual-checkbox-li ${theme}`}>
 			<label>
-				<span className={`visual-title ${theme}`}>{props.title}</span>
+				<span className={`visual-title ${theme}`} title={props.title}>
+					{props.title}
+				</span>
 				<input
 					id={props.name}
 					onChange={props.handleCheckboxInput}

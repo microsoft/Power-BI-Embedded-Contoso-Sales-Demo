@@ -2,12 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-import React, { useState, useContext } from 'react';
+import './Bookmark.scss';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import ThemeContext from '../../../themeContext';
 import $ from 'jquery';
 
 export interface BookmarkProp {
 	captureBookmarkWithName: { (bookmarkName: string): void };
+	onClick?: { (): void };
 }
 
 /**
@@ -18,10 +20,11 @@ export function Bookmark(props: BookmarkProp): JSX.Element {
 
 	const [inputText, setInputText] = useState<string>('');
 
-	// Cache DOM elements
 	const invalidClass = 'is-invalid';
-	const bookmarkName = $('#bookmark-name');
+	// Cache DOM element
 	const captureViewModal = $('#modal-capture-view');
+
+	const bookmarkName = useRef<HTMLInputElement>();
 
 	function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
 		setInputText(event.target.value);
@@ -31,40 +34,47 @@ export function Bookmark(props: BookmarkProp): JSX.Element {
 		// Checks whether the bookmark name entered is empty or not
 		if (inputText.trim() === '') {
 			// Invalid bookmark-name
-			bookmarkName.addClass(invalidClass);
+			bookmarkName.current.classList.add(invalidClass);
 			return;
 		}
-		bookmarkName.removeClass(invalidClass);
+		bookmarkName.current.classList.remove(invalidClass);
 
 		// Execute the function to save the bookmark
 		props.captureBookmarkWithName(inputText);
-		captureViewModal.modal('hide');
+		// Close the modal after saving the bookmark
+		props.onClick();
 		// Reset text box
 		setInputText('');
 	}
 
 	captureViewModal.on('hidden.bs.modal', function () {
 		// On modal close, remove the invalid class and reset the field
-		bookmarkName.removeClass(invalidClass);
+		const bookmarkText = document.getElementById('bookmark-name');
+		if (bookmarkText) {
+			bookmarkText.classList.remove(invalidClass);
+		}
 		// Reset text box
 		setInputText('');
 	});
 
 	// On focus, remove the invalid class
-	bookmarkName.on('focus', function () {
-		bookmarkName.removeClass(invalidClass);
-	});
+	useEffect(() => {
+		bookmarkName.current.addEventListener('focus', function () {
+			bookmarkName.current.classList.remove(invalidClass);
+		});
+	}, []);
 
 	return (
 		<React.Fragment>
 			<div className='modal-body'>
-				<form noValidate>
+				<form className={`bookmark-form ${theme}`} noValidate>
 					<p className={`input-title ${theme}`}>Enter a name for this view:</p>
 					<input
+						ref={bookmarkName}
 						id='bookmark-name'
 						type='text'
 						placeholder='Example: May 2020 Sales Analytics'
-						className='form-control'
+						className={`form-control input-bookmark`}
 						value={inputText}
 						onChange={handleChange}
 						required
@@ -73,7 +83,7 @@ export function Bookmark(props: BookmarkProp): JSX.Element {
 				</form>
 			</div>
 			<div className='modal-footer text-center'>
-				<button type='button' className='btn-submit' onClick={captureBookmarkOnClick}>
+				<button type='button' className='btn btn-submit' onClick={captureBookmarkOnClick}>
 					Save
 				</button>
 			</div>

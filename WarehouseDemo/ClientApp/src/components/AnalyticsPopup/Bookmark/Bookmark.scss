@@ -2,9 +2,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // ---------------------------------------------------------------------------
 
-import React from 'react';
-import { Theme } from './models';
+.bookmark-form {
+	&.dark {
+		.input-bookmark {
+			color: #D8D8D8;
+			&:focus {
+				background-color: #343741 !important;
+			}
+		}
+	}
+}
 
-const ThemeContext = React.createContext(Theme.Light);
-
-export default ThemeContext;
+.input-bookmark::placeholder {
+	color: #777777;
+}

@@ -8,7 +8,7 @@
 }
 
 .icon-bar {
-	margin: -1.5px 18px 0 0;
+	margin-right: 18px;
 	position: relative;
 }
 
@@ -19,10 +19,18 @@
 
 #settings-dropdown {
 	border-radius: 0;
-	box-shadow: 0 0 20px #6B6B6B29;
+	margin-top: 5px;
 	padding: 0;
 	transform: translate(-27px, 24.5px);
 	width: 209px;
+
+	&.light {
+		box-shadow: 0 0 20px #6B6B6B29;
+	}
+
+	&.dark {
+		box-shadow: 0 11px 18px #00000030;
+	}
 }
 
 .user-profile {

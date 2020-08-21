@@ -3,23 +3,16 @@
 // ---------------------------------------------------------------------------
 
 import { VisualDescriptor, models, Report } from 'powerbi-client';
-import { IVisualNode } from 'visualDescriptor';
-import { Layout } from './PersonaliseBar/PersonaliseBar';
 import {
-	visualPairs,
 	visualMargin,
 	visualAspectRatio,
 	rowsPerSpanTypeSection,
 	visualsPerSpanTypeSection,
 	overlapVisualHeightRatio,
 } from '../constants';
-import { layoutMap, LayoutColumns, SpanType } from './layoutMapping';
-
-export interface VisualGroup {
-	mainVisual: IVisualNode;
-	overlapVisual?: IVisualNode;
-	checked: boolean;
-}
+import { layoutMap } from './layoutMapping';
+import { VisualGroup, LayoutColumns, SpanType, Layout } from '../models';
+import { visualPairs } from '../reportConfig';
 
 /**
  * Pairs the report visuals into VisualGroups based on visualPairs array
@@ -175,7 +168,7 @@ export function rearrangeVisualGroups(
 			// Width of this visual grp
 			const width =
 				checkedCount % visualsPerSpanTypeSection === visualsPerSpanTypeSection - 1
-					? visualWidth * 2
+					? visualWidth * 2 + visualMargin
 					: visualWidth;
 
 			const mainVisualLayout = element.mainVisual.layout;
@@ -234,8 +227,11 @@ export function rearrangeVisualGroups(
 				continue;
 			}
 
-			// Width of this visual grp
-			const height = checkedCount % visualsPerSpanTypeSection === 0 ? visualHeight * 2 : visualHeight;
+			// Height of this visual grp
+			const height =
+				checkedCount % visualsPerSpanTypeSection === 0
+					? visualHeight * 2 + visualMargin
+					: visualHeight;
 
 			const mainVisualLayout = element.mainVisual.layout;
 			// Calc coordinates of main visual

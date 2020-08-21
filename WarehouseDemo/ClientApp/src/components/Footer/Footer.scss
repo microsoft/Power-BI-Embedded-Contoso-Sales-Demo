@@ -30,12 +30,20 @@
 	display: contents;
 }
 
-.footer>img {
-	height: 22px;
-	width: 30px;
+.separator-pipe {
+	margin-bottom: 0;
+	padding-left: 6px;
+}
+
+.github-icon {
+	margin: 0 8px;
+}
+		
+.powerbi-icon {
+	margin: 0 4px;
 }
 
 .footer>p>a {
-	padding: 0 4px;
+	padding-left: 4px;
 	text-decoration: underline;
 }

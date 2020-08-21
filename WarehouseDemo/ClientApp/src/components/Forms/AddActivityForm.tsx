@@ -3,22 +3,18 @@
 // ---------------------------------------------------------------------------
 
 import './Forms.scss';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import DatePicker from 'react-datepicker';
 import { InputBox } from '../InputBox';
 import { formInputErrorMessage } from '../../constants';
+import { getFormattedDate, trimInput } from '../utils';
 import ThemeContext from '../../themeContext';
+import { AddActivityFormData } from '../../models';
 
-interface AddActivityFormData {
-	topic: string;
-	accountName: string;
-	contactFullName: string;
-	subject: string;
-	dueDate: string;
-	priority: string;
-	activityType: string;
-	description: string;
-}
+const activityTypeOptions = ['Appointment', 'Email', 'Letter', 'Phone Call', 'Task'];
+
+const activityPriorityOptions = ['Low', 'Normal', 'High'];
 
 interface AddActivityFormProps {
 	toggleActivityFormPopup: { (): void };
@@ -27,6 +23,9 @@ interface AddActivityFormProps {
 export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 	const theme = useContext(ThemeContext);
 	const { register, handleSubmit, errors } = useForm();
+	const [dueDate, setDueDate] = useState({
+		dueDate: new Date(),
+	});
 	const onSubmit = (formData: AddActivityFormData) => {
 		// TODO: Use formData to add record in CDS activity entity
 		props.toggleActivityFormPopup();
@@ -70,6 +69,7 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 	const inputListBeforeSelect = inputBoxesBeforeSelect.map((input, idx) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -84,6 +84,7 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 
 	const descriptionBox = (
 		<InputBox
+			onBlur={(event) => trimInput(event)}
 			title='Description'
 			name='description'
 			className={`form-control form-element ${errors.description && `is-invalid`}`}
@@ -95,7 +96,7 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 	);
 
 	return (
-		<div className={`d-flex flex-column justify-content-center align-items-center overlay ${theme}`}>
+		<div className={`d-flex flex-column align-items-center overlay ${theme}`}>
 			<div className={`popup ${theme}`}>
 				<div className={`d-flex justify-content-between popup-header ${theme}`}>
 					<label className='popup-form-title'>Add New Activity</label>
@@ -116,13 +117,16 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 
 						<div>
 							<label className='input-label'>Due Date</label>
-							<select
-								className={`form-control form-element ${errors.dueDate && `is-invalid`}`}
-								name='dueDate'
-								// grab value from form element
-								ref={register({ required: true })}>
-								<option value='dummy_date'>Select Due Date...</option>
-							</select>
+							<div className='date-container'>
+								<DatePicker
+									className='form-control form-element date-picker'
+									name='dueDate'
+									selected={dueDate.dueDate}
+									value={getFormattedDate(dueDate.dueDate)}
+									onChange={(date: Date) => setDueDate({ dueDate: date })}
+									ref={register({ required: true })}
+								/>
+							</div>
 						</div>
 
 						<div>
@@ -132,7 +136,13 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 								name='priority'
 								// grab value from form element
 								ref={register({ required: true })}>
-								<option value='dummy_priority'>Select Priority...</option>
+								{activityPriorityOptions.map((option, idx) => {
+									return (
+										<option className={`select-list ${theme}`} value={option} key={idx}>
+											{option}
+										</option>
+									);
+								})}
 							</select>
 						</div>
 
@@ -143,7 +153,13 @@ export function AddActivityForm(props: AddActivityFormProps): JSX.Element {
 								name='activityType'
 								// grab value from form element
 								ref={register({ required: true })}>
-								<option value='dummy_act'>Select Activity Type...</option>
+								{activityTypeOptions.map((option, idx) => {
+									return (
+										<option className={`select-list ${theme}`} value={option} key={idx}>
+											{option}
+										</option>
+									);
+								})}
 							</select>
 						</div>
 

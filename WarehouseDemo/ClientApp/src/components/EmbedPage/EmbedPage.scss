@@ -5,13 +5,14 @@
 body {
 	background: #EBEFF3 0% 0% no-repeat padding-box;
 	height: 100vh;
-	min-width: 955px;
 	opacity: 1;
-	overflow: auto hidden;
+	width: 100vw;
 }
 
 .embed-page-class {
-	height: 100vh;
+	height: 100%;
+	min-width: 1000px;
+	width: 100%;
 
 	&.light {
 		background: #EBEFF3 0% 0% no-repeat padding-box;

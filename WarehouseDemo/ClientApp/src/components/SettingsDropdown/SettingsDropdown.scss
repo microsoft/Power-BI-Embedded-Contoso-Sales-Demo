@@ -43,36 +43,17 @@
 	}
 }
 
-.theme-selector-container {
-	height: 50px;
-	padding: 0.25rem 1.5rem;
-	padding-top: 10px;
-
-	&.light {
-		color: #707070;
-	}
-
-	&.dark {
-		color: #D8D8D8;
-	}
-}
-
-.theme-selector {
-	background: #606384;
-	display: inline-block;
-	margin-right: 6px;
-}
-
-.theme-label {
-	display: inline;
-	letter-spacing: 0;
-	margin: 0 10px 0 0;
-	opacity: 1;
-	text-align: left;
+.form-check-label {
+	cursor: pointer;
 }
 
 .m-right {
 	margin-right: 20px;
+}
+
+.radio-themes {
+	margin-right: 7px !important;
+	margin-top: 2px !important;
 }
 
 .separator {
@@ -85,10 +66,21 @@
 	}
 }
 
-.theme-type-label::after {
-	margin: -2px -0.5px;
+.theme-selector {
+	background: #606384;
+	display: inline-block;
+	margin-right: 6px;
 }
 
-.theme-type-label::before {
-	margin-top: -2px;
+.theme-selector-container {
+	height: 50px;
+	padding-left: 1.5rem;
+
+	&.light {
+		color: #707070;
+	}
+
+	&.dark {
+		color: #D8D8D8;
+	}
 }

@@ -7,8 +7,9 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { InputBox } from '../InputBox';
 import { formInputErrorMessage } from '../../constants';
-import { getFormattedDate } from '../utils';
+import { getFormattedDate, trimInput } from '../utils';
 import ThemeContext from '../../themeContext';
+import { AddLeadFormData } from '../../models';
 
 const ratingOptionsSet = ['Hot', 'Warm', 'Cold'];
 
@@ -26,15 +27,6 @@ const sourceOptionsSet = [
 ];
 
 const createdDate = new Date();
-
-interface AddLeadFormData {
-	accountName: string;
-	contactFullName: string;
-	topic: string;
-	rating: string;
-	source: string;
-	createdOn: string;
-}
 
 interface AddLeadFormProps {
 	toggleAddLeadFormPopup: { (): void };
@@ -78,6 +70,7 @@ export function AddLeadForm(props: AddLeadFormProps): JSX.Element {
 	const inputListBeforeSelect = inputBoxesBeforeSelect.map((input) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -105,7 +98,7 @@ export function AddLeadForm(props: AddLeadFormProps): JSX.Element {
 	);
 
 	return (
-		<div className={`d-flex flex-column justify-content-center align-items-center overlay ${theme}`}>
+		<div className={`d-flex flex-column align-items-center overlay ${theme}`}>
 			<div className={`popup ${theme}`}>
 				<div className={`d-flex justify-content-between popup-header ${theme}`}>
 					<label className='popup-form-title'>Add New Lead</label>
@@ -133,7 +126,7 @@ export function AddLeadForm(props: AddLeadFormProps): JSX.Element {
 								ref={register({ required: true })}>
 								{ratingOptionsSet.map((option, idx) => {
 									return (
-										<option value={option} key={idx}>
+										<option className={`select-list ${theme}`} value={option} key={idx}>
 											{option}
 										</option>
 									);
@@ -150,7 +143,7 @@ export function AddLeadForm(props: AddLeadFormProps): JSX.Element {
 								ref={register({ required: true })}>
 								{sourceOptionsSet.map((option, idx) => {
 									return (
-										<option value={option} key={idx}>
+										<option className={`select-list ${theme}`} value={option} key={idx}>
 											{option}
 										</option>
 									);

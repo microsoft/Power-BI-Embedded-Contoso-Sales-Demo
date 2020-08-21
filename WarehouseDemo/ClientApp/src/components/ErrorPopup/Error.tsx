@@ -5,6 +5,7 @@
 import './Error.scss';
 import React, { useContext } from 'react';
 import ThemeContext from '../../themeContext';
+import { Icon } from '../Icon/Icon';
 import { captializeFirstLetterOfWords } from '../utils';
 
 export interface ErrorProps {
@@ -18,6 +19,7 @@ export interface ErrorProps {
  */
 export function Error(props: ErrorProps): JSX.Element {
 	const theme = useContext(ThemeContext);
+	const errorIconDimension = 30;
 	const errorDetails: Array<string> = [];
 
 	let jsonError: Record<string, unknown>;
@@ -50,7 +52,11 @@ export function Error(props: ErrorProps): JSX.Element {
 			<div className='modal-dialog modal-dialog-centered modal-dialog-error' role='document'>
 				<div className={`modal-content shadow-lg ${theme}`}>
 					<div className='modal-header modal-header-error'>
-						<img src={require(`../../assets/Icons/error-${theme}.svg`)} alt='Error' />
+						<Icon
+							iconId={`error-${theme}`}
+							height={errorIconDimension}
+							width={errorIconDimension}
+						/>
 						<p className={`modal-title ${theme}`}>ERROR</p>
 					</div>
 					<div className='modal-body modal-body-error'>

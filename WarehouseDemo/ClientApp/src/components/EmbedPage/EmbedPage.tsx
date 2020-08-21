@@ -6,73 +6,57 @@ import './EmbedPage.scss';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Report, Embed, models, service, IEmbedConfiguration } from 'powerbi-client';
 import { PowerBIEmbed } from 'powerbi-client-react';
-import { Profile } from '../../App';
-import { NavTabs, Tab } from '../NavTabs/NavTabs';
-import { IconBar } from '../IconBar/IconBar';
+import { NavTabs } from '../NavTabs/NavTabs';
+import type { EventHandler } from 'powerbi-client-react';
+import { IconBar, IconBarProps } from '../IconBar/IconBar';
 import { AnalyticsButton } from '../AnalyticsButton/AnalyticsButton';
-import { PersonaliseBar, Layout } from '../PersonaliseBar/PersonaliseBar';
-import ThemeContext, { Theme } from '../../themeContext';
-import { getVisualsFromPage, getActivePage, getBookmarksFromReport, getSelectedBookmark } from '../utils';
+import { PersonaliseBar } from '../PersonaliseBar/PersonaliseBar';
+import ThemeContext from '../../themeContext';
+import { Icon } from '../Icon/Icon';
+import {
+	getVisualsFromPage,
+	getActivePage,
+	getBookmarksFromReport,
+	getSelectedBookmark,
+	getStoredToken,
+	checkTokenValidity,
+} from '../utils';
 import { Footer } from '../Footer/Footer';
-import { VisualGroup, pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
+import { pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
 import { Modal } from '../AnalyticsPopup/Modal/Modal';
 import { Error } from '../ErrorPopup/Error';
 import { BookmarksList } from '../BookmarksList/BookmarksList';
-import { salesPersonTabs, salesManagerTabs, TabName } from '../tabConfig';
-import {
-	appName,
-	reportEmbedConfigUrl,
-	ReportMargin,
-	visualCommands,
-	visualSelectorSchema,
-	visualButtons,
-	visibleClass,
-	hiddenClass,
-} from '../../constants';
+import { salesPersonTabs, salesManagerTabs, visualCommands, visualButtons } from '../../reportConfig';
+import { AddLeadForm } from '../Forms/AddLead';
 import { AddActivityForm } from '../Forms/AddActivityForm';
 import { EditLeadForm } from '../Forms/EditLeadForm';
-import { AddLeadForm } from '../Forms/AddLead';
 import { UpdateOpportunityForm } from '../Forms/UpdateOpportunityForm';
-import $ from 'jquery';
-
-/**
- * Shape for the response from server end point constants.reportEmbedConfigUrl
- */
-export interface EmbedParamsResponse {
-	Id: string;
-	EmbedUrl: string;
-	Type: string;
-	EmbedToken: {
-		Token: string;
-		TokenId: string;
-		Expiration: string;
-	};
-	MinutesToExpiration: string;
-	DefaultPage: string | null;
-	MobileDefaultPage: string | null;
-}
+import {
+	storageKeyJWT,
+	ReportMargin,
+	visualSelectorSchema,
+	minutesToRefreshBeforeExpiration,
+} from '../../constants';
+import {
+	EmbedParamsResponse,
+	Bookmark,
+	Tab,
+	VisualGroup,
+	Layout,
+	TabName,
+	Profile,
+	Theme,
+	ServiceAPI,
+} from '../../models';
 
 export interface EmbedPageProps {
 	profile: Profile;
-	firstName: string;
-	lastName: string;
+	name: string;
 	profileImageName: string;
-	logoutOnClick: { (): void };
-}
-
-export interface Bookmark extends models.IReportBookmark {
-	checked?: boolean;
+	updateApp: IconBarProps['updateApp'];
 }
 
 export function EmbedPage(props: EmbedPageProps): JSX.Element {
-	// Cache DOM element
-	const reportDiv = $('.report-container');
-
-	// Hide the report-container on the initial load
-	if (!reportDiv.hasClass(visibleClass)) {
-		reportDiv.addClass(hiddenClass);
-	}
-
 	// State hook for error
 	const [error, setError] = useState<string>('');
 
@@ -196,12 +180,19 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// State hook for the list of bookmarks of the report
 	const [bookmarks, updateBookmarks] = useState<Bookmark[]>([]);
 
+	// State hook for report export progress
+	const [isExportInProgress, setIsExportInProgress] = useState<boolean>(false);
+
+	// State hook for Analytics button background
+	const [analyticsBtnActive, setAnalyticsBtnActive] = useState<string>('');
+
 	/* End of state hooks declaration */
 
-	const eventHandlersMap = new Map([
+	// Report embedding event handlers
+	const eventHandlersMap: Map<string, EventHandler> = new Map([
 		[
 			'loaded',
-			function () {
+			function (event, embeddedReport: Report): void {
 				console.log('Report has loaded');
 
 				// Get the page for the Home tab
@@ -231,18 +222,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 					// Get bookmarks from the report
 					getBookmarksFromReport(stateRef.current, updateBookmarks);
 				});
+
+				// Render report
+				embeddedReport.render();
 			},
 		],
 		[
 			'rendered',
 			function () {
-				// Cache DOM element
-				const reportDiv = $('.report-container');
-
-				// Show the report-container when the visuals are arranged
-				reportDiv.removeClass(hiddenClass);
-				reportDiv.addClass(visibleClass);
-
 				console.log('Report has rendered');
 				// Add logic to trigger after report is rendered
 			},
@@ -280,11 +267,53 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		],
 	]);
 
+	/**
+	 * Refresh token when tokenExpiration has reached minutesToRefresh
+	 * @param tokenExpiration time left to expire
+	 * @param minutesBeforeExpiration time interval before expiration
+	 */
+	function setTokenExpirationListener(tokenExpiration: number, minutesBeforeExpiration: number): void {
+		// Time in ms before expiration
+		const msBeforeExpiration: number = minutesBeforeExpiration * 60 * 1000;
+
+		// Current UTC time in ms
+		const msCurrentTime: number = Date.now() + new Date().getTimezoneOffset() * 60 * 1000;
+
+		// Time until token refresh in milliseconds
+		const msToRefresh: number = tokenExpiration - msCurrentTime - msBeforeExpiration;
+
+		// If token already expired, generate new token and set the access token
+		if (msToRefresh <= 0) {
+			fetchReportConfig();
+		} else {
+			setTimeout(fetchReportConfig, msToRefresh);
+		}
+	}
+
 	// Fetch params for embed config for the report
 	async function fetchReportConfig(): Promise<void> {
+		// Get token from storage
+		const storedToken = getStoredToken();
+
+		// Check token expiry before making API request, redirect back to login page
+		if (!checkTokenValidity(storedToken)) {
+			alert('Session expired');
+
+			// Re-render App component
+			props.updateApp((prev: number) => prev + 1);
+			return;
+		}
+
 		try {
 			// Fetch report's embed params
-			const serverRes = await fetch(reportEmbedConfigUrl, { method: 'POST' });
+			const serverRes = await fetch(ServiceAPI.FetchEmbedParams, {
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${sessionStorage.getItem(storageKeyJWT)}`,
+				},
+			});
 
 			if (!serverRes.ok) {
 				// Show error popup if request fails
@@ -304,6 +333,12 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				embedUrl: embedParams.EmbedUrl,
 				accessToken: embedParams.EmbedToken.Token,
 			});
+
+			// Get ms to expiration
+			const msOfExpiration: number = Date.parse(embedParams.EmbedToken.Expiration);
+
+			// Starting the expiration listener
+			setTokenExpirationListener(msOfExpiration, minutesToRefreshBeforeExpiration);
 		} catch (error) {
 			setError(error.message);
 			console.error('Error in fetching embed configuration', error);
@@ -331,6 +366,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		}
 	}, [powerbiReport]);
 
+	/**
+	 * Gets the embedded report and updates the report state
+	 * @param embeddedReport Embedded report instance
+	 */
 	function getReport(embeddedReport: Embed): void {
 		const report = embeddedReport as Report;
 		setReport(report);
@@ -362,6 +401,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	function togglePersonaliseBar(): void {
 		setShowPersonaliseBar((prevState) => !prevState);
+	}
+
+	function toggleExportProgressState() {
+		setIsExportInProgress((prevState) => !prevState);
 	}
 
 	async function captureNewBookmark(capturedBookmarkName: string): Promise<void> {
@@ -453,22 +496,18 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const navPane = (
 		<nav
 			className={`header justify-content-between navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light ${theme}`}>
-			<img
-				src={require(`../../assets/Images/app-name-${theme}.svg`)}
-				className='app-name'
-				alt={appName}
-			/>
+			<Icon className='app-name' iconId={`app-name-${theme}`} width={111.5} height={40} />
+
 			{navTabs}
 			<IconBar
-				firstName={props.firstName}
-				lastName={props.lastName}
+				name={props.name}
 				profileImageName={props.profileImageName}
 				profile={props.profile}
 				showPersonaliseBar={activeTab === TabName.Home} // Show personalise bar when Home tab is active
 				personaliseBarOnClick={togglePersonaliseBar}
-				logoutOnClick={props.logoutOnClick}
 				theme={theme}
 				applyTheme={setTheme}
+				updateApp={props.updateApp}
 			/>
 		</nav>
 	);
@@ -583,22 +622,23 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const bookmarksList = <BookmarksList bookmarks={bookmarks} updateBookmarks={updateBookmarks} />;
 
 	const analyticsButtonContainer = (
-		<div className={`analytics-button-container ${theme}`}>
+		<div className={`btn-analytics-container ${theme}`}>
 			{
 				<AnalyticsButton
 					className={`${theme}`}
 					dataToggle={'dropdown'}
-					icon={require(`../../assets/Icons/analytics-myviews-${theme}.svg`)}>
+					icon={`analytics-myviews-${theme}`}>
 					My Views
 				</AnalyticsButton>
 			}
 			{bookmarksList}
 			{
 				<AnalyticsButton
-					className={`${theme}`}
+					className={`${analyticsBtnActive} ${theme}`}
 					dataToggle={'modal'}
 					dataTarget={'#modal-capture-view'}
-					icon={require(`../../assets/Icons/analytics-captureview-${theme}.svg`)}>
+					icon={`analytics-captureview-${theme}`}
+					onClick={() => setAnalyticsBtnActive('btn-analytics-active')}>
 					Capture View
 				</AnalyticsButton>
 			}
@@ -613,14 +653,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			getEmbeddedComponent={getReport}
 			eventHandlers={eventHandlersMap}
 			cssClassName={'report-container'}
+			phasedEmbedding={true}
 		/>
 	);
-
-	const [isExportInProgress, setIsExportInProgress] = useState<boolean>(false);
-
-	function toggleExportProgressState() {
-		setIsExportInProgress((prevState) => !prevState);
-	}
 
 	const captureViewPopup = (
 		<Modal
@@ -630,6 +665,8 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 			setError={setError}
 			toggleExportProgressState={toggleExportProgressState}
 			selectedBookmark={getSelectedBookmark(bookmarks)}
+			updateApp={props.updateApp}
+			resetAnalyticsBtn={() => setAnalyticsBtnActive('')}
 		/>
 	);
 

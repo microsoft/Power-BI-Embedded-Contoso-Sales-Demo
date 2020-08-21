@@ -6,38 +6,8 @@
 	margin-left: 18px;
 }
 
-/* Override default Bootstrap radio button look */
-.custom-radio .custom-control-input~.custom-control-label {
-	&:before, &:after {
-		background-color: transparent;
-		border-radius: 50%;
-		background-repeat: no-repeat;
-		background-size: 90%;
-	}
-}
-
-.custom-radio .custom-control-input:checked~.custom-control-label {
-	&.light::before, &.light::after {
-		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23303778'/%3e%3c/svg%3e");
-		border-color: #303778;
-	}
-
-	&.dark::before, &.dark::after {
-		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-		border-color: #FFF;
-	}
-}
-
-// Remove shadow from radio button when checked
-.custom-radio .custom-control-input:focus ~ .custom-control-label::before {
-	box-shadow: none;
-}
-
-.gradient-bg {
-	background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
-	height: 100%;
-	margin: 0;
-	padding: 0;
+.cursor-default {
+	cursor: default;
 }
 
 .form-control {
@@ -53,6 +23,13 @@
 	}
 }
 
+.gradient-bg {
+	background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 .input-icon {
 	height: 16px;
 	width: 16px;
@@ -60,6 +37,11 @@
 
 .input-text-icon {
 	padding-left: 3rem;
+}
+
+input[type='text']:focus,
+input[type='password']:focus {
+	border-color: #A7AEFF;
 }
 
 input[type='radio'] {
@@ -70,20 +52,24 @@ input[type='radio']:focus {
 	outline: none;
 }
 
+.invalid-feedback {
+	position: absolute;
+}
+
+.non-selectable {
+	user-select: none;
+}
+
+.rounded-img {
+	border-radius: 50%;
+}
+
 .report-container {
 	display: flex;
 	flex: 1;
 	margin: 34px 35px;
 	height: calc(10vh - 90px);
 	position: sticky;
-}
-
-.report-visible {
-	visibility: visible;
-}
-
-.report-hidden {
-	visibility: hidden;
 }
 
 .report-container > iframe {

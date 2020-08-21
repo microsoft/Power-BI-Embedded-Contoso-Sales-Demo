@@ -6,7 +6,9 @@ import './IconBar.scss';
 import React, { useContext } from 'react';
 import { SettingsDropdown, SettingsDropdownProps } from '../SettingsDropdown/SettingsDropdown';
 import { ProfileInfo, ProfileInfoProps } from '../ProfileInfo/ProfileInfo';
-import ThemeContext, { Theme } from '../../themeContext';
+import { Icon } from '../Icon/Icon';
+import ThemeContext from '../../themeContext';
+import { Theme } from '../../models';
 
 export interface IconBarProps extends SettingsDropdownProps, ProfileInfoProps {
 	profileImageName: string;
@@ -14,37 +16,42 @@ export interface IconBarProps extends SettingsDropdownProps, ProfileInfoProps {
 
 export function IconBar(props: IconBarProps): JSX.Element {
 	const theme: Theme = useContext(ThemeContext);
+	const settingsIconDimension = 27;
+	const profileIconDimension = 38;
 
 	return (
 		<div className='align-items-center d-flex flex-row icon-bar'>
 			<div className='setting'>
-				<img
-					id='options-icon'
-					src={require(`../../assets/Icons/settings-${theme}.svg`)}
-					alt='More options'
-					data-toggle='collapse'
-					data-target='#settings-dropdown'
+				<Icon
 					className='dropdown dropdown-toggle nav-icon'
+					iconId={`settings-${theme}`}
+					height={settingsIconDimension}
+					width={settingsIconDimension}
+					dataTarget='#settings-dropdown'
+					dataToggle='collapse'
 				/>
+
 				<SettingsDropdown
 					showPersonaliseBar={props.showPersonaliseBar}
 					personaliseBarOnClick={props.personaliseBarOnClick}
-					logoutOnClick={props.logoutOnClick}
 					applyTheme={props.applyTheme}
 					theme={props.theme}
+					updateApp={props.updateApp}
 				/>
 			</div>
 
 			<div className='user-profile'>
-				<img
-					src={require(`../../assets/Images/${props.profileImageName}`)}
-					alt='Profile photo'
-					className='nav-icon'
+				<Icon
+					// For production app, fetch profile image from the identity provider
+					className='nav-icon rounded-img'
+					iconId={props.profileImageName}
+					width={profileIconDimension}
+					height={profileIconDimension}
 				/>
 			</div>
 
 			<div className='user-info'>
-				<ProfileInfo firstName={props.firstName} lastName={props.lastName} profile={props.profile} />
+				<ProfileInfo name={props.name} profile={props.profile} />
 			</div>
 		</div>
 	);

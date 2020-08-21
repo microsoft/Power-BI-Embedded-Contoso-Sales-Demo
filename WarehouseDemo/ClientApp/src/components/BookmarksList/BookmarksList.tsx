@@ -5,7 +5,7 @@
 import './BookmarksList.scss';
 import '../SettingsDropdown/SettingsDropdown.scss';
 import React, { useContext } from 'react';
-import { Bookmark } from '../EmbedPage/EmbedPage';
+import { Bookmark } from '../../models';
 import ThemeContext from '../../themeContext';
 /**
  * Bookmarks list props
@@ -42,22 +42,22 @@ export function BookmarksList(props: BookmarksListProps): JSX.Element {
 	const bookmarksList = props.bookmarks.map((bookmark, idx) => {
 		return (
 			<div
-				className={`dropdown-item custom-control custom-radio bookmark-list-item ${theme}`}
+				className={`dropdown-item form-check bookmark-list-item ${theme}`}
 				key={idx}
 				onClick={() => handleChange(bookmark.name)}>
 				<input
 					type='radio'
 					id={bookmark.name}
 					name='bookmark-list-item'
-					className='custom-control-input'
+					className='form-check-input'
 					checked={bookmark.checked}
 					value={bookmark.name}
 					onChange={() => handleChange(bookmark.name)}
 				/>
-				<label
-					className={`custom-control-label label-radio ${theme}`}
-					htmlFor={bookmark.name}></label>
-				<span className='d-inline-block text-truncate'>{bookmark.displayName}</span>
+				<label className={`form-check-label label-radio ${theme}`} htmlFor={bookmark.name}></label>
+				<span className='d-inline-block text-truncate' title={bookmark.displayName}>
+					{bookmark.displayName}
+				</span>
 			</div>
 		);
 	});

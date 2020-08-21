@@ -5,11 +5,7 @@
 import './NavTabs.scss';
 import React, { useContext } from 'react';
 import ThemeContext from '../../themeContext';
-
-export interface Tab {
-	readonly name: string;
-	readonly isActive: boolean;
-}
+import { Tab } from '../../models';
 
 export interface NavTabsProps {
 	tabsList: Array<Tab>;
@@ -26,7 +22,7 @@ export function NavTabs(props: NavTabsProps): JSX.Element {
 					return (
 						<li key={tab.name} className='nav-item' onClick={() => props.tabOnClick(tab.name)}>
 							<a
-								className={`nav-link pl-0 pr-0 ${
+								className={`nav-link non-selectable pl-0 pr-0 ${
 									tab.isActive ? 'active' : 'inactive'
 								} ${theme}`}
 								href='#'>

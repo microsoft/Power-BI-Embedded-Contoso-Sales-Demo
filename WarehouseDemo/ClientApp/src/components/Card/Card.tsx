@@ -3,26 +3,34 @@
 // ---------------------------------------------------------------------------
 
 import './Card.scss';
-import React from 'react';
-import { Home, HomeProps } from '../Home/Home';
+import React, { useState } from 'react';
+import { Home } from '../Home/Home';
 import { Login, LoginProps } from '../Login/Login';
-import { Page } from '../../App';
+import { Icon } from '../Icon/Icon';
+import { Profile } from '../../models';
 
-export interface CardProps extends LoginProps, HomeProps {
-	page: Page;
+interface CardsProps {
+	updateApp: LoginProps['updateApp'];
 }
 
-export function Card(props: CardProps): JSX.Element {
+export function Card(props: CardsProps): JSX.Element {
+	const [selectedProfile, setSelectedProfile] = useState<Profile>(null);
+
+	// Get back to home
+	const homeOnClick = (): void => {
+		setSelectedProfile(null);
+	};
+
+	// Show profile selector page (<Home>) when no profile is selected, else show <Login> page
 	let cardBody: JSX.Element;
-	if (props.page === Page.Home) {
-		cardBody = <Home setProfileType={props.setProfileType} />;
-	} else if (props.page === Page.Login) {
+	if (selectedProfile === null) {
+		cardBody = <Home setProfileType={setSelectedProfile} />;
+	} else {
 		cardBody = (
 			<Login
-				homeOnClick={props.homeOnClick}
-				loginOnClick={props.loginOnClick}
-				profile={props.profile}
-				anonymousLoginOnClick={props.anonymousLoginOnClick}
+				backToHomeOnClick={homeOnClick}
+				selectedProfile={selectedProfile}
+				updateApp={props.updateApp}
 			/>
 		);
 	}
@@ -30,13 +38,9 @@ export function Card(props: CardProps): JSX.Element {
 	return (
 		<div className='gradient-bg'>
 			<div className='card  mx-auto vertical-center'>
-				<img
-					src={require('../../assets/Images/app-name-light.svg')}
-					alt='App name'
-					className='card-img mx-auto'
-				/>
+				<Icon className='card-img mx-auto' iconId='app-name-light' height={40} width={112} />
 
-				{props.page === Page.Home ? <div className='horizontal-separator'></div> : null}
+				{!selectedProfile ? <div className='horizontal-separator'></div> : null}
 
 				{cardBody}
 			</div>

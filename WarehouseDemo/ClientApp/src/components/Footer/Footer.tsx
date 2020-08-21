@@ -4,24 +4,29 @@
 
 import './Footer.scss';
 import React, { useContext } from 'react';
-import { powerBiIconAltName, gitHubIconAltName } from '../../constants';
+import { FooterIcon } from '../Icon/FooterIcon';
 import ThemeContext from '../../themeContext';
 
 export function Footer(): JSX.Element {
 	const theme = useContext(ThemeContext);
 
 	return (
-		<div className={`d-flex justify-content-center align-items-center footer ${theme}`}>
-			<p>This sample is powered by Power BI Embedded |</p>
-			<img src={require('../../assets/Icons/powerbi.svg')} alt={powerBiIconAltName} />
+		<div className={`d-flex justify-content-center align-items-center non-selectable footer ${theme}`}>
+			<p>
+				This demo is powered by Power BI Embedded
+				<label className='separator-pipe'>{'|'}</label>
+			</p>
+
+			<FooterIcon className='powerbi-icon' iconId='powerbi' height={22} width={30} />
 			<p>
 				{'Explore our'}
 				<a className='d-block' href='https://aka.ms/pbijs/' target='_blank' rel='noreferrer noopener'>
 					Embedded Playground
 				</a>
-				{'|'}
+				<label className='separator-pipe'>{'|'}</label>
 			</p>
-			<img src={require('../../assets/Icons/github.svg')} alt={gitHubIconAltName} />
+
+			<FooterIcon className='github-icon' iconId='github' height={22} width={22} />
 			<p>
 				{'Find our'}
 				<a

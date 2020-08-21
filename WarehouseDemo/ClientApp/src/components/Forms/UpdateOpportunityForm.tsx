@@ -7,12 +7,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
-import { opportunityPopupTabNames } from '../tabConfig';
-import { NavTabs, Tab } from '../NavTabs/NavTabs';
+import { NavTabs } from '../NavTabs/NavTabs';
 import { InputBox } from '../InputBox';
-import { formInputErrorMessage } from '../../constants';
-import { createTimeOptions } from '../utils';
+import { opportunityPopupTabNames, formInputErrorMessage } from '../../constants';
+import { Icon } from '../Icon/Icon';
+import { createTimeOptions, trimInput } from '../utils';
 import ThemeContext from '../../themeContext';
+import { UpdateOpportunityFormData, Tab } from '../../models';
 
 // List of radio button for status form
 const statusFormOptionsSet = [
@@ -42,23 +43,6 @@ const statusFormOptionsSet = [
 		checked: false,
 	},
 ];
-
-interface UpdateOpportunityFormData {
-	topic: string;
-	title: string;
-	accountName: string;
-	contactFullName: string;
-	fullName: string;
-	startDate: string;
-	endDate: string;
-	startTime: string;
-	endTime: string;
-	estimatedRevenue: string;
-	currentQuote: string;
-	editQuote: string;
-	opportunityStatus: string;
-	description: string;
-}
 
 interface UpdateOpportunityFormProps {
 	toggleUpdateOpportunityFormPopup: { (): void };
@@ -107,6 +91,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 
 	const editTopicInputBox = (
 		<InputBox
+			onBlur={(event) => trimInput(event)}
 			title='Topic'
 			name='topic'
 			className={`form-control form-element ${errors.topic && `is-invalid`}`}
@@ -160,6 +145,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 	const meetingFormInputListBeforeDate = meetingFormInputBoxesBeforeDate.map((input, idx) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -173,6 +159,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 
 	const meetingFormDescriptionBox = (
 		<InputBox
+			onBlur={(event) => trimInput(event)}
 			title='Description'
 			name='description'
 			className={`form-control form-element ${errors.description && `is-invalid`}`}
@@ -193,7 +180,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 				{meetingFormInputListBeforeDate}
 				<div>
 					<label className='input-label'>Date and Time</label>
-					<div className='d-flex flex-row justify-content-between date-time-container'>
+					<div className='d-flex flex-row justify-content-between align-items-center date-time-container'>
 						<DatePicker
 							className='form-control form-element date'
 							name='startDate'
@@ -210,16 +197,17 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 							ref={register({ required: true })}>
 							{timeOptions.map((timeOption, idx) => {
 								return (
-									<option value={timeOption} key={idx}>
+									<option className={`select-list ${theme}`} value={timeOption} key={idx}>
 										{timeOption}
 									</option>
 								);
 							})}
 						</select>
-						<img
+						<Icon
 							className='right-arrow'
-							src={require(`../../assets/Icons/Icon feather-arrow-right-${theme}.svg`)}
-							alt={`right-arrow-${theme}`}
+							iconId={`icon-feather-arrow-right-${theme}`}
+							width={16.5}
+							height={17}
 						/>
 						<DatePicker
 							className='form-control form-element date'
@@ -235,7 +223,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 							ref={register({ required: true })}>
 							{timeOptions.map((timeOption, idx) => {
 								return (
-									<option value={timeOption} key={idx}>
+									<option className={`select-list ${theme}`} value={timeOption} key={idx}>
 										{timeOption}
 									</option>
 								);
@@ -307,6 +295,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 	const quoteFormInputList = quoteFormInputBoxes.map((input, idx) => {
 		return (
 			<InputBox
+				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
 				className={input.className}
@@ -337,9 +326,9 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 
 	const statusFormOptions = statusFormOptionsSet.map((option, idx) => {
 		return (
-			<div className='custom-control custom-radio' key={idx}>
+			<div className='opportunity-status-radio' key={idx}>
 				<input
-					className='custom-control-input'
+					className='form-check-input status-radio'
 					type='radio'
 					name='opportunityStatus'
 					id={option.id}
@@ -347,7 +336,9 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 					onChange={() => setRadioSelection(option.id)}
 					checked={option.id === radioSelection}
 				/>
-				<label className={`custom-control-label r-label label-radio ${theme}`} htmlFor={option.id}>
+				<label
+					className={`form-check-label r-label label-radio opportunity-status-text ${theme}`}
+					htmlFor={option.id}>
 					{option.value}
 				</label>
 			</div>
@@ -372,7 +363,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 	);
 
 	return (
-		<div className={`d-flex flex-column justify-content-center align-items-center overlay ${theme}`}>
+		<div className={`d-flex flex-column align-items-center overlay ${theme}`}>
 			<div className={`popup ${theme}`}>
 				<div className={`d-flex justify-content-between popup-header ${theme}`}>
 					<div className='tab-container'>{navTabs}</div>
