@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
 namespace WarehouseDemo
@@ -41,7 +42,7 @@ namespace WarehouseDemo
 						var signingKey = Encoding.UTF8.GetString(key.Key.N);
 						
 						IConfigurationRoot keyConfig = new ConfigurationBuilder()
-							.AddInMemoryCollection(new [] { new KeyValuePair<string, string>(Constant.SigningKey, signingKey) })
+							.AddInMemoryCollection(new [] { new KeyValuePair<string, string>(builtConfig["KeyVault:KeyName"], signingKey) })
 							.Build();
 
 						// Add Key to configuration

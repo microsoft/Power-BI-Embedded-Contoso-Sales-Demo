@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
 namespace WarehouseDemo.Controllers
@@ -7,6 +8,7 @@ namespace WarehouseDemo.Controllers
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Microsoft.IdentityModel.Tokens;
 	using Newtonsoft.Json.Linq;
@@ -30,12 +32,14 @@ namespace WarehouseDemo.Controllers
 		private static IConfiguration Configuration { get; set; }
 		private static IOptions<JwtTokenConfig> JwtTokenConfig { get; set; }
 		private static IOptions<UserCollection> UserCollection { get; set; }
+		private readonly ILogger<BasicAuthenticationController> Logger;
 
-		public BasicAuthenticationController(IConfiguration configuration, IOptions<JwtTokenConfig> jwtTokenConfig, IOptions<UserCollection> userCollection)
+		public BasicAuthenticationController(IConfiguration configuration, IOptions<JwtTokenConfig> jwtTokenConfig, IOptions<UserCollection> userCollection, ILogger<BasicAuthenticationController> logger)
 		{
 			Configuration = configuration;
 			JwtTokenConfig = jwtTokenConfig;
 			UserCollection = userCollection;
+			Logger = logger;
 		}
 
 		/**
@@ -90,22 +94,24 @@ namespace WarehouseDemo.Controllers
 				actualUsername = Configuration[Constant.SalesManagerUsername];
 				actualPassword = Configuration[Constant.SalesManagerPassword];
 				user = UserCollection.Value.SalesManager;
+				Logger.LogInformation($"{user.Username}, {Constant.SalesManagerRole}");
 			}
 			else if (string.Equals(selectedRoleValue, Constant.SalesPersonRole, StringComparison.InvariantCultureIgnoreCase))
 			{
 				// Return anonymous user when authorization parameter is not present
 				if (string.IsNullOrWhiteSpace(authorization))
 				{
+					Logger.LogInformation($"Anonymous: {Constant.SalesPersonRole}");
 					return UserCollection.Value.Anonymous;
 				}
 
 				actualUsername = Configuration[Constant.SalesPersonUsername];
 				actualPassword = Configuration[Constant.SalesPersonPassword];
 				user = UserCollection.Value.SalesPerson;
+				Logger.LogInformation($"{user.Username}, {Constant.SalesPersonRole}");
 			}
 			else
 			{
-				Console.Error.WriteLine(Constant.InvalidRole);
 				return null;
 			}
 
@@ -128,7 +134,7 @@ namespace WarehouseDemo.Controllers
 				!string.Equals(credential[1], actualPassword)
 			)
 			{
-				Console.Error.WriteLine(Constant.InvalidUsernamePassword);
+				Logger.LogInformation($"{Constant.InvalidUsernamePassword}, {credential[0]}, {credential[1]}, {selectedRoleValue}");
 				return null;
 			}
 
@@ -161,7 +167,7 @@ namespace WarehouseDemo.Controllers
 			// Time before which JWT token will not be accepted for processing
 			var notBeforeTime = DateTime.UtcNow;
 
-			var signingKey = Encoding.UTF8.GetBytes(Configuration[Constant.SigningKey]);
+			var signingKey = Encoding.UTF8.GetBytes(Configuration[Configuration["KeyVault:KeyName"]]);
 
 			// Create token signature
 			var securityKey = new SymmetricSecurityKey(signingKey);

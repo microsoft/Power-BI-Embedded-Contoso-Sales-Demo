@@ -1,5 +1,6 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
 namespace WarehouseDemo
@@ -36,7 +37,7 @@ namespace WarehouseDemo
 				.AddJwtBearer("OAuth", options =>
 				{
 					// Create signature for JWT token
-					var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[Constant.SigningKey]));
+					var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[Configuration["KeyVault:KeyName"]]));
 
 					// Get validation parameters
 					var issuer = Configuration.GetSection("JwtToken:Issuer").Value;
@@ -68,7 +69,7 @@ namespace WarehouseDemo
 					{
 						microsoftIdentityOptions.ClientCertificates = new CertificateDescription[]
 						{
-							CertificateDescription.FromBase64Encoded(Configuration[Constant.Certificate])
+							CertificateDescription.FromBase64Encoded(Configuration[Configuration["KeyVault:CertificateName"]])
 						};
 					}
 				)
@@ -78,6 +79,20 @@ namespace WarehouseDemo
 			var salesManagerRole = Configuration.GetSection("Users:SalesManager:Role").Value;
 			var salesPersonRole = Configuration.GetSection("Users:SalesPerson:Role").Value;
 
+			// Check whether telemetry is On
+			bool.TryParse(Configuration["Telemetry"], out var isTelemetryOn);
+			if (isTelemetryOn)
+			{
+				// Get App Insights Instrumentation key from config
+				var appInsightsInstrumentationKey = Configuration[Constant.AppInsightsInstrumentationKey];
+
+				// Enable App Insights telemetry collection if Instrumentation key is available
+				if (!string.IsNullOrWhiteSpace(appInsightsInstrumentationKey))
+				{
+					services.AddApplicationInsightsTelemetry(appInsightsInstrumentationKey);
+				}
+			}
+
 			services.AddControllersWithViews(options => {
 				options.Filters.Add(new AuthorizeFilter(
 					new AuthorizationPolicyBuilder()
@@ -86,6 +101,16 @@ namespace WarehouseDemo
 						.RequireClaim("scope")
 						.Build()
 				));
+			});
+
+			services.AddAuthorization(options => {
+				// GeneralUser policy
+				options.AddPolicy(Constant.GeneralUserPolicyName,
+					policy => policy.RequireClaim("scope"));
+
+				// FieldUser policy
+				options.AddPolicy(Constant.FieldUserPolicyName,
+					policy => policy.RequireClaim("scope", new [] {Configuration.GetSection("Users:SalesPerson:Scope").Value}));
 			});
 
 			// In production, the React files will be served from this directory

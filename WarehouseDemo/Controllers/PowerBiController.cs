@@ -1,18 +1,22 @@
 ﻿// ----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
 namespace WarehouseDemo.Controllers
 {
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Caching.Memory;
 	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Microsoft.Identity.Client;
 	using Microsoft.Identity.Web;
 	using Microsoft.Rest;
 	using Newtonsoft.Json.Linq;
 	using System;
+	using System.Net;
 	using System.Security.Claims;
 	using System.Threading.Tasks;
 	using WarehouseDemo.Helpers;
@@ -21,14 +25,16 @@ namespace WarehouseDemo.Controllers
 
 	[ApiController]
 	[Route("[controller]")]
+	[Authorize(Policy = Constant.GeneralUserPolicyName)]
 	public class PowerBiController : ControllerBase
 	{
 		private readonly ITokenAcquisition TokenAcquisition;
 		private static IConfiguration Configuration { get; set; }
 		private static IOptions<PowerBiConfig> PowerBiConfig { get; set; }
 		private IMemoryCache Cache { get; set; }
+		private readonly ILogger<PowerBiController> Logger;
 
-		public PowerBiController(IConfiguration configuration, ITokenAcquisition tokenAcquisition, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache)
+		public PowerBiController(IConfiguration configuration, ITokenAcquisition tokenAcquisition, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache, ILogger<PowerBiController> logger)
 		{
 			Configuration = configuration;
 			TokenAcquisition = tokenAcquisition;
@@ -36,6 +42,7 @@ namespace WarehouseDemo.Controllers
 
 			// Get service cache
 			Cache = cache;
+			Logger = logger;
 		}
 
 		[HttpPost("/api/powerbi/EmbedParams")]
@@ -93,29 +100,31 @@ namespace WarehouseDemo.Controllers
 			}
 			catch (MsalServiceException ex)
 			{
+				Logger.LogError(ex, ex.Message);
 				return StatusCode(ex.StatusCode, ex.Message);
 			}
 			catch (MsalClientException ex)
 			{
-				try
+				Logger.LogError(ex, ex.Message);
+				if (Int32.TryParse(ex.ErrorCode, out int errorCode))
 				{
-					return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+					return StatusCode(errorCode, ex.Message);
 				}
-				catch (Exception)
+				else
 				{
-					// ErrorCode is not parsable when client certificate/secret is missing
-					// Return with Forbidden status in cases where request does not have either client certificate/secret
 					return StatusCode(403, ex.Message);
 				}
 			}
 			catch (HttpOperationException ex)
 			{
+				Logger.LogError(ex, ex.Message);
 				JObject error = ErrorHelper.ExtractPowerBiErrorInfo(ex);
 				return StatusCode((int)ex.Response.StatusCode, error.ToString());
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, ex.Message);
+				Logger.LogError(ex, ex.Message);
+				return StatusCode((int)HttpStatusCode.InternalServerError);
 			}
 		}
 
@@ -149,29 +158,31 @@ namespace WarehouseDemo.Controllers
 			}
 			catch (MsalServiceException ex)
 			{
+				Logger.LogError(ex, ex.Message);
 				return StatusCode(ex.StatusCode, ex.Message);
 			}
 			catch (MsalClientException ex)
 			{
-				try
+				Logger.LogError(ex, ex.Message);
+				if (Int32.TryParse(ex.ErrorCode, out int errorCode))
 				{
-					return StatusCode(int.Parse(ex.ErrorCode), ex.Message);
+					return StatusCode(errorCode, ex.Message);
 				}
-				catch (Exception)
+				else
 				{
-					// ErrorCode is not parsable when client certificate/secret is missing
-					// Return with Forbidden status in cases where request does not have either client certificate/secret
 					return StatusCode(403, ex.Message);
 				}
 			}
 			catch (HttpOperationException ex)
 			{
+				Logger.LogError(ex, ex.Message);
 				JObject error = ErrorHelper.ExtractPowerBiErrorInfo(ex);
 				return StatusCode((int)ex.Response.StatusCode, error.ToString());
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, ex.Message);
+				Logger.LogError(ex, ex.Message);
+				return StatusCode((int)HttpStatusCode.InternalServerError);
 			}
 		}
 	}

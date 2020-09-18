@@ -1,19 +1,24 @@
 // ----------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
 public class Constant
 {
 	// Used as key for reading Key Vault items from Configuration
-	public const string Certificate = "NewFieldDemoCertificate";
-	public const string SigningKey = "TokenSigningKey";
 	public const string SalesManagerUsername = "SalesManagerUsername";
 	public const string SalesManagerPassword = "SalesManagerPassword";
 	public const string SalesPersonUsername = "SalesPersonUsername";
 	public const string SalesPersonPassword = "SalesPersonPassword";
+	public const string AppInsightsInstrumentationKey = "AppInsightsInstrumentationKey";
 
 	// Used while fetching AAD token
 	public const string PowerBiScope = "https://analysis.windows.net/powerbi/api/.default";
+	public static readonly string CdsScope = $"https://{CdsBaseUrl}/.default";
+
+	// Used for naming policies
+	public const string GeneralUserPolicyName = "GeneralUser";
+	public const string FieldUserPolicyName = "FieldUser";
 
 	// Used to renew AAD token minutes before expiry
 	public const int RenewBeforeMinutes = 10;
@@ -52,7 +57,45 @@ public class Constant
 	public const string InvalidRole = "Invalid role";
 	public const string InvalidAccessToken = "Invalid access token";
 
+	// Used for returning error message in CDS service
+	public const string InvalidRequest = "Invalid request parameters";
+
 	// Used while setting or checking for roles
 	public const string SalesPersonRole = "Sales Person";
 	public const string SalesManagerRole = "Sales Manager";
+
+	// CDS API urls
+	public const string CdsBaseUrl = "contososalesdemoorg.api.crm.dynamics.com";
+	public static readonly string CdsApiBaseUrl = $"{CdsBaseUrl}/api/data/v9.1";
+
+	// Note: These entity names should match the entity names in CDS
+	// CDS entity names
+	// Used for CDS API calls
+	public const string EntityNameActivities = "crcb2_activitieses";
+	public const string EntityNameOpportunities = "opportunities";
+	public const string EntityNameLeads = "leads";
+	public const string EntityNameAccounts = "accounts";
+
+	// CDS entity's id-field names
+	// Used for CDS API calls
+	public const string isLatestFieldName = "crcb2_islatest";
+	public const string baseIdFieldName = "crcb2_baseid";
+	public const string RowCreationDateFieldName = "crcb2_rowcreationdate";
+	public const string EntityIdFieldActivities = "crcb2_activitiesid";
+	public const string EntityIdFieldOpportunities = "opportunityid";
+	public const string EntityIdFieldLeads = "leadid";
+	public const string EntityIdFieldAccounts = "accountid";
+
+	// CDS constants
+	// Used for setting date in Date Only type fields
+	public const string IsLatestTrue = "1";
+	public const string IsLatestFalse = "0";
+	public const string CdsDateFormat = "yyyy-MM-dd";
+
+	// Used for returning error message for CDS apis
+	public const string InvalidReq = "Invalid request parameters";
+	public const string InvalidEntity = "Invalid entity name";
+	public const string InvalidUpdateDataFields = "Invalid update fields";
+	public const string InvalidInsertDataFields = "Invalid insert fields";
+	public const string DataParsingFailed = "Invalid input provided in form";
 }
