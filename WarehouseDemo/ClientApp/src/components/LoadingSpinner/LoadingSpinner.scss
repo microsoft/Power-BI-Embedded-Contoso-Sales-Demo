@@ -3,13 +3,16 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-body, html {
-	height: 100%;
+.spinner-border {
+	&.light {
+		border-color: #303778 #303778 #303778 transparent;
+	}
+
+	&.dark {
+		border-color: #A7AEFF #A7AEFF #A7AEFF transparent;
+	}
 }
 
-main {
-	height: 100%;
-	overflow: auto;
-	position: fixed;
-	width: 100%;
+.spinner-form {
+	padding-top: 20px;
 }

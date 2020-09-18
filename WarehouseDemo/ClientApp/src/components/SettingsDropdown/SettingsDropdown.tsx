@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import './SettingsDropdown.scss';
@@ -7,14 +8,14 @@ import React, { useState, useContext } from 'react';
 import ThemeContext from '../../themeContext';
 import { storageKeyJWT } from '../../constants';
 import { useClickOutside } from '../utils';
-import { Theme } from '../../models';
+import { Theme, UpdateApp } from '../../models';
 
 export interface SettingsDropdownProps {
 	showPersonaliseBar: boolean;
 	personaliseBarOnClick: { (): void };
 	theme: Theme;
 	applyTheme: { (theme: Theme): void };
-	updateApp: Function;
+	updateApp: UpdateApp;
 }
 
 export function SettingsDropdown(props: SettingsDropdownProps): JSX.Element {

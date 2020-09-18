@@ -1,25 +1,25 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import './EmbedPage.scss';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Report, Embed, models, service, IEmbedConfiguration } from 'powerbi-client';
-import { PowerBIEmbed } from 'powerbi-client-react';
+import { PowerBIEmbed, EventHandler } from 'powerbi-client-react';
 import { NavTabs } from '../NavTabs/NavTabs';
-import type { EventHandler } from 'powerbi-client-react';
 import { IconBar, IconBarProps } from '../IconBar/IconBar';
 import { AnalyticsButton } from '../AnalyticsButton/AnalyticsButton';
 import { PersonaliseBar } from '../PersonaliseBar/PersonaliseBar';
 import ThemeContext from '../../themeContext';
 import { Icon } from '../Icon/Icon';
 import {
-	getVisualsFromPage,
 	getActivePage,
 	getBookmarksFromReport,
 	getSelectedBookmark,
 	getStoredToken,
 	checkTokenValidity,
+	getPagesFromReport,
 } from '../utils';
 import { Footer } from '../Footer/Footer';
 import { pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
@@ -27,15 +27,18 @@ import { Modal } from '../AnalyticsPopup/Modal/Modal';
 import { Error } from '../ErrorPopup/Error';
 import { BookmarksList } from '../BookmarksList/BookmarksList';
 import { salesPersonTabs, salesManagerTabs, visualCommands, visualButtons } from '../../reportConfig';
-import { AddLeadForm } from '../Forms/AddLead';
-import { AddActivityForm } from '../Forms/AddActivityForm';
+import { AddLeadForm } from '../Forms/AddLeadForm';
 import { EditLeadForm } from '../Forms/EditLeadForm';
 import { UpdateOpportunityForm } from '../Forms/UpdateOpportunityForm';
 import {
 	storageKeyJWT,
-	ReportMargin,
 	visualSelectorSchema,
 	minutesToRefreshBeforeExpiration,
+	FilterPaneWidth,
+	ExtraEmbeddingMargin,
+	AnonymousWritebackMessage,
+	WritebackRefreshFailMessage,
+	storageKeyTheme,
 } from '../../constants';
 import {
 	EmbedParamsResponse,
@@ -48,6 +51,7 @@ import {
 	Theme,
 	ServiceAPI,
 } from '../../models';
+import $ from 'jquery';
 
 export interface EmbedPageProps {
 	profile: Profile;
@@ -65,21 +69,23 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// State hook for PowerBI Report
 	const [powerbiReport, setReport] = useState<Report>(null);
 
-	// Maintaining a ref to the 'powerbiReport' state hook
-	// Reason: async callbacks like powerbi load event handler of PBI report does not
-	// get the latest value of the state
-	// https://stackoverflow.com/questions/57847594/react-hooks-accessing-up-to-date-state-from-within-a-callback
-	// If a more elegant solution is found, update this approach of keeping state ref
-	const stateRef = useRef<Report | null>();
-	stateRef.current = powerbiReport;
-
 	// State hook to toggle personalise bar
-	const [theme, setTheme] = useState<Theme>(Theme.Light);
+	const [theme, setTheme] = useState<Theme>(() => {
+		// Check theme state to persist across sessions
+		const storedThemeState = sessionStorage.getItem(storageKeyTheme);
+
+		// Return stored theme if any theme state is stored and value exists in Theme enum values
+		if (storedThemeState !== null && Object.values(Theme).includes(storedThemeState as Theme)) {
+			return storedThemeState as Theme;
+		}
+
+		return Theme.Light;
+	});
 
 	// Report config state hook
 	const [sampleReportConfig, setReportConfig] = useState<IEmbedConfiguration>({
 		type: 'report',
-		// TODO: Patch for powerbi-client bug
+		// Note: Empty string embedUrl is a temporary patch for powerbi-client bookmark bug
 		embedUrl: '',
 		tokenType: models.TokenType.Embed,
 		accessToken: undefined,
@@ -139,9 +145,6 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const [showPersonaliseBar, setShowPersonaliseBar] = useState<boolean>(false);
 
 	// State hook to toggle add activity form
-	const [addActivityFormPopup, setAddActivityFormPopup] = useState<boolean>(false);
-
-	// State hook to toggle add activity form
 	const [editLeadFormPopup, setEditLeadFormPopup] = useState<boolean>(false);
 
 	// State hook to toggle edit add lead form
@@ -149,6 +152,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// State hook to toggle edit opportunity form
 	const [updateOpportunityFormPopup, setUpdateOpportunityFormPopup] = useState<boolean>(false);
+
+	// State hook to capture values from the visuals
+	const [visualAutofilledData, setVisualAutofilledData] = useState<object>(null);
 
 	// State hook to set qna visual index
 	const [qnaVisualIndex, setQnaVisualIndex] = useState<number>(null);
@@ -161,7 +167,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		tabNames = salesManagerTabs.map((tabConfig) => tabConfig.name);
 	}
 
-	// State hook to set first tab as active
+	// State hook for active tab
 	const [activeTab, setActiveTab] = useState<Tab['name']>(() => {
 		if (tabNames?.length > 0) {
 			return tabNames[0];
@@ -180,8 +186,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// State hook for the list of bookmarks of the report
 	const [bookmarks, updateBookmarks] = useState<Bookmark[]>([]);
 
+	// State hook for the ratio of height/width of each respective page of the report
+	const [pagesAspectRatio] = useState(new Map<string, number>());
+
 	// State hook for report export progress
 	const [isExportInProgress, setIsExportInProgress] = useState<boolean>(false);
+
+	// State hook for write-back progress
+	const [isWritebackInProgress, setWritebackProgressState] = useState<boolean>(false);
 
 	// State hook for Analytics button background
 	const [analyticsBtnActive, setAnalyticsBtnActive] = useState<string>('');
@@ -189,83 +201,100 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	/* End of state hooks declaration */
 
 	// Report embedding event handlers
-	const eventHandlersMap: Map<string, EventHandler> = new Map([
-		[
-			'loaded',
-			function (event, embeddedReport: Report): void {
-				console.log('Report has loaded');
+	const eventHandlersMap: Map<string, EventHandler> = new Map();
 
-				// Get the page for the Home tab
-				const pageName = getReportPageName(TabName.Home, props.profile);
-				const page = stateRef.current.page(pageName);
+	eventHandlersMap.set('loaded', async function (event, embeddedReport: Report) {
+		console.log('Report has loaded');
 
-				// Set the page active
-				page?.setActive().catch((reason) => console.error(reason));
+		// Get the page for the Home tab
+		const pageName = getReportPageName(TabName.Home, props.profile);
+		const page = embeddedReport.page(pageName);
 
-				getVisualsFromPage(page, (visuals) => {
-					// Remove visuals without title
-					visuals = visuals.filter((visual) => visual.title);
+		// Set the page active
+		page?.setActive().catch((reason) => console.error(reason));
 
-					// Check if the report has a QnA visual from the list of visuals and get the index
-					let qnaVisualIndexSearch = visuals.findIndex((visual) => visual.type === 'qnaVisual');
+		// Get the report pages and update map of aspect ratios for all pages
+		const reportPages = await getPagesFromReport(embeddedReport);
+		reportPages.map((reportPage) => {
+			pagesAspectRatio.set(
+				reportPage.name,
+				reportPage.defaultSize.height / reportPage.defaultSize.width
+			);
+		});
 
-					// No QnA visual in the report
-					if (qnaVisualIndexSearch === -1) {
-						qnaVisualIndexSearch = null;
-					}
+		const visuals = await page.getVisuals();
+		// Pair the configured visuals
+		const pairedVisual = pairVisuals(visuals);
 
-					setQnaVisualIndex(qnaVisualIndexSearch);
+		// Build visual groups and update state
+		setReportVisuals(pairedVisual);
 
-					// Build visual groups and update state
-					setReportVisuals(pairVisuals(visuals));
+		// Check if the report has a QnA visual from the list of visuals and get the index
+		let qnaVisualIndexSearch = pairedVisual.findIndex(
+			(visual) => visual.mainVisual?.type === 'qnaVisual' || visual.overlapVisual?.type === 'qnaVisual'
+		);
 
-					// Get bookmarks from the report
-					getBookmarksFromReport(stateRef.current, updateBookmarks);
-				});
+		// No QnA visual in the report
+		if (qnaVisualIndexSearch === -1) {
+			qnaVisualIndexSearch = null;
+		}
 
-				// Render report
-				embeddedReport.render();
-			},
-		],
-		[
-			'rendered',
-			function () {
-				console.log('Report has rendered');
-				// Add logic to trigger after report is rendered
-			},
-		],
-		[
-			'commandTriggered',
-			function (event) {
-				console.log('Command triggered');
+		setQnaVisualIndex(qnaVisualIndexSearch);
 
-				if (event.detail.command === visualCommands.editLeads.name) {
-					toggleEditLeadFormPopup();
-				} else if (event.detail.command === visualCommands.editOpportunity.name) {
-					toggleUpdateOpportunityFormPopup();
-				}
-			},
-		],
-		[
-			'buttonClicked',
-			function (event) {
-				console.log('Button Clicked');
+		// Get bookmarks from the report and set the first bookmark as active
+		getBookmarksFromReport(embeddedReport, (reportBookmarks) => {
+			if (reportBookmarks.length > 0) {
+				reportBookmarks[0].checked = true;
+			}
+			updateBookmarks(reportBookmarks);
+		});
 
-				// Use id here if title is not unique
-				if (event.detail.title === visualButtons.addLeadsTitle) {
-					toggleAddLeadFormPopup();
-				} else if (event.detail.title === visualButtons.addActivityTitle) {
-					toggleAddActivityFormPopup();
-				}
-			},
-		],
-		[
-			'error',
-			function (event: service.ICustomEvent<string>) {
-				console.error(event.detail);
-			},
-		],
-	]);
+		// Render report
+		embeddedReport.render();
+	});
+
+	eventHandlersMap.set('rendered', async function (event, embeddedReport: Report) {
+		console.log('Report has rendered');
+		// Add logic to trigger after report is rendered
+		const activePage = await getActivePage(embeddedReport);
+		const homePage = getReportPageName(TabName.Home, props.profile);
+
+		// Return if the Home tab is active
+		if (activePage.name === homePage) {
+			return;
+		}
+		setPageHeight(activePage.name);
+	});
+
+	eventHandlersMap.set('commandTriggered', function (event) {
+		console.log('Command triggered');
+
+		if (typeof event.detail.dataPoints[0] !== 'undefined') {
+			setVisualAutofilledData(event.detail.dataPoints[0].identity);
+			if (event.detail.command === visualCommands.editLeads.name) {
+				toggleEditLeadFormPopup();
+			} else if (event.detail.command === visualCommands.editOpportunity.name) {
+				toggleUpdateOpportunityFormPopup();
+			}
+		}
+	});
+
+	eventHandlersMap.set('buttonClicked', function (event): void {
+		if (event.detail.id === visualButtons.addLeadButtonGuid) {
+			// Restrict Anonymous User to toggle Add Activity form and Add New Lead form
+			if (props.name === 'Anonymous') {
+				setError(AnonymousWritebackMessage);
+				return;
+			}
+
+			// Open add lead form
+			toggleAddLeadFormPopup();
+		}
+	});
+
+	eventHandlersMap.set('error', function (event: service.ICustomEvent<string>) {
+		console.error(event.detail);
+	});
 
 	/**
 	 * Refresh token when tokenExpiration has reached minutesToRefresh
@@ -375,29 +404,39 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		setReport(report);
 	}
 
-	// Change the theme of the embedded report
-	useEffect(() => {
-		if (powerbiReport) {
-			powerbiReport
-				.applyTheme({
-					themeJson: require(`../../assets/ReportThemes/${theme}Theme.json`),
-				})
-				.then(function () {
-					console.log('Theme applied in the report');
-				});
+	/**
+	 * Change theme of the app
+	 * @param theme Theme to be applied
+	 */
+	async function switchTheme(theme: Theme): Promise<void> {
+		if (!powerbiReport) {
+			console.debug('Report object is null');
+			return;
 		}
-	}, [theme, powerbiReport]);
+
+		try {
+			await powerbiReport.applyTheme({
+				themeJson: require(`../../assets/ReportThemes/${theme}Theme.json`),
+			});
+			setTheme(theme);
+
+			// Store theme state to persist across sessions
+			sessionStorage.setItem(storageKeyTheme, theme);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
 	// Apply the currently selected bookmark
 	useEffect(() => {
-		if (powerbiReport && bookmarks.length > 0) {
+		if (powerbiReport && bookmarks.length > 0 && activeTab === TabName.Analytics) {
 			const selectedBookmark = getSelectedBookmark(bookmarks);
 
 			if (selectedBookmark) {
 				powerbiReport.bookmarksManager.applyState(selectedBookmark.state);
 			}
 		}
-	}, [bookmarks, powerbiReport]);
+	}, [bookmarks, powerbiReport, activeTab]);
 
 	function togglePersonaliseBar(): void {
 		setShowPersonaliseBar((prevState) => !prevState);
@@ -405,6 +444,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	function toggleExportProgressState() {
 		setIsExportInProgress((prevState) => !prevState);
+	}
+
+	function toggleWritebackProgressState() {
+		setWritebackProgressState((prevState) => !prevState);
 	}
 
 	async function captureNewBookmark(capturedBookmarkName: string): Promise<void> {
@@ -457,31 +500,34 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// Change embedded report's page based on new active tab
 	useEffect(() => {
+		if (!powerbiReport) {
+			console.debug('Report object is null');
+			return;
+		}
+
 		// Get report page name corresponding to active tab
 		const pageName = getReportPageName(activeTab, props.profile);
 
-		if (powerbiReport) {
-			// Set given page as active in the embedded report
-			const page = powerbiReport.page(pageName);
-			page?.setActive().catch((reason) => console.error(reason));
+		// Set given page as active in the embedded report
+		const page = powerbiReport.page(pageName);
+		page?.setActive().catch((reason) => console.error(reason));
 
-			// Remove the customLayout property fron the Settings object
-			setReportConfig((sampleReportConfig) => {
-				return {
-					...sampleReportConfig,
-					settings: {
-						panes: {
-							filters: {
-								visible: false,
-							},
-							pageNavigation: {
-								visible: false,
-							},
+		// Remove the customLayout property from the Settings object
+		setReportConfig((sampleReportConfig) => {
+			return {
+				...sampleReportConfig,
+				settings: {
+					panes: {
+						filters: {
+							visible: activeTab !== TabName.Home,
+						},
+						pageNavigation: {
+							visible: false,
 						},
 					},
-				};
-			});
-		}
+				},
+			};
+		});
 	}, [activeTab, powerbiReport, props.profile]);
 
 	// Create array of Tab for rendering and set isActive as true for the active tab
@@ -506,49 +552,79 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				showPersonaliseBar={activeTab === TabName.Home} // Show personalise bar when Home tab is active
 				personaliseBarOnClick={togglePersonaliseBar}
 				theme={theme}
-				applyTheme={setTheme}
+				applyTheme={switchTheme}
 				updateApp={props.updateApp}
 			/>
 		</nav>
 	);
 
 	/**
+	 * Set the height based on width of the report-container and aspect-ratio of report page
+	 * @param pageSection Report page whose height needs to be set in the container
+	 */
+	const setPageHeight = useCallback(
+		(pageSection: string) => {
+			const aspectRatio = pagesAspectRatio.get(pageSection);
+			const currentWidth = $('.report-container').width();
+			const newHeight = aspectRatio * (currentWidth - FilterPaneWidth - ExtraEmbeddingMargin);
+			resetReportContainerHeight(newHeight);
+		},
+		[pagesAspectRatio]
+	);
+
+	/**
+	 * Set the new height to the report-container
+	 * @param height
+	 */
+	function resetReportContainerHeight(height: number) {
+		$('.report-container').height(height);
+	}
+
+	/**
 	 * Rearranges the visuals in the custom layout and updates the custom layout setting in report config state
 	 */
-	const rearrangeAndRenderCustomLayout = useCallback(() => {
-		// Rearrange the visuals only if the activeTab is Home
-		if (activeTab !== TabName.Home) return;
+	const rearrangeAndRenderCustomLayout = useCallback(async () => {
+		// Reset the height of the report-container based on the width and ratio when activeTab is not Home
+		if (activeTab !== TabName.Home) {
+			const activePageSection = getReportPageName(activeTab, props.profile);
+			setPageHeight(activePageSection);
+			return;
+		}
 
+		// Rearrange the visuals as per the layout only if the activeTab is Home
 		// Get active page and set the new calculated custom layout
-		getActivePage(powerbiReport).then((activePage) => {
-			// Calculate positions of visual groups
-			const newReportHeight = rearrangeVisualGroups(reportVisuals, layoutType, powerbiReport);
+		const activePage = await getActivePage(powerbiReport);
 
-			// Get layout details for selected visuals in the custom layout
-			// You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Custom-Layout
-			const customPageLayout = getPageLayout(activePage.name, reportVisuals);
+		// Calculate positions of visual groups
+		const newReportHeight = rearrangeVisualGroups(reportVisuals, layoutType, powerbiReport);
 
-			// Update settings with new calculation of custom layout
-			setReportConfig((sampleReportConfig) => {
-				return {
-					...sampleReportConfig,
-					settings: {
-						// Set page height automatically
-						layoutType: models.LayoutType.Custom,
-						customLayout: {
-							pageSize: {
-								type: models.PageSizeType.Custom,
-								width: powerbiReport.element.clientWidth - ReportMargin,
-								height: newReportHeight,
-							},
-							displayOption: models.DisplayOption.ActualSize,
-							pagesLayout: customPageLayout,
+		// Reset report-container height
+		resetReportContainerHeight(newReportHeight);
+
+		// Get layout details for selected visuals in the custom layout
+		// You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Custom-Layout
+		const customPageLayout = getPageLayout(activePage.name, reportVisuals);
+
+		// Update settings with new calculation of custom layout
+		setReportConfig((sampleReportConfig) => {
+			return {
+				...sampleReportConfig,
+				settings: {
+					// Set page height automatically
+					layoutType: models.LayoutType.Custom,
+					customLayout: {
+						pageSize: {
+							type: models.PageSizeType.Custom,
+							width: powerbiReport.element.clientWidth,
+							height: newReportHeight,
 						},
+						displayOption: models.DisplayOption.ActualSize,
+						pagesLayout: customPageLayout,
 					},
-				};
-			});
+				},
+			};
 		});
-	}, [powerbiReport, layoutType, reportVisuals, activeTab]);
+	}, [powerbiReport, layoutType, reportVisuals, activeTab, props.profile, setPageHeight]);
 
 	// Attaches the rearrangeAndRenderCustomLayout function to resize event of window
 	// Thus whenever window is resized, visuals will get arranged as per the dimensions of the resized report-container
@@ -562,6 +638,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		}
 		rearrangeAndRenderCustomLayout();
 	}, [powerbiReport, activeTab, rearrangeAndRenderCustomLayout]);
+
+	// Hide Export Data, Edit Leads and Edit Opportunities option for Anonymous User
+	useEffect(() => {
+		if (props.name === 'Anonymous') {
+			// Anonymous user shall not see Context Menu options (Edit Leads and Edit Opportunities)
+			delete sampleReportConfig.settings.extensions;
+		}
+	}, [props.name, sampleReportConfig.settings]);
 
 	/**
 	 * Handle toggle of visual checkboxes
@@ -670,10 +754,6 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		/>
 	);
 
-	function toggleAddActivityFormPopup(): void {
-		setAddActivityFormPopup((prevState) => !prevState);
-	}
-
 	function toggleEditLeadFormPopup(): void {
 		setEditLeadFormPopup((prevState) => !prevState);
 	}
@@ -686,6 +766,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		setAddLeadFormPopup((prevState) => !prevState);
 	}
 
+	function refreshReport(): void {
+		powerbiReport.refresh().catch(() => {
+			setError(WritebackRefreshFailMessage);
+			// Trigger report refresh after 15 sec
+			setTimeout(refreshReport, 15000);
+		});
+	}
+
 	return (
 		<ThemeContext.Provider value={theme}>
 			<div className={`embed-page-class d-flex flex-column ${theme}`}>
@@ -696,13 +784,37 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 				{errorPopup}
 				<Footer />
 			</div>
-			{addActivityFormPopup ? (
-				<AddActivityForm toggleActivityFormPopup={toggleAddActivityFormPopup} />
+			{editLeadFormPopup ? (
+				<EditLeadForm
+					preFilledValues={visualAutofilledData}
+					toggleFormPopup={toggleEditLeadFormPopup}
+					setError={setError}
+					updateApp={props.updateApp}
+					refreshReport={refreshReport}
+					isWritebackInProgress={isWritebackInProgress}
+					toggleWritebackProgressState={toggleWritebackProgressState}
+				/>
 			) : null}
-			{editLeadFormPopup ? <EditLeadForm toggleEditLeadFormPopup={toggleEditLeadFormPopup} /> : null}
-			{addLeadFormPopup ? <AddLeadForm toggleAddLeadFormPopup={toggleAddLeadFormPopup} /> : null}
+			{addLeadFormPopup ? (
+				<AddLeadForm
+					toggleFormPopup={toggleAddLeadFormPopup}
+					setError={setError}
+					updateApp={props.updateApp}
+					refreshReport={refreshReport}
+					isWritebackInProgress={isWritebackInProgress}
+					toggleWritebackProgressState={toggleWritebackProgressState}
+				/>
+			) : null}
 			{updateOpportunityFormPopup ? (
-				<UpdateOpportunityForm toggleUpdateOpportunityFormPopup={toggleUpdateOpportunityFormPopup} />
+				<UpdateOpportunityForm
+					preFilledValues={visualAutofilledData}
+					toggleFormPopup={toggleUpdateOpportunityFormPopup}
+					setError={setError}
+					updateApp={props.updateApp}
+					refreshReport={refreshReport}
+					isWritebackInProgress={isWritebackInProgress}
+					toggleWritebackProgressState={toggleWritebackProgressState}
+				/>
 			) : null}
 		</ThemeContext.Provider>
 	);

@@ -1,67 +1,47 @@
 ﻿{
-	"name": "Innovate",
+	"name": "Dark Theme",
 	"dataColors": [
-		"#70B0E0",
-		"#FCB714",
-		"#2878BD",
-		"#0EB194",
-		"#108372",
-		"#AF916D",
-		"#C4B07B",
-		"#F15628",
-		"#6F9EDB",
-		"#FEE266",
-		"#5DA9FD",
-		"#4AC5BB",
-		"#35B895",
-		"#B69087",
-		"#B6A887",
-		"#F48459",
-		"#1D5C95",
-		"#BDA750",
-		"#4A82BB",
-		"#168980",
-		"#288A6F",
-		"#A67668",
-		"#7B6E4F",
-		"#B54C25",
-		"#164672",
-		"#7E6F36",
-		"#31567D",
-		"#0F5C55",
-		"#0D2E25",
-		"#7B594F",
-		"#524934",
-		"#793418"
+		"#5463CE",
+		"#7ED7E9",
+		"#FE9AD2",
+		"#AA86F1",
+		"#ABDAFC",
+		"#FFBAF7",
+		"#EBEF95",
+		"#FFA88D",
+		"#91EFC6",
+		"#E37FA4",
+		"#F8D871",
+		"#75D9C9"
 	],
-	"foreground": "#FFFFFF",
-	"foregroundNeutralSecondary": "#D2D0CE",
-	"foregroundNeutralTertiary": "#979593",
-	"background": "#3a3a3a",
-	"backgroundLight": "#3B3A39",
-	"backgroundNeutral": "#605E5C",
-	"tableAccent": "#2878BD",
-	"maximum": "#2878BD",
-	"center": "#FCB714",
-	"minimum": "#D0E4F5",
-	"hyperlink": "#2878BD",
-	"visitedHyperlink": "#D0E4F5",
+	"maximum": "#746397",
+	"center": "#79A6AF",
+	"minimum": "#565D8F",
 	"textClasses": {
-		"callout": {
-			"fontFace": "Arial",
-			"color": "#FFFFFF"
-		},
 		"title": {
-			"fontFace": "Arial",
-			"color": "#FFFFFF"
+			"color": "#D8D8D8",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
 		},
-		"header": {
-			"fontFace": "Arial",
-			"color": "#FFFFFF"
+		"callout": {
+			"color": "#D8D8D8",
+			"fontSize": 40,
+			"fontFace": "Segoe UI"
 		},
-		"label": {
-			"fontFace": "Arial",
-			"color": "#FFFFFF"
+		"largeTitle": {
+			"color": "#D8D8D8",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
+		},
+		"smallLightLabel": {
+			"color": "#D8D8D8",
+			"fontSize": 9,
+			"fontFace": "Segoe UI"
+		},
+		"lightLabel": {
+			"color": "#D8D8D8",
+			"fontSize": 9,
+			"fontFace": "Segoe UI"
 		}
 	},
 	"visualStyles": {
@@ -73,24 +53,42 @@
 							"solid": {
 								"color": "#343741"
 							}
+						},
+						"transparency": 0
+					}
+				],
+				"labels": [
+					{
+						"color": {
+							"solid": {
+								"color": "#D8D8D8"
+							}
 						}
 					}
 				],
-				"visualHeader": [
+				"legend": [
 					{
-						"foreground": {
+						"labelColor": {
 							"solid": {
-								"color": "#FFFFFF"
+								"color": "#D8D8D8"
 							}
-						},
-						"border": {
+						}
+					}
+				],
+				"calloutValue": [
+					{
+						"color": {
 							"solid": {
-								"color": "#3a3a3a"
+								"color": "#D8D8D8"
 							}
-						},
-						"background": {
+						}
+					}
+				],
+				"categoryLabels": [
+					{
+						"color": {
 							"solid": {
-								"color": "#3a3a3a"
+								"color": "#D8D8D8"
 							}
 						}
 					}
@@ -99,129 +97,126 @@
 					{
 						"backgroundColor": {
 							"solid": {
-								"color": "#3a3a3a"
+								"color": "#1F2128"
 							}
 						},
 						"foregroundColor": {
 							"solid": {
-								"color": "#FFFFFF"
-							}
-						},
-						"transparency": 0,
-						"border": true,
-						"borderColor": {
-							"solid": {
-								"color": "#979593"
+								"color": "#D8D8D8"
 							}
 						}
 					}
 				],
 				"filterCard": [
 					{
-						"$id": "Applied",
-						"transparency": 0,
+						"$id": "Available",
 						"foregroundColor": {
 							"solid": {
-								"color": "#FFFFFF"
+								"color": "#D8D8D8"
 							}
 						},
 						"backgroundColor": {
 							"solid": {
-								"color": "#605E5C"
+								"color": "#1F2128"
 							}
 						},
-						"inputBoxColor": {
-							"solid": {
-								"color": "#605E5C"
-							}
-						},
-						"borderColor": {
-							"solid": {
-								"color": "#979593"
-							}
-						},
-						"border": true
+						"transparency": 0
 					},
 					{
-						"$id": "Available",
-						"transparency": 0,
-						"foregroundColor": {
-							"solid": {
-								"color": "#FFFFFF"
-							}
-						},
+						"$id": "Applied",
 						"backgroundColor": {
 							"solid": {
-								"color": "#3a3a3a"
+								"color": "#343741"
 							}
 						},
-						"inputBoxColor": {
+						"foregroundColor": {
 							"solid": {
-								"color": "#3a3a3a"
+								"color": "#D8D8D8"
 							}
 						},
-						"borderColor": {
-							"solid": {
-								"color": "#979593"
-							}
-						},
-						"border": true
-					}
-				]
-			}
-		},
-		"slicer": {
-			"*": {
-				"items": [
-					{
-						"background": {
-							"solid": {
-								"color": "#3a3a3a"
-							}
-						}
-					}
-				],
-				"numericInputStyle": [
-					{
-						"background": {
-							"solid": {
-								"color": "#3a3a3a"
-							}
-						}
-					}
-				]
-			}
-		},
-		"keyDriversVisual": {
-			"*": {
-				"keyInfluencersVisual": [
-					{
-						"canvasColor": {
-							"solid": {
-								"color": "#3B3A39"
-							}
-						}
+						"transparency": 0
 					}
 				]
 			}
 		},
 		"page": {
 			"*": {
+				"background": [
+					{
+						"color": {
+							"solid": {
+								"color": "#1F2128"
+							}
+						},
+						"transparency": 0
+					}
+				],
 				"outspace": [
 					{
 						"color": {
 							"solid": {
-								"color": "#000000"
+								"color": "#1F2128"
+							}
+						},
+						"transparency": 0
+					}
+				]
+			}
+		},
+		"tableEx": {
+			"*": {
+				"columnHeaders": [
+					{
+						"fontColor": {
+							"solid": {
+								"color": "#FFFFFF"
+							}
+						},
+						"backColor": {
+							"solid": {
+								"color": "#747D94"
 							}
 						}
 					}
 				],
-				"background": [
+				"values": [
 					{
-						"transparency": 0,
+						"fontColorPrimary": {
+							"solid": {
+								"color": "#D8D8D8"
+							}
+						},
+						"fontColorSecondary": {
+							"solid": {
+								"color": "#D8D8D8"
+							}
+						}
+					}
+				]
+			}
+		},
+		"treemap": {
+			"*": {
+				"categoryLabels": [
+					{
+						"show": true,
 						"color": {
 							"solid": {
-								"color": "#000000"
+								"color": "#E1E1E1"
+							}
+						}
+					}
+				]
+			}
+		},
+		"basicShape": {
+			"*": {
+				"fill": [
+					{
+						"show": true,
+						"fillColor": {
+							"solid": {
+								"color": "#1F2128"
 							}
 						}
 					}

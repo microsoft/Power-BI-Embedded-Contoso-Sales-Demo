@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,8 +14,8 @@ import { getStoredToken, checkTokenValidity, getTokenPayload } from './component
 import { Profile } from './models';
 
 export default function App(): React.FunctionComponentElement<null> {
-	// This state is used to re-render the app to switch between pages
-	const [state, setState] = useState(0);
+	// This state is used to re-render the app to switch between pages, state value is never used
+	const [state, setState] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
 
 	// Get token from storage
 	const storedToken = getStoredToken();

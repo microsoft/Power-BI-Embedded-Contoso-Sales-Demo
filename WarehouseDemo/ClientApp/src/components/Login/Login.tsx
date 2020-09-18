@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import './Login.scss';
@@ -7,14 +8,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Icon } from '../Icon/Icon';
 import { storageKeyJWT } from '../../constants';
-import { AuthResponse, Profile, ServiceAPI } from '../../models';
+import { AuthResponse, Profile, ServiceAPI, UpdateApp } from '../../models';
 
 export interface LoginProps {
 	backToHomeOnClick: {
 		(event?: React.MouseEvent<HTMLElement, MouseEvent>): void;
 	};
 	selectedProfile: Profile;
-	updateApp: Function;
+	updateApp: UpdateApp;
 }
 
 export interface LoginFormProps {

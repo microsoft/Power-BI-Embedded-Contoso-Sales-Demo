@@ -37,5 +37,6 @@ module.exports = {
 	  "@typescript-eslint/no-unsafe-return": "error",
 	  "@typescript-eslint/no-extra-semi": "off",
 	  "prettier/prettier": "error",
+	  "no-duplicate-imports": ["error", { includeExports: true }],
 	},
   };

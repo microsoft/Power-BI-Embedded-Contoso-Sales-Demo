@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import React from 'react';
@@ -9,7 +10,7 @@ export interface InputBoxProps {
 	name: string;
 	className: string;
 	placeHolder: string;
-	errorMessage: string;
+	errorMessage?: string;
 	value?: string;
 	disabled?: boolean;
 	onBlur?: { (event): void };
@@ -22,7 +23,7 @@ export const InputBox = React.forwardRef((props: InputBoxProps, ref: React.Legac
 			type='text'
 			className={props.className}
 			name={props.name}
-			value={props.value}
+			defaultValue={props.value}
 			placeholder={props.placeHolder}
 			ref={ref}
 			disabled={props.disabled}

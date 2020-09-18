@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import './Export.scss';
 import React, { useState, useContext } from 'react';
 import { exportTypes, storageKeyJWT } from '../../../constants';
-import { Bookmark, TabName, Theme, ServiceAPI } from '../../../models';
+import { Bookmark, TabName, Theme, ServiceAPI, UpdateApp } from '../../../models';
 import ThemeContext from '../../../themeContext';
 import { getPageName, getStoredToken, checkTokenValidity, downloadFile } from '../../utils';
 import { salesManagerTabs } from '../../../reportConfig';
@@ -16,7 +17,7 @@ export interface ExportProp {
 	setError: { (error: string): void };
 	toggleExportProgressState: { (): void };
 	selectedBookmark: Bookmark;
-	updateApp: Function;
+	updateApp: UpdateApp;
 }
 
 /**
@@ -147,7 +148,7 @@ function ExportInProgressView(): JSX.Element {
 
 	return (
 		<div className='align-items-center d-flex modal-body justify-content-center wait-container'>
-			<div className={`spinner-border ${theme}`} role='status'>
+			<div className={`spinner-border spinner-export ${theme}`} role='status'>
 				<span className='sr-only'>Loading...</span>
 			</div>
 			<div>

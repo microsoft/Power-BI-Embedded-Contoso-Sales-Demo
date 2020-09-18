@@ -1,14 +1,15 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import { VisualDescriptor, models, Report } from 'powerbi-client';
 import {
 	visualMargin,
 	visualAspectRatio,
-	rowsPerSpanTypeSection,
 	visualsPerSpanTypeSection,
 	overlapVisualHeightRatio,
+	reportMargin,
 } from '../constants';
 import { layoutMap } from './layoutMapping';
 import { VisualGroup, LayoutColumns, SpanType, Layout } from '../models';
@@ -19,7 +20,7 @@ import { visualPairs } from '../reportConfig';
  * @param reportVisuals List of visuals of the embedded report
  */
 export function pairVisuals(reportVisuals: VisualDescriptor[]): VisualGroup[] {
-	// List of title of overlapping visuals
+	// List of guid of overlapping visuals
 	const overlapVisualsPairList = visualPairs.map((visualPair) => {
 		return visualPair[1];
 	});
@@ -27,37 +28,53 @@ export function pairVisuals(reportVisuals: VisualDescriptor[]): VisualGroup[] {
 	// List of main visuals
 	// Filter out overlapping visuals from all visuals, i.e. [reportVisuals] - [overlapping visuals]
 	const mainVisualGroupList = reportVisuals.filter((reportVisual) => {
-		return !overlapVisualsPairList.includes(reportVisual.title);
+		return !overlapVisualsPairList.includes(reportVisual.name);
 	});
 
 	// Final list of Visual groups
-	const visualGroups: VisualGroup[] = mainVisualGroupList.map((reportVisual) => {
-		// Pair of groups visuals' title
+	const visualGroups: VisualGroup[] = mainVisualGroupList.map((mainVisual) => {
+		// Pair of groups visuals' guid
 		const visualTitlePair = visualPairs.find((visualPair) => {
 			// Check if this main visual has a mapped overlapping visual
-			return visualPair[0] === reportVisual.title;
+			return visualPair[0] === mainVisual.name;
 		});
 
 		let overlapVisual: VisualGroup['overlapVisual'];
 
 		if (visualTitlePair) {
-			// Title of the overlapping visual mapped to this reportVisual
+			// guid of the overlapping visual mapped to this reportVisual
 			const overlapVisualTitle = visualTitlePair[1];
 
 			// Get the overlap visual
 			overlapVisual = reportVisuals.find((visual) => {
-				return visual.title === overlapVisualTitle;
+				return visual.name === overlapVisualTitle;
 			});
 		}
 
 		return {
-			mainVisual: reportVisual,
+			mainVisual: mainVisual,
 			overlapVisual: overlapVisual,
 
 			// Make the QNA visual hidden by default
-			checked: reportVisual.type !== 'qnaVisual',
+			checked: mainVisual.type !== 'qnaVisual',
 		};
 	});
+
+	// Move qna visual at the end
+	const qnaVisualIndex = visualGroups.findIndex(
+		(visualGroup) => visualGroup.mainVisual.type === 'qnaVisual'
+	);
+	if (qnaVisualIndex !== -1) {
+		visualGroups.push(visualGroups.splice(qnaVisualIndex, 1)[0]);
+	}
+
+	// Move table visual at the end, after the qna visual
+	const tableVisualIndex = visualGroups.findIndex(
+		(visualGroup) => visualGroup.mainVisual.type === 'tableEx'
+	);
+	if (tableVisualIndex !== -1) {
+		visualGroups.push(visualGroups.splice(tableVisualIndex, 1)[0]);
+	}
 
 	return visualGroups;
 }
@@ -124,16 +141,16 @@ export function rearrangeVisualGroups(
 	powerbiReport: Report
 ): number {
 	const reportWidth = powerbiReport.element.clientWidth;
-	let reportHeight = powerbiReport.element.clientHeight;
+	let reportHeight = 0;
 
 	// Get number of columns corresponding to given layout
 	const layoutColumns = layoutMap.get(selectedLayout).columns;
 
-	// Count of checked visuals
-	const checkedVisualsLength = visualGroups.filter((visualGroup) => visualGroup.checked).length;
+	// Calculating the combined width of the all visuals in a row
+	const visualsTotalWidth = reportWidth - visualMargin * (layoutColumns - 1);
 
 	// Calculating the combined width of the all visuals in a row
-	const visualsTotalWidth = reportWidth - visualMargin * (layoutColumns + 1);
+	const layoutWidth = reportWidth - 2 * reportMargin;
 
 	// Calculate the width of a single visual, according to the number of columns
 	// For one and three columns visuals width will be a third of visuals total width
@@ -146,41 +163,62 @@ export function rearrangeVisualGroups(
 	const layoutSpanType = layoutMap.get(selectedLayout).spanType;
 
 	// Visuals starting point
-	let x = visualMargin;
-	let y = visualMargin;
+	let x = reportMargin;
+	let y = reportMargin;
 
 	// 2 x 2 Layout with column span in second row
+	//  _ _
+	// |_|_|
+	// |___|
 	if (layoutSpanType === SpanType.ColSpan) {
-		let rows = rowsPerSpanTypeSection * Math.floor(checkedVisualsLength / visualsPerSpanTypeSection);
-
-		if (checkedVisualsLength % visualsPerSpanTypeSection) {
-			rows += 1;
-		}
-
-		reportHeight = Math.max(reportHeight, rows * visualHeight + (rows + 1) * visualMargin);
-
 		for (let idx = 0, checkedCount = 0; idx < visualGroups.length; idx++) {
 			const element = visualGroups[idx];
+
+			// Do not render unchecked visuals
 			if (!element.checked) {
 				continue;
 			}
 
 			// Width of this visual grp
-			const width =
+			let width =
 				checkedCount % visualsPerSpanTypeSection === visualsPerSpanTypeSection - 1
 					? visualWidth * 2 + visualMargin
 					: visualWidth;
+
+			// Height of this visual grp
+			let height = visualHeight;
+
+			// Adjust x, y, width, height, checkedCount for qna and table visual
+			if (element.mainVisual.type === 'qnaVisual' || element.mainVisual.type === 'tableEx') {
+				// Take full width
+				width = layoutWidth;
+
+				// Take the height from the report
+				height = element.mainVisual.layout.height || visualHeight;
+
+				x = reportMargin;
+
+				if (checkedCount % visualsPerSpanTypeSection === 1) {
+					y += visualHeight + visualMargin;
+				}
+
+				// Make checkedCount to be like last visual in this layout
+				checkedCount += visualsPerSpanTypeSection - (checkedCount % visualsPerSpanTypeSection) - 1;
+			}
 
 			const mainVisualLayout = element.mainVisual.layout;
 			// Calc coordinates of main visual
 			mainVisualLayout.x = x;
 			mainVisualLayout.y = y;
 			mainVisualLayout.width = width;
-			mainVisualLayout.height = visualHeight;
+			mainVisualLayout.height = height;
 			mainVisualLayout.displayState = {
 				// Change the selected visual's display mode to visible
 				mode: models.VisualContainerDisplayMode.Visible,
 			};
+
+			// Update report height
+			reportHeight = Math.max(reportHeight, mainVisualLayout.y + mainVisualLayout.height);
 
 			if (element.overlapVisual) {
 				const overlapVisualLayout = element.overlapVisual.layout;
@@ -202,47 +240,74 @@ export function rearrangeVisualGroups(
 					? visualWidth * 2
 					: visualWidth);
 
-			// Reset x
+			// Reset x, y
 			if (x + visualWidth > reportWidth) {
-				x = visualMargin;
-				y += visualHeight + visualMargin;
+				x = reportMargin;
+				y += height + visualMargin;
 			}
 
 			checkedCount++;
 		}
 	}
 	// 2 x 2 Layout with row span in first column
+	//  _ _
+	// | |_|
+	// |_|_|
 	else if (layoutSpanType === SpanType.RowSpan) {
-		let rows = rowsPerSpanTypeSection * Math.floor(checkedVisualsLength / visualsPerSpanTypeSection);
-
-		if (checkedVisualsLength % visualsPerSpanTypeSection) {
-			rows += 2;
-		}
-
-		reportHeight = Math.max(reportHeight, rows * visualHeight + (rows + 1) * visualMargin);
-
 		for (let idx = 0, checkedCount = 0; idx < visualGroups.length; idx++) {
 			const element = visualGroups[idx];
+
+			// Do not render unchecked visuals
 			if (!element.checked) {
 				continue;
 			}
 
+			// Width of this visual grp
+			let width = visualWidth;
+
 			// Height of this visual grp
-			const height =
+			let height =
 				checkedCount % visualsPerSpanTypeSection === 0
 					? visualHeight * 2 + visualMargin
 					: visualHeight;
+
+			// Adjust x, y, width, height, checkedCount for qna and table visual
+			if (element.mainVisual.type === 'qnaVisual' || element.mainVisual.type === 'tableEx') {
+				// Take full width
+				width = layoutWidth;
+
+				// Take the height from the report
+				height = element.mainVisual.layout.height || visualHeight;
+
+				x = reportMargin;
+
+				switch (checkedCount % visualsPerSpanTypeSection) {
+					case 1:
+						y += visualHeight * 2 + visualMargin * 2;
+						break;
+
+					case 2:
+						y += visualHeight + visualMargin;
+						break;
+				}
+
+				// Render next visual as a first visual of layout
+				checkedCount += visualsPerSpanTypeSection - (checkedCount % visualsPerSpanTypeSection) - 1;
+			}
 
 			const mainVisualLayout = element.mainVisual.layout;
 			// Calc coordinates of main visual
 			mainVisualLayout.x = x;
 			mainVisualLayout.y = y;
-			mainVisualLayout.width = visualWidth;
+			mainVisualLayout.width = width;
 			mainVisualLayout.height = height;
 			mainVisualLayout.displayState = {
 				// Change the selected visual's display mode to visible
 				mode: models.VisualContainerDisplayMode.Visible,
 			};
+
+			// Update report height
+			reportHeight = Math.max(reportHeight, mainVisualLayout.y + mainVisualLayout.height);
 
 			if (element.overlapVisual) {
 				const overlapVisualLayout = element.overlapVisual.layout;
@@ -258,18 +323,16 @@ export function rearrangeVisualGroups(
 			}
 
 			// Calculating (x,y) position for the next visual
-			x += visualMargin + visualWidth;
+			x += visualMargin + width;
 
-			// Reset x
+			// Reset x, y
 			if (x + visualWidth > reportWidth) {
 				x =
 					(checkedCount + 1) % visualsPerSpanTypeSection === 0
-						? visualMargin
-						: 2 * visualMargin + visualWidth;
+						? reportMargin
+						: visualMargin + visualWidth;
 				y +=
-					checkedCount % visualsPerSpanTypeSection === 0
-						? visualHeight * 2
-						: visualHeight + visualMargin;
+					checkedCount % visualsPerSpanTypeSection === 0 ? visualHeight * 2 : height + visualMargin;
 			}
 
 			checkedCount++;
@@ -281,26 +344,52 @@ export function rearrangeVisualGroups(
 			visualHeight /= 2;
 		}
 
-		const rows = Math.ceil(checkedVisualsLength / layoutColumns);
-
-		reportHeight = Math.max(reportHeight, rows * visualHeight + (rows + 1) * visualMargin);
-
-		for (let idx = 0; idx < visualGroups.length; idx++) {
+		for (let idx = 0, checkedCount = 0; idx < visualGroups.length; idx++) {
 			const element = visualGroups[idx];
+
+			// Do not render unchecked visuals
 			if (!element.checked) {
 				continue;
+			}
+
+			// Width of this visual grp
+			let width = visualWidth;
+
+			// Height of this visual grp
+			let height = visualHeight;
+
+			// Adjust x, y, width, height, checkedCount for qna and table visual
+			if (element.mainVisual.type === 'qnaVisual' || element.mainVisual.type === 'tableEx') {
+				// Take full width
+				width = layoutWidth;
+
+				// Take the height from the report
+				height = element.mainVisual.layout.height || visualHeight;
+
+				x = reportMargin;
+
+				// Start render from new row if it is not the start of the row
+				if (checkedCount % layoutColumns !== 0) {
+					y += visualHeight + visualMargin;
+				}
+
+				// Make checkedCount to be like last visual in this layout
+				checkedCount += layoutColumns - (checkedCount % layoutColumns) - 1;
 			}
 
 			const mainVisualLayout = element.mainVisual.layout;
 			// Calc coordinates of main visual
 			mainVisualLayout.x = x;
 			mainVisualLayout.y = y;
-			mainVisualLayout.width = visualWidth;
-			mainVisualLayout.height = visualHeight;
+			mainVisualLayout.width = width;
+			mainVisualLayout.height = height;
 			mainVisualLayout.displayState = {
 				// Change the selected visual's display mode to visible
 				mode: models.VisualContainerDisplayMode.Visible,
 			};
+
+			// Update report height
+			reportHeight = Math.max(reportHeight, mainVisualLayout.y + mainVisualLayout.height);
 
 			if (element.overlapVisual) {
 				const overlapVisualLayout = element.overlapVisual.layout;
@@ -316,16 +405,18 @@ export function rearrangeVisualGroups(
 			}
 
 			// Calculating (x,y) position for the next visual
-			x += visualMargin + visualWidth;
+			x += visualMargin + width;
 
-			// Reset x
+			// Reset x, y
 			if (x + visualWidth > reportWidth) {
-				x = visualMargin;
-				y += visualHeight + visualMargin;
+				x = reportMargin;
+				y += height + visualMargin;
 			}
+
+			checkedCount++;
 		}
 	}
 
 	// Return height to resize the embedded report
-	return reportHeight;
+	return reportHeight + reportMargin;
 }

@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 /**
@@ -47,7 +48,17 @@ export const visualMargin = 20;
 /**
  * Left right margin around report page
  */
-export const ReportMargin = 10;
+export const reportMargin = 0;
+
+/**
+ * Width of filter pane
+ */
+export const FilterPaneWidth = 32;
+
+/**
+ * Extra space around embedded report
+ */
+export const ExtraEmbeddingMargin = 24;
 
 /**
  * Aspect ratio of all visuals
@@ -82,9 +93,109 @@ export const opportunityPopupTabNames = ['Edit Topic', 'Schedule a Meeting', 'Qu
 export const editLeadPopupTabNames = ['Add Activity', 'Qualify Lead', 'Disqualify Lead'];
 
 /**
+ * Entity names on which the operations are to be performed
+ */
+export const entityNameActivities = 'crcb2_activitieses';
+export const entityNameOpportunities = 'opportunities';
+export const entityNameLeads = 'leads';
+
+// TODO: Update CDS options sets values once we shift tenant
+/**
+ * Leads entity rating options with corresponding values in CDS
+ */
+export const ratingOptionsSet = { Hot: 1, Warm: 2, Cold: 3 };
+
+/**
+ * Activity type options with corresponding values in CDS
+ */
+export const activityTypeOptions = {
+	Appointment: 712800000,
+	Email: 712800001,
+	'Phone Call': 712800002,
+	Task: 712800003,
+};
+
+/**
+ * Opportunity status options with corresponding values in CDS
+ */
+export const opportunityStatus = [
+	{
+		id: 'new',
+		value: 'New',
+		checked: true,
+		code: 712800004,
+	},
+	{
+		id: 'meetingScheduled',
+		value: 'Meeting Scheduled',
+		checked: false,
+		code: 712800003,
+	},
+	{
+		id: 'quoteSent',
+		value: 'Quote Sent',
+		checked: false,
+		code: 712800002,
+	},
+	{
+		id: 'closedWon',
+		value: 'Closed Won',
+		checked: false,
+		code: 712800000,
+	},
+	{
+		id: 'closedLost',
+		value: 'Closed Lost',
+		checked: false,
+		code: 712800001,
+	},
+];
+
+/**
+ * Opportunity sales stage options with corresponding values in CDS
+ */
+export const opportunitySalesStage = {
+	Qualify: 712800000,
+	Develop: 712800002,
+	Propose: 712800003,
+	Closed: 712800001,
+};
+
+/**
+ * Lead status options with corresponding values in CDS
+ */
+export const leadStatus = { New: 712800000, Qualified: 712800001, Disqualified: 712800002 };
+
+/**
+ * Activity priority options with corresponding values in CDS
+ */
+export const activityPriorityOptions = { Low: 712800000, Normal: 712800001, High: 712800002 };
+
+/**
+ * Leads entity source options with corresponding values in CDS
+ */
+export const sourceOptionsSet = {
+	Advertisement: 1,
+	'Employee Referral': 2,
+	'External Referral': 3,
+	Partner: 4,
+	'Public Relations': 5,
+	Seminar: 6,
+	'Trade Show': 7,
+	Web: 8,
+	'Word of Mouth': 9,
+	Other: 10,
+};
+
+/**
  * Name of the application
  */
 export const appName = 'Contoso';
+
+/**
+ * Session storage key for stored theme state
+ */
+export const storageKeyTheme = 'themeState';
 
 /**
  * Session storage key for stored JWT token
@@ -100,6 +211,16 @@ export const tokenExpiryKey = 'exp';
  * Error message to be displayed against invalid user input
  */
 export const formInputErrorMessage = 'Please provide a valid value';
+
+/**
+ * Error message to be displayed when anonymous user tries to perform write-back operations
+ */
+export const AnonymousWritebackMessage = 'Anonymous user cannot perform Add Lead write-back operation';
+
+/**
+ * Error message to be displayed when user report refresh fails due to 15 sec limit
+ */
+export const WritebackRefreshFailMessage = 'It may take up to 15 sec for the data to refresh';
 
 /**
  * Embed token to be refreshed before expiration

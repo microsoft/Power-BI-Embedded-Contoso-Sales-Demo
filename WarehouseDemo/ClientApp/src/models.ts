@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import { models } from 'powerbi-client';
@@ -25,53 +26,45 @@ export interface Bookmark extends models.IReportBookmark {
 	checked?: boolean;
 }
 
-export interface AddActivityFormData {
-	topic: string;
-	accountName: string;
-	contactFullName: string;
-	subject: string;
-	dueDate: string;
-	priority: string;
-	activityType: string;
-	description: string;
+// Following are the fields names of the entities in the CDS where name starting with 'crcb2' indicates custom fields
+export interface Activity {
+	crcb2_activitytype: number;
+	crcb2_subject: string;
+	crcb2_priority: number;
+	crcb2_startdatetime: string;
+	crcb2_enddatetime: string;
+	crcb2_duedatetime: string;
+	crcb2_description: string;
+	crcb2_topic: string;
 }
 
-export interface AddLeadFormData {
-	accountName: string;
-	contactFullName: string;
-	topic: string;
-	rating: string;
-	source: string;
-	createdOn: string;
+export class Lead {
+	crcb2_primarycontactname: string;
+	subject: string;
+	leadqualitycode: number;
+	leadsourcecode: number;
+	crcb2_leadstatus: number;
+}
+
+export interface Opportunity {
+	name: string;
+	estimatedvalue: number;
+	estimatedclosedate: string;
+	crcb2_opportunitystatus: number;
+	crcb2_salesstage: number;
+	crcb2_quoteamount: number;
 }
 
 export interface EditLeadFormData {
-	accountName: string;
-	contactFullName: string;
-	topic: string;
-	activityType: string;
-	subject: string;
-	priority: string;
-	description: string;
-	dueDate: string;
-	estimatedRevenue: string;
-	estimatedCloseDate: string;
+	leadcontactfullname: string;
+	leadtopic: string;
+	estimatedrevenue: number;
+	estimatedclosedate: Date;
 }
 
 export interface UpdateOpportunityFormData {
-	topic: string;
 	title: string;
-	accountName: string;
-	contactFullName: string;
-	fullName: string;
-	startDate: string;
-	endDate: string;
-	startTime: string;
-	endTime: string;
-	estimatedRevenue: string;
-	currentQuote: string;
-	editQuote: string;
-	opportunityStatus: string;
+	editquote: number;
 	description: string;
 }
 
@@ -174,4 +167,58 @@ export enum ServiceAPI {
 	Authenticate = '/api/auth/token',
 	FetchEmbedParams = '/api/powerbi/EmbedParams',
 	ExportReport = '/api/powerbi/ExportReport',
+	WriteBackAdd = '/api/data/add',
+	WriteBackUpdate = '/api/data/update',
+	WriteBackUpdateAdd = '/api/data/update-add',
+}
+
+/**
+ * Props interface for write back forms
+ */
+export interface FormProps {
+	toggleFormPopup: { (): void };
+	setError: { (error: string): void };
+	updateApp: UpdateApp;
+	refreshReport: { (): void };
+	isWritebackInProgress: boolean;
+	toggleWritebackProgressState: { (): void };
+}
+
+/**
+ * App re-render state update function type
+ */
+export type UpdateApp = { (stateUpdateFunction: { (prevState: number): number }): void };
+
+/**
+ * Date format types
+ */
+export enum DateFormat {
+	DayMonthDayYear = 'dddd, MMMM DD, yyyy',
+	YearMonthDay = 'YYYY-MM-DD',
+	YearMonthDayTime = 'YYYY-MM-DDTHH:mm:ss',
+}
+
+/**
+ * CDS request interface with CDS service API endpoint, HTTP method and request body
+ */
+export interface CDSRequest {
+	cdsServiceApi: string;
+	method: string;
+	body: string;
+}
+
+export interface CDSAddRequestData {
+	newData: string;
+	addEntityType: string;
+}
+
+export interface CDSUpdateRequestData {
+	baseId: string;
+	updatedData: string;
+	updateEntityType: string;
+}
+
+export interface CDSUpdateAddRequestData {
+	UpdateReqBody: CDSUpdateRequestData;
+	AddReqBody: CDSAddRequestData;
 }

@@ -42,11 +42,11 @@ namespace WarehouseDemo.Service
 
 				// Create effective identity for current user
 				List<EffectiveIdentity> identities = null;
-				// TODO: Uncomment below 4 lines when RLS is implemented in report
-				// if (!string.IsNullOrWhiteSpace(username) || !string.IsNullOrWhiteSpace(role))
-				// {
-				// 	identities = new List<EffectiveIdentity> { new EffectiveIdentity(username: username, roles: new List<string> { role }, datasets: new List<string> { pbiReport.DatasetId }) };
-				// }
+
+				if (!string.IsNullOrWhiteSpace(username) || !string.IsNullOrWhiteSpace(role))
+				{
+					identities = new List<EffectiveIdentity> { new EffectiveIdentity(username: username, roles: new List<string> { role }, datasets: new List<string> { pbiReport.DatasetId }) };
+				}
 
 				// Create a request for getting Embed token 
 				var tokenRequest = new GenerateTokenRequestV2(datasets: datasets, reports: reports, targetWorkspaces: workspaces, identities: identities);

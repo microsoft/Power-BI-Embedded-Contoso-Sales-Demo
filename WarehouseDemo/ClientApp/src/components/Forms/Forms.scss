@@ -1,8 +1,10 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 $form-element-dark-theme-font-color: #D8D8D8;
+$chevron-margin: calc(100% - 10px);
 
 .popup {
 	&.light {
@@ -11,7 +13,7 @@ $form-element-dark-theme-font-color: #D8D8D8;
 	&.dark {
 		background: #343741 0 0 no-repeat padding-box;
 	}
-	margin-top: 120px;
+	margin: 120px auto;
 }
 
 .popup > * {
@@ -37,6 +39,10 @@ $form-element-dark-theme-font-color: #D8D8D8;
 			color: $form-element-dark-theme-font-color;
 			&:focus {
 				background-color: #343741;
+			}
+
+			&:disabled {
+				background-color: #4D5258;
 			}
 		}
 	}
@@ -90,10 +96,6 @@ $form-element-dark-theme-font-color: #D8D8D8;
 	padding: 0 20px !important;
 }
 
-.form-element:disabled {
-	background-color: transparent;
-}
-
 .form-element::placeholder {
 	color: #777777;
 }
@@ -137,7 +139,7 @@ $form-element-dark-theme-font-color: #D8D8D8;
 	color: #303778;
 }
 
-.button-container {
+.btn-form-submit {
 	padding-top: 20px;
 }
 
@@ -176,8 +178,28 @@ $form-element-dark-theme-font-color: #D8D8D8;
 	margin-left: 0;
 }
 
+.date-picker {
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
+}
+
 .date {
 	max-width: 184px;
+	min-width: 170px;
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
 }
 
 .date-container > * {
@@ -215,6 +237,23 @@ $form-element-dark-theme-font-color: #D8D8D8;
 
 .warning-message {
 	padding-left: 22px;
+}
+
+// Remove the original arrow and put the custom chevron
+select {
+	appearance: none;
+	cursor: pointer;
+
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
+	-webkit-appearance: none;
+	-moz-appearance: none;
 }
 
 select:focus {

@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import './Forms.scss';
@@ -10,17 +11,39 @@ import DatePicker from 'react-datepicker';
 import { NavTabs } from '../NavTabs/NavTabs';
 import { InputBox } from '../InputBox';
 import { Icon } from '../Icon/Icon';
-import { editLeadPopupTabNames, formInputErrorMessage } from '../../constants';
-import { getFormattedDate, trimInput } from '../utils';
+import {
+	editLeadPopupTabNames,
+	entityNameLeads,
+	entityNameOpportunities,
+	entityNameActivities,
+	formInputErrorMessage,
+	ratingOptionsSet,
+	sourceOptionsSet,
+	activityTypeOptions,
+	leadStatus,
+	activityPriorityOptions,
+	opportunityStatus,
+	opportunitySalesStage,
+} from '../../constants';
+import { setPreFilledValues, getFormattedDate, trimInput, removeWrappingBraces } from '../utils';
+import { saveCDSData, CDSAddRequest, CDSUpdateAddRequest, CDSUpdateRequest } from './SaveData';
 import ThemeContext from '../../themeContext';
-import { EditLeadFormData, Tab } from '../../models';
+import {
+	EditLeadFormData,
+	Activity,
+	Lead,
+	Opportunity,
+	Tab,
+	FormProps,
+	DateFormat,
+	CDSAddRequestData,
+	CDSUpdateRequestData,
+	CDSUpdateAddRequestData,
+} from '../../models';
+import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 
-const activityTypeOptions = ['Appointment', 'Email', 'Letter', 'Phone Call', 'Task'];
-
-const activityPriorityOptions = ['Low', 'Normal', 'High'];
-
-interface EditLeadFormProps {
-	toggleEditLeadFormPopup: { (): void };
+interface EditLeadFormProps extends FormProps {
+	preFilledValues?: object;
 }
 
 export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
@@ -53,10 +76,127 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		}
 	);
 
+	// Lead table visual fields in embedded report
+	const leadTableFields = {
+		LeadId: { name: 'Lead Id', value: null },
+		BaseId: { name: 'crcb2_baseid', value: null },
+		AccountId: { name: 'Account Id', value: null },
+		AccountName: { name: 'Account Name', value: null },
+		ContactName: { name: 'Contact Name', value: null },
+		Topic: { name: 'Topic', value: null },
+		Status: { name: 'Status', value: null },
+		Rating: { name: 'Rating', value: null },
+		Source: { name: 'Source', value: null },
+		CreatedOn: { name: 'Created on', value: null },
+	};
+
+	// Set values from report's table visual
+	setPreFilledValues(props.preFilledValues, leadTableFields);
+
 	const { register, handleSubmit, errors } = useForm();
-	const onSubmit = (formData: EditLeadFormData) => {
-		// TODO: Use form data to use the data with CDS rest APIs
-		props.toggleEditLeadFormPopup();
+	const addActivityFormOnSubmit = async (formData: Activity) => {
+		props.toggleWritebackProgressState();
+		const formattedDueDate = getFormattedDate(dueDate.dueDate, DateFormat.YearMonthDayTime);
+		formData.crcb2_duedatetime = formattedDueDate;
+		formData.crcb2_startdatetime = formattedDueDate;
+		formData.crcb2_enddatetime = formattedDueDate;
+		delete formData['activityaccountname'];
+		delete formData['activitycontactfullname'];
+		// Remove '{' and '}' from the id captured from report table visual
+		formData['crcb2_LeadId@odata.bind'] = `leads(${removeWrappingBraces(leadTableFields.LeadId.value)})`;
+
+		// Build request
+		const addRequestData: CDSAddRequestData = {
+			newData: JSON.stringify(formData),
+			addEntityType: entityNameActivities,
+		};
+		const addRequest = new CDSAddRequest(addRequestData);
+		const result = await saveCDSData(addRequest, props.updateApp, props.setError);
+		if (result) {
+			props.refreshReport();
+			props.toggleFormPopup();
+		}
+		props.toggleWritebackProgressState();
+	};
+	const qualifyLeadFormOnSubmit = async (formData: EditLeadFormData) => {
+		props.toggleWritebackProgressState();
+		const leadData: Lead = {
+			crcb2_primarycontactname: formData.leadcontactfullname,
+			subject: formData.leadtopic,
+			crcb2_leadstatus: leadStatus['Qualified'],
+			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
+			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
+		};
+		// Remove '{' and '}' from the id captured from report table visual
+		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
+			leadTableFields.AccountId.value
+		)})`;
+		const opportunityData: Opportunity = {
+			name: formData.leadtopic,
+			crcb2_quoteamount: formData.estimatedrevenue,
+			estimatedclosedate: getFormattedDate(
+				estimateCloseDate.estimateCloseDate,
+				DateFormat.YearMonthDay
+			),
+			estimatedvalue: formData.estimatedrevenue,
+			crcb2_salesstage: opportunitySalesStage['Propose'],
+			crcb2_opportunitystatus:
+				opportunityStatus[opportunityStatus.findIndex((option) => (option.value = 'New'))].code,
+		};
+		// Remove '{' and '}' from the id captured from report table visual
+		opportunityData['originatingleadid@odata.bind'] = `leads(${removeWrappingBraces(
+			leadTableFields.LeadId.value
+		)})`;
+
+		// Build request
+		const updateRequestData: CDSUpdateRequestData = {
+			baseId: leadTableFields.BaseId.value ?? leadTableFields.LeadId.value,
+			updatedData: JSON.stringify(leadData),
+			updateEntityType: entityNameLeads,
+		};
+		const addRequestData: CDSAddRequestData = {
+			newData: JSON.stringify(opportunityData),
+			addEntityType: entityNameOpportunities,
+		};
+		const updateAddRequestData: CDSUpdateAddRequestData = {
+			UpdateReqBody: updateRequestData,
+			AddReqBody: addRequestData,
+		};
+		const requestObject = new CDSUpdateAddRequest(updateAddRequestData);
+		const result = await saveCDSData(requestObject, props.updateApp, props.setError);
+		if (result) {
+			props.refreshReport();
+			props.toggleFormPopup();
+		}
+		props.toggleWritebackProgressState();
+	};
+	const disqualifyLeadFormOnSubmit = async () => {
+		props.toggleWritebackProgressState();
+		const leadData: Lead = {
+			crcb2_leadstatus: leadStatus['Disqualified'],
+			crcb2_primarycontactname: leadTableFields.ContactName.value,
+			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
+			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
+			subject: leadTableFields.Topic.value,
+		};
+		// Remove '{' and '}' from the id captured from report table visual
+		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
+			leadTableFields.AccountId.value
+		)})`;
+
+		// Build request
+		const updateRequestData: CDSUpdateRequestData = {
+			baseId: leadTableFields.BaseId.value ?? leadTableFields.LeadId.value,
+			updatedData: JSON.stringify(leadData),
+			updateEntityType: entityNameLeads,
+		};
+		const updateRequest = new CDSUpdateRequest(updateRequestData);
+		const result = await saveCDSData(updateRequest, props.updateApp, props.setError);
+		if (result) {
+			props.refreshReport();
+			props.toggleFormPopup();
+		}
+		props.toggleWritebackProgressState();
 	};
 
 	const navTabs = <NavTabs tabsList={tabsDetails} tabOnClick={setActiveTab} />;
@@ -64,27 +204,28 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	const addActivityInputBoxesBeforeSelect = [
 		{
 			title: 'Account Name',
-			name: 'accountName',
-			className: `form-control form-element ${errors.accountName && `is-invalid`}`,
-			placeHolder: `Enter Account Name, e.g., 'Fabrikam, Inc.'`,
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			name: 'activityaccountname',
+			className: 'form-control form-element',
+			// Show '--blank--' where applicable if empty field is fetched from the report
+			placeHolder: '--blank--',
+			value: leadTableFields.AccountName.value,
+			ref: register,
 		},
 		{
 			title: 'Contact Full Name',
-			name: 'contactFullName',
-			className: `form-control form-element ${errors.contactFullName && `is-invalid`}`,
-			placeHolder: `Enter Contact Full Name, e.g., 'John Peltier'`,
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			name: 'activitycontactfullname',
+			className: 'form-control form-element',
+			placeHolder: '--blank--',
+			value: leadTableFields.ContactName.value,
+			ref: register,
 		},
 		{
 			title: 'Topic',
-			name: 'topic',
-			className: `form-control form-element ${errors.topic && `is-invalid`}`,
-			placeHolder: `Enter Topic, e.g.,'Like our products'`,
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			name: 'crcb2_topic',
+			className: 'form-control form-element',
+			placeHolder: '--blank--',
+			value: leadTableFields.Topic.value,
+			ref: register,
 		},
 	];
 
@@ -96,7 +237,8 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				name={input.name}
 				className={input.className}
 				placeHolder={input.placeHolder}
-				errorMessage={input.errorMessage}
+				value={input.value}
+				disabled={true}
 				// grab value from form element
 				ref={input.ref}
 				key={input.name}
@@ -108,8 +250,8 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		<InputBox
 			onBlur={(event) => trimInput(event)}
 			title='Subject'
-			name='subject'
-			className={`form-control form-element ${errors.subject && `is-invalid`}`}
+			name='crcb2_subject'
+			className={`form-control form-element ${errors.crcb2_subject && `is-invalid`}`}
 			placeHolder={`Enter Subject, e.g., '100 Laptops'`}
 			errorMessage={formInputErrorMessage}
 			// grab value from form element
@@ -121,8 +263,8 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		<InputBox
 			onBlur={(event) => trimInput(event)}
 			title='Description'
-			name='description'
-			className={`form-control form-element ${errors.description && `is-invalid`}`}
+			name='crcb2_description'
+			className={`form-control form-element ${errors.crcb2_description && `is-invalid`}`}
 			placeHolder='Enter Description'
 			errorMessage={formInputErrorMessage}
 			// grab value from form element
@@ -130,24 +272,39 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		/>
 	);
 
+	let formActionElement: JSX.Element = <LoadingSpinner />;
+	if (!props.isWritebackInProgress) {
+		formActionElement = (
+			<div className='d-flex justify-content-center btn-form-submit'>
+				<button className='btn btn-form' type='submit'>
+					Add Activity
+				</button>
+			</div>
+		);
+	}
 	const addActivityForm = (
 		<form
 			className={`d-flex flex-column justify-content-between popup-form ${theme}`}
 			noValidate
-			onSubmit={handleSubmit(onSubmit)}>
+			onSubmit={handleSubmit(addActivityFormOnSubmit)}>
 			<div className='form-content'>
 				{addActivityInputListBeforeSelect}
 
 				<div>
 					<label className='input-label'>Activity Type</label>
 					<select
-						className={`form-control form-element ${errors.activityType && `is-invalid`}`}
-						name='activityType'
+						className={`form-control form-element ${
+							errors.activityType && `is-invalid`
+						} ${theme}`}
+						name='crcb2_activitytype'
 						// grab value from form element
 						ref={register({ required: true })}>
-						{activityTypeOptions.map((option, idx) => {
+						{Object.keys(activityTypeOptions).map((option) => {
 							return (
-								<option className={`select-list ${theme}`} value={option} key={idx}>
+								<option
+									className={`select-list ${theme}`}
+									value={activityTypeOptions[option]}
+									key={activityTypeOptions[option]}>
 									{option}
 								</option>
 							);
@@ -160,13 +317,16 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				<div>
 					<label className='input-label'>Priority</label>
 					<select
-						className={`form-control form-element ${errors.priority && `is-invalid`}`}
-						name='priority'
+						className={`form-control form-element ${errors.priority && `is-invalid`} ${theme}`}
+						name='crcb2_priority'
 						// grab value from form element
 						ref={register({ required: true })}>
-						{activityPriorityOptions.map((option, idx) => {
+						{Object.keys(activityPriorityOptions).map((option) => {
 							return (
-								<option className={`select-list ${theme}`} value={option} key={idx}>
+								<option
+									className={`select-list ${theme}`}
+									value={activityPriorityOptions[option]}
+									key={activityPriorityOptions[option]}>
 									{option}
 								</option>
 							);
@@ -180,54 +340,54 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 					<label className='input-label'>Due Date</label>
 					<div className='date-container'>
 						<DatePicker
-							className='form-control form-element date-picker'
-							name='dueDate'
+							className={`form-control form-element date-picker ${theme}`}
+							name='crcb2_duedatetime'
 							selected={dueDate.dueDate}
-							value={getFormattedDate(dueDate.dueDate)}
+							value={getFormattedDate(dueDate.dueDate, DateFormat.DayMonthDayYear)}
 							onChange={(date: Date) => setDueDate({ dueDate: date })}
 							ref={register({ required: true })}
 						/>
 					</div>
 				</div>
 			</div>
-			<div className='d-flex justify-content-center button-container'>
-				<button className='btn btn-form' type='submit'>
-					Add Activity
-				</button>
-			</div>
+			{formActionElement}
 		</form>
 	);
 
 	const qualifyLeadInputBoxes = [
 		{
 			title: 'Account Name',
-			name: 'accountName',
-			className: `form-control form-element ${errors.accountName && `is-invalid`}`,
-			placeHolder: `Enter Account Name, e.g., 'Fabrikam, Inc.'`,
+			name: 'leadaccountname',
+			className: 'form-control form-element',
+			placeHolder: '--blank--',
 			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			value: leadTableFields.AccountName.value,
+			disabled: true,
+			ref: register,
 		},
 		{
 			title: 'Contact Full Name',
-			name: 'contactFullName',
-			className: `form-control form-element ${errors.contactFullName && `is-invalid`}`,
-			placeHolder: `Enter Contact Full Name, e.g., 'Isabella Rasmussen'`,
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			name: 'leadcontactfullname',
+			className: 'form-control form-element',
+			placeHolder: '--blank--',
+			value: leadTableFields.ContactName.value,
+			disabled: true,
+			ref: register,
 		},
 		{
 			title: 'Topic',
-			name: 'topic',
-			className: `form-control form-element ${errors.topic && `is-invalid`}`,
-			placeHolder: `Enter Topic, e.g.,'100 Laptops'`,
-			errorMessage: formInputErrorMessage,
-			ref: register({ required: true, minLength: 1 }),
+			name: 'leadtopic',
+			className: 'form-control form-element',
+			placeHolder: '--blank--',
+			value: leadTableFields.Topic.value,
+			disabled: true,
+			ref: register,
 		},
 		{
 			title: 'Estimated Revenue',
-			name: 'estimatedRevenue',
-			className: `form-control form-element ${errors.estimatedRevenue && `is-invalid`}`,
-			placeHolder: 'Enter Estimated Revenue, e.g., $10,000',
+			name: 'estimatedrevenue',
+			className: `form-control form-element ${errors.estimatedrevenue && `is-invalid`}`,
+			placeHolder: `Enter Estimated Revenue (in $) e.g. '10000'`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
@@ -242,46 +402,65 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				className={input.className}
 				placeHolder={input.placeHolder}
 				errorMessage={input.errorMessage}
+				value={input.value}
+				disabled={input.disabled}
 				ref={input.ref}
 				key={input.name}
 			/>
 		);
 	});
 
+	if (!props.isWritebackInProgress) {
+		formActionElement = (
+			<div className='d-flex justify-content-center btn-form-submit'>
+				<button className='btn btn-form' type='submit'>
+					Qualify Lead
+				</button>
+			</div>
+		);
+	}
 	const qualifyLeadForm = (
 		<form
 			className={`d-flex flex-column justify-content-between popup-form ${theme}`}
 			noValidate
-			onSubmit={handleSubmit(onSubmit)}>
+			onSubmit={handleSubmit(qualifyLeadFormOnSubmit)}>
 			<div className='form-content'>
 				{qualifyLeadInputList}
 				<div>
 					<label className='input-label'>Estimated Close Date</label>
 					<div className='date-container'>
 						<DatePicker
-							className='form-control form-element date-picker'
-							name='estimatedCloseDate'
+							className={`form-control form-element date-picker ${theme}`}
+							name='estimatedclosedate'
 							selected={estimateCloseDate.estimateCloseDate}
-							value={getFormattedDate(estimateCloseDate.estimateCloseDate)}
+							value={getFormattedDate(
+								estimateCloseDate.estimateCloseDate,
+								DateFormat.DayMonthDayYear
+							)}
 							onChange={(date: Date) => setEstimateCloseDate({ estimateCloseDate: date })}
 							ref={register({ required: true })}
 						/>
 					</div>
 				</div>
 			</div>
-			<div className='d-flex justify-content-center button-container'>
-				<button className='btn btn-form' type='submit'>
-					Qualify Lead
-				</button>
-			</div>
+			{formActionElement}
 		</form>
 	);
 
+	if (!props.isWritebackInProgress) {
+		formActionElement = (
+			<div className='d-flex justify-content-center btn-form-submit'>
+				<button className='btn btn-form' type='submit'>
+					Disqualify Lead
+				</button>
+			</div>
+		);
+	}
 	const disqualifyLeadForm = (
 		<form
 			className={`d-flex flex-column justify-content-between popup-form ${theme}`}
 			noValidate
-			onSubmit={handleSubmit(onSubmit)}>
+			onSubmit={handleSubmit(disqualifyLeadFormOnSubmit)}>
 			<div className='form-content'>
 				<div className={`d-flex flex-row warning ${theme}`}>
 					<Icon
@@ -293,11 +472,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 					<div className='warning-message'>Are you sure you want to disqualify this lead?</div>
 				</div>
 			</div>
-			<div className='d-flex justify-content-center button-container'>
-				<button className='btn btn-form' type='submit'>
-					Disqualify Lead
-				</button>
-			</div>
+			{formActionElement}
 		</form>
 	);
 
@@ -310,7 +485,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 						type='button'
 						className={`close close-button tabbed-form-close-button p-0 ${theme}`}
 						aria-label='Close'
-						onClick={props.toggleEditLeadFormPopup}>
+						onClick={props.toggleFormPopup}>
 						<span aria-hidden='true'>&times;</span>
 					</button>
 				</div>

@@ -1,40 +1,149 @@
 ﻿{
-	"name": "Classroom",
+	"name": "Light Theme",
 	"dataColors": [
-		"#4A8DDC",
-		"#4C5D8A",
-		"#F3C911",
-		"#DC5B57",
-		"#33AE81",
-		"#95C8F0",
-		"#DD915F",
-		"#9A64A0",
-		"#6EA4E3",
-		"#707DA1",
-		"#F5D441",
-		"#E37C79",
-		"#5CBE9A",
-		"#AAD3F3",
-		"#E4A77F",
-		"#AE83B3",
-		"#386AA5",
-		"#394668",
-		"#B6970D",
-		"#A54441",
-		"#268361",
-		"#7096B4",
-		"#A66D47",
-		"#744B78",
-		"#25476E",
-		"#262F45",
-		"#7A6509",
-		"#6E2E2C",
-		"#1A5741",
-		"#4B6478",
-		"#6F4930",
-		"#4D3250"
+		"#515889",
+		"#7ED7E9",
+		"#FFA1D6",
+		"#B89FE9",
+		"#ABDAFC",
+		"#FFAEF6",
+		"#EBEF95",
+		"#FFA88D",
+		"#91EFC6",
+		"#E37FA4",
+		"#F8D871",
+		"#75D9C9"
 	],
-	"background": "#FFFFFF",
-	"foreground": "#070f25",
-	"tableAccent": "#0F1934"
+	"maximum": "#EBEDFF",
+	"center": "#E4FAFF",
+	"minimum": "#FFD9EF",
+	"textClasses": {
+		"title": {
+			"color": "#3A3A3A",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
+		},
+		"callout": {
+			"color": "#4B4B4B",
+			"fontSize": 40,
+			"fontFace": "Segoe UI"
+		},
+		"largeTitle": {
+			"color": "#3A3A3A",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
+		},
+		"smallLightLabel": {
+			"color": "#3A3A3A",
+			"fontSize": 9,
+			"fontFace": "Segoe UI"
+		},
+		"lightLabel": {
+			"color": "#303778"
+		}
+	},
+	"visualStyles": {
+		"*": {
+			"*": {
+				"background": [
+					{
+						"color": {
+							"solid": {
+								"color": "#FFFFFF"
+							}
+						},
+						"transparency": 0
+					}
+				],
+				"labels": [
+					{
+						"color": {
+							"solid": {
+								"color": "#3B3C3D"
+							}
+						}
+					}
+				],
+				"legend": [
+					{
+						"labelColor": {
+							"solid": {
+								"color": "#3B3C3D"
+							}
+						}
+					}
+				]
+			}
+		},
+		"page": {
+			"*": {
+				"background": [
+					{
+						"color": {
+							"solid": {
+								"color": "#EBEFF3"
+							}
+						},
+						"transparency": 0
+					}
+				],
+				"outspace": [
+					{
+						"color": {
+							"solid": {
+								"color": "#EBEFF3"
+							}
+						},
+						"transparency": 0
+					}
+				]
+			}
+		},
+		"tableEx": {
+			"*": {
+				"columnHeaders": [
+					{
+						"fontColor": {
+							"solid": {
+								"color": "#4B4F6D"
+							}
+						},
+						"backColor": {
+							"solid": {
+								"color": "#F5F5F5"
+							}
+						}
+					}
+				],
+				"values": [
+					{
+						"fontColorPrimary": {
+							"solid": {
+								"color": "#252423"
+							}
+						},
+						"fontColorSecondary": {
+							"solid": {
+								"color": "#252423"
+							}
+						}
+					}
+				]
+			}
+		},
+		"treemap": {
+			"*": {
+				"categoryLabels": [
+					{
+						"show": true,
+						"color": {
+							"solid": {
+								"color": "#F2F2F2"
+							}
+						}
+					}
+				]
+			}
+		}
+	}
 }

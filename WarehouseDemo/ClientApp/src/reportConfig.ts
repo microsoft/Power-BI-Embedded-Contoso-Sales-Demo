@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
 import { TabConfig, TabName } from './models';
@@ -54,9 +55,9 @@ export const salesManagerTabs: TabConfig[] = [
 
 /**
  * Pairs of visuals to be grouped together in the custom layout
- * Format: ['main visual title', 'overlapping visual title']
+ * Format: ['main visual guid', 'overlapping visual guid']
  */
-// Add titles of visuals to be paired in custom layout
+// Add guids of visuals to be paired in custom layout
 export const visualPairs = [['', '']];
 
 /**
@@ -81,6 +82,5 @@ export const visualCommands = {
  * Title of Power BI buttons on which custom action is to be set
  */
 export const visualButtons = {
-	addLeadsTitle: '',
-	addActivityTitle: '',
+	addLeadButtonGuid: '',
 };
