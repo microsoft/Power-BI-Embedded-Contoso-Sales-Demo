@@ -20,7 +20,7 @@ npm-debug.log
 client-react/components/*.js
 client-react.test/build
 !client-react.test/build/client-react/styles/
-WarehouseDemo/ClientApp/src/react-app-env.d.ts
+**/react-app-env.d.ts
 
 # testing
 compiledTests/

@@ -61,7 +61,7 @@ Users can do the following in the application’s user interface:
 
 ## Architecture
 
-![Architecture](WarehouseDemo/ClientApp/src/assets/Images/architecture.png)
+![Architecture](ContosoSalesDemo/ClientApp/src/assets/Images/architecture.png)
 
 
 
