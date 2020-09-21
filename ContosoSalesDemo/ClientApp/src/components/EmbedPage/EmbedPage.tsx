@@ -542,7 +542,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const navPane = (
 		<nav
 			className={`header justify-content-between navbar navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-light ${theme}`}>
-			<Icon className='app-name' iconId={`app-name-${theme}`} width={111.5} height={40} />
+			<div className='d-flex align-items-center'>
+				<Icon className='app-name' iconId={`app-name-${theme}`} width={111.5} height={40} />
+				<p className={`preview-tag non-selectable ${theme}`}>PREVIEW</p>
+			</div>
 
 			{navTabs}
 			<IconBar
