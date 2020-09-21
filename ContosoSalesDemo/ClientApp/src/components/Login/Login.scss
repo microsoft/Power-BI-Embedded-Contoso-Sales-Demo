@@ -1,0 +1,98 @@
+﻿// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.auth-error-info {
+	margin-left: 68px;
+}
+
+.auth-error-info-salesmanager {
+	margin-top: 23px;
+}
+
+.auth-error-info-salesperson {
+	margin-top: 11px;
+}
+
+.back-btn, .login-btn {
+	background-color: #303778;
+	border: none;
+	color: #FFFFFF;
+	font: 400 14px 'Segoe UI';
+	height: 37px;
+	margin: 0;
+	opacity: 1;
+	padding: 0.5rem 0;
+	text-align: center;
+	width: 161px;
+}
+
+@media only screen and (max-width: 575px) {
+	.back-btn {
+		margin-bottom: 0.5rem;
+	}
+}
+
+$mar-left: 68px;
+
+.btn-anonymous {
+	color: #2A359A;
+	cursor: pointer;
+	font: 400 14px/19px 'Segoe UI';
+	letter-spacing: 0;
+	margin-left: $mar-left;
+	padding-top: 5px;
+	opacity: 1;
+	text-align: left;
+}
+
+.login-btn {
+	margin-left: 15px;
+}
+
+.btn-wrapper {
+	margin-bottom: 1rem;
+	margin-left: $mar-left;
+	margin-top: 1.5rem;
+}
+
+.form-group {
+	margin-left: 35px;
+	margin-right: 35px;
+	position: relative;
+}
+
+$input-width: 335px;
+$input-height: 49px;
+$input-border-radius: 3px;
+
+.form-input {
+	border-radius: $input-border-radius;
+	height: $input-height;
+	margin-left: 34px;
+	padding-left: 3rem !important;
+	width: $input-width;
+}
+
+.icon-auth-error {
+	margin-right: 8px;
+	margin-top: -2.5px;
+}
+
+.m-top {
+	margin-top: 16px;
+}
+
+.set-icon {
+	margin-left: 12%;
+	position: absolute;
+	top: 20%;
+}
+
+.text-auth-error {
+	color: #AF005E;
+	font: 600 14px/19px 'Segoe UI';
+	letter-spacing: 0;
+	opacity: 1;
+}

@@ -1,0 +1,60 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.bookmark-list-item {
+	cursor: pointer;
+	font: 400 16px/21px 'Segoe UI';
+	height: 42px;
+	margin-bottom: 0;
+	padding: 5px 0;
+
+	&:active, &.selected {
+		background-color: transparent;
+		font-weight: 400;
+
+		&.light {
+			color: #707070;
+		}
+
+		&.dark {
+			color: #D8D8D8;
+		}
+
+		&:hover {
+			background-color: transparent;
+		}
+	}
+
+	// Override hover effect of bootstrap
+	&:hover {
+		background-color: transparent;
+	}
+}
+
+.bookmark-list-item>span {
+	margin: -0.5px 0 0 10px;
+	width: 250px;
+}
+
+.bookmarks-dropdown-container {
+	background: #FFFFFF 0 0 no-repeat padding-box;
+	border: 0;
+	border-radius: 0;
+	margin-top: 0;
+	max-height: 448px;
+	opacity: 1;
+	overflow-y: auto;
+	padding: 14px 0 14px 50px;
+	width: 340px;
+	z-index: 1;
+
+	&.light {
+		box-shadow: 0 11px 16px #94949430;
+	}
+
+	&.dark {
+		box-shadow: 0 11px 18px #00000030;
+	}
+}

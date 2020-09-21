@@ -1,0 +1,51 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+button {
+	background-color: #303778;
+	border: none;
+	color: #FFFFFF;
+	font: 400 14px 'Segoe UI';
+	margin: 0.5rem 66px;
+	opacity: 1;
+	text-align: center;
+}
+
+button:focus {
+	outline: none;
+}
+
+.card {
+	border-radius: 8px;
+	height: 427px;
+	width: 514px;
+}
+
+.card-img {
+	height: 40px;
+	margin-top: 60px;
+	width: 112px;
+}
+
+.card-title {
+	color: #303778;
+	font: 600 18px 'Segoe UI';
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.gradient-bg {
+	background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.horizontal-separator {
+	background-color: #CFCFCF;
+	height: 1px;
+	margin: 36px 87px 20px;
+	opacity: 1;
+}

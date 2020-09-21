@@ -1,0 +1,19 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.bookmark-form {
+	&.dark {
+		.input-bookmark {
+			color: #D8D8D8;
+			&:focus {
+				background-color: #343741 !important;
+			}
+		}
+	}
+}
+
+.input-bookmark::placeholder {
+	color: #777777;
+}

@@ -1,0 +1,278 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+$form-element-dark-theme-font-color: #D8D8D8;
+$chevron-margin: calc(100% - 10px);
+
+.popup {
+	&.light {
+		background: #FFFFFF 0 0 no-repeat padding-box;
+	}
+	&.dark {
+		background: #343741 0 0 no-repeat padding-box;
+	}
+	margin: 120px auto;
+}
+
+.popup > * {
+	width: 860px;
+}
+
+.popup-form {
+	&.light {
+		.input-label{
+			color: #303778;
+		}
+		.form-element,
+		.form-element:focus {
+			color: #383838;
+		}
+	}
+
+	&.dark {
+		.input-label{
+			color: #A7AEFF;
+		}
+		.form-element {
+			color: $form-element-dark-theme-font-color;
+			&:focus {
+				background-color: #343741;
+			}
+
+			&:disabled {
+				background-color: #4D5258;
+			}
+		}
+	}
+	min-height: 683px;
+	padding: 0 40px 40px;
+}
+
+.form-content > * {
+	padding-bottom: 20px;
+}
+
+.overlay {
+	&.light {
+		background: rgba(32, 32, 32, 0.64);
+	}
+	
+	&.dark {
+		background: rgba(33, 33, 33, 0.64);
+	}
+	height: 100%;
+	overflow: auto;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 2;
+}
+
+.popup-form-title {
+	font: 700 20px/27px 'Segoe UI';
+	margin-bottom: 0;
+}
+
+.popup-header {
+	&.light {
+		color: #303778;
+	}
+	
+	&.dark {
+		color: #A7AEFF;
+	}
+	height: 107px;
+	padding: 40px;
+}
+
+.form-element,
+.form-element:focus {
+	border: 1px solid #C1C1C1;
+	box-shadow: none;
+	font: 400 18px 'Segoe UI';
+	height: 50px;
+	padding: 0 20px !important;
+}
+
+.form-element::placeholder {
+	color: #777777;
+}
+
+.opportunity-status-radio {
+	margin-left: 20px;
+}
+
+.opportunity-status-text {
+	&.dark {
+		color: #D8D8D8;
+	}
+}
+
+.status-radio {
+	margin-top: 0.42rem;
+}
+
+.input-label {
+	font: 600 18px/36px 'Segoe UI';
+}
+
+.btn-form {
+	background: #D7DAF9 0 0 no-repeat padding-box;
+	border: none;
+	border-radius: 4px;
+	color: #303778;
+	font: 700 18px 'Segoe UI';
+	margin: 0 10px;
+	padding: 10px 35px;
+}
+
+.btn-form:hover,
+.btn-form:focus,
+.btn-form:active,
+.btn-form:not(:disabled):not(.disabled):active,
+.btn-form:not(:disabled):not(.disabled):active:focus {
+	background: #D7DAF9 0 0 no-repeat padding-box;
+	border: none;
+	box-shadow: none;
+	color: #303778;
+}
+
+.btn-form-submit {
+	padding-top: 20px;
+}
+
+.multiple-submit-buttons {
+	padding: 10px;
+	width: 190px;
+}
+
+.tab-container > div > ul {
+	flex-direction: row;
+}
+
+.tab-container {
+	margin-left: -142px;
+}
+
+.r-label {
+	&.light {
+		color: #3B3B3B;
+	}
+	&::before {
+		border-color: #606384;
+		height: 12px;
+		margin-top: 2px !important;
+		width: 12px;
+	}
+	&::after {
+		height: 9px;
+		margin: 4px 2px !important;
+		width: 9px;
+	}
+	font: 500 18px 'Segoe UI';
+}
+
+.date-time-container {
+	margin-left: 0;
+}
+
+.date-picker {
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
+}
+
+.date {
+	max-width: 184px;
+	min-width: 170px;
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
+}
+
+.date-container > * {
+	width: 100%;
+}
+
+.time {
+	max-width: 156px;
+}
+
+.close-button {
+	&.tabbed-form-close-button {
+		margin: 3px 6px;
+	}
+	&.single-form-close-button {
+		margin: -4px 6px;
+	}
+	height: 17px;
+	width: 17px;
+}
+
+.warning {
+	&.light {
+		background: #FFEBF6 0 0 no-repeat padding-box;
+		color: #000000;
+	}
+	&.dark {
+		background: #6D485C 0 0 no-repeat padding-box;
+		color: #FFFFFF;
+	}
+	font: 400 20px 'Segoe UI';
+	margin-top: 20px;
+	padding: 16px 22px;
+}
+
+.warning-message {
+	padding-left: 22px;
+}
+
+// Remove the original arrow and put the custom chevron
+select {
+	appearance: none;
+	cursor: pointer;
+
+	&.light {
+		background: url('../../assets/Icons/feather-chevron-down-light.svg') transparent no-repeat $chevron-margin !important;
+	}
+
+	&.dark {
+		background: url('../../assets/Icons/feather-chevron-down-dark.svg') transparent no-repeat $chevron-margin !important;
+		border: 1px solid #C1C1C1 !important;
+	}
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+select:focus {
+	border-color: #A7AEFF !important;
+}
+
+.select-list {
+	&.dark {
+		background-color: #262830;
+		color: $form-element-dark-theme-font-color;
+	}
+}
+
+@media only screen and (max-width: 1100px) {
+	.tab-container {
+		margin-left: -21px;
+	}
+
+	.popup > * {
+		width: 700px;
+	}
+}

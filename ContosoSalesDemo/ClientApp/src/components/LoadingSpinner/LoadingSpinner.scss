@@ -1,0 +1,18 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.spinner-border {
+	&.light {
+		border-color: #303778 #303778 #303778 transparent;
+	}
+
+	&.dark {
+		border-color: #A7AEFF #A7AEFF #A7AEFF transparent;
+	}
+}
+
+.spinner-form {
+	padding-top: 20px;
+}

@@ -1,0 +1,86 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.m-left {
+	margin-left: 120px;
+}
+
+.active {
+	font: 700 18px/24px 'Segoe UI';
+
+	&.light {
+		border-bottom: 3px solid #303778;
+		color: #303778 !important;
+	}
+
+	&.dark {
+		border-bottom: 3px solid #A7AEFF;
+		color: #A7AEFF !important;
+	}
+}
+
+.inactive {
+	font: 400 18px/24px 'Segoe UI';
+
+	&.light {
+		color: #707070 !important;
+	}
+
+	&.dark {
+		color: #A7A7A7 !important;
+	}
+}
+
+li {
+	margin: 0 0.5rem;
+}
+
+.header {
+	height: 96px;
+	padding: 1rem;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+.navbar-light .navbar-nav .active a {
+	border-bottom: 2.5px solid #303778;
+}
+
+.nav-link {
+	color: #303778;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.nav-item {
+	color: #303778;
+	font: 700 18px/21px 'Segoe UI';
+	letter-spacing: 0;
+	opacity: 1;
+	text-align: left;
+}
+
+.navbar,
+.navbar-nav,
+.options {
+	&.light {
+		background-color: #FFFFFF;
+	}
+	
+	&.dark {
+		background-color: #343741;
+	}
+}
+
+.navbar-nav {
+	flex-direction: row;
+}
+
+@media only screen and (max-width: 1230px) {
+	.m-left {
+		margin-left: 0;
+	}
+}

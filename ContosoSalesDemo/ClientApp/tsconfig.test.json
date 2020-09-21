@@ -1,0 +1,19 @@
+{
+	"include": [
+		"test/**/*.tsx"
+	],
+	"compilerOptions": {
+		"target": "es6",
+		"lib": [
+			"ES2016",
+		  	"dom"
+		],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": false,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"jsx": "react"
+	}
+}

@@ -1,0 +1,56 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.footer {
+	bottom: 0;
+	height: 42px;
+	position: relative;
+	width: 100%;
+
+	&.light {
+		background: #F7F8FA 0% 0% no-repeat padding-box;
+
+		>p, >p>a {
+			color: #3A3A3A;
+		}
+	}
+
+	&.dark {
+		background: #494C55 0% 0% no-repeat padding-box;
+
+		>p, >p>a{
+			color: #D8D8D8;
+		}
+	}
+}
+
+.footer>p,
+.footer>p>a {
+	display: contents;
+}
+
+.footer-icon {
+	border-radius: 50%;
+	height: 22px;
+	padding: 0 6px;
+}
+
+.separator-pipe {
+	margin-bottom: 0;
+	padding-left: 6px;
+}
+
+.github-icon {
+	margin: 0 8px;
+}
+		
+.powerbi-icon {
+	margin: 0 4px;
+}
+
+.footer>p>a {
+	padding-left: 4px;
+	text-decoration: underline;
+}

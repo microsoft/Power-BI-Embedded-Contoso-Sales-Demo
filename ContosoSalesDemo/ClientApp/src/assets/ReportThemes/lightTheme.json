@@ -1,0 +1,149 @@
+﻿{
+	"name": "Light Theme",
+	"dataColors": [
+		"#515889",
+		"#7ED7E9",
+		"#FFA1D6",
+		"#B89FE9",
+		"#ABDAFC",
+		"#FFAEF6",
+		"#EBEF95",
+		"#FFA88D",
+		"#91EFC6",
+		"#E37FA4",
+		"#F8D871",
+		"#75D9C9"
+	],
+	"maximum": "#EBEDFF",
+	"center": "#E4FAFF",
+	"minimum": "#FFD9EF",
+	"textClasses": {
+		"title": {
+			"color": "#3A3A3A",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
+		},
+		"callout": {
+			"color": "#4B4B4B",
+			"fontSize": 40,
+			"fontFace": "Segoe UI"
+		},
+		"largeTitle": {
+			"color": "#3A3A3A",
+			"fontSize": 10,
+			"fontFace": "Segoe UI Bold"
+		},
+		"smallLightLabel": {
+			"color": "#3A3A3A",
+			"fontSize": 9,
+			"fontFace": "Segoe UI"
+		},
+		"lightLabel": {
+			"color": "#303778"
+		}
+	},
+	"visualStyles": {
+		"*": {
+			"*": {
+				"background": [
+					{
+						"color": {
+							"solid": {
+								"color": "#FFFFFF"
+							}
+						},
+						"transparency": 0
+					}
+				],
+				"labels": [
+					{
+						"color": {
+							"solid": {
+								"color": "#3B3C3D"
+							}
+						}
+					}
+				],
+				"legend": [
+					{
+						"labelColor": {
+							"solid": {
+								"color": "#3B3C3D"
+							}
+						}
+					}
+				]
+			}
+		},
+		"page": {
+			"*": {
+				"background": [
+					{
+						"color": {
+							"solid": {
+								"color": "#EBEFF3"
+							}
+						},
+						"transparency": 0
+					}
+				],
+				"outspace": [
+					{
+						"color": {
+							"solid": {
+								"color": "#EBEFF3"
+							}
+						},
+						"transparency": 0
+					}
+				]
+			}
+		},
+		"tableEx": {
+			"*": {
+				"columnHeaders": [
+					{
+						"fontColor": {
+							"solid": {
+								"color": "#4B4F6D"
+							}
+						},
+						"backColor": {
+							"solid": {
+								"color": "#F5F5F5"
+							}
+						}
+					}
+				],
+				"values": [
+					{
+						"fontColorPrimary": {
+							"solid": {
+								"color": "#252423"
+							}
+						},
+						"fontColorSecondary": {
+							"solid": {
+								"color": "#252423"
+							}
+						}
+					}
+				]
+			}
+		},
+		"treemap": {
+			"*": {
+				"categoryLabels": [
+					{
+						"show": true,
+						"color": {
+							"solid": {
+								"color": "#F2F2F2"
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}

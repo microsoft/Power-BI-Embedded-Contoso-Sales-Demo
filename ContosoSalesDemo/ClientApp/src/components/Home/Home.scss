@@ -1,0 +1,24 @@
+﻿// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+$width: 339px;
+$height: 37px;
+$profile-btn-ml: 66px;
+
+.profile-btn {
+	height: $height;
+	margin-left: $profile-btn-ml;
+	width: $width;
+}
+
+#salesmanager-btn {
+	margin-bottom: 3.5rem;
+	margin-top: 25px;
+}
+
+#salesperson-btn {
+	margin-bottom: 1.5rem;
+	margin-top: 31px;
+}

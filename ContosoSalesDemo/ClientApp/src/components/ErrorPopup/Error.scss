@@ -1,0 +1,99 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+$error-detail-color-light: #3B3C3D;
+$error-detail-color-dark: #D8D8D8;
+
+.btn-close {
+	background: transparent;
+	border: 1px solid #BCBFDE;
+	border-radius: 4px;
+	font: 700 16px 'Segoe UI';
+	letter-spacing: 0;
+	margin: auto;
+	opacity: 1;
+	padding: 6px 24px;
+	text-align: center;
+
+	&.light {
+		color: #303778;
+	}
+
+	&.dark {
+		color: #A7AEFF;
+	}
+}
+
+.error-title {
+	font: 700 14px 'Segoe UI';
+	letter-spacing: 0;
+	margin-bottom: 2px;
+	margin-right: 10px;
+
+	&.light {
+		color: $error-detail-color-light;
+	}
+
+	&.dark {
+		color: $error-detail-color-dark;
+	}
+}
+
+.error-val {
+	font: 400 14px 'Segoe UI';
+	letter-spacing: 0;
+	margin-bottom: 2px;
+
+	&.light {
+		color: $error-detail-color-light;
+	}
+
+	&.dark {
+		color: $error-detail-color-dark;
+	}
+}
+
+.modal-dialog-error {
+	min-width: 600px;
+}
+
+.modal-footer-error {
+	border-top: 0;
+	padding-bottom: 35px;
+}
+
+.modal-header-error {
+	align-items: center;
+	border-bottom: 0;
+	display: flex;
+	flex-direction: column;
+	padding-top: 35px;
+}
+
+.modal-title {
+	font: Bold 20px/36px 'Segoe UI';
+
+	&.light {
+		color: #E37FB7;
+	}
+
+	&.dark {
+		color: #FFA2D6;
+	}
+}
+
+.modal-content {
+	&.light {
+		background-color: #FFFFFF;
+	}
+
+	&.dark {
+		background-color: #343741;
+	}
+}
+
+.height-auto {
+	height: auto !important;
+}

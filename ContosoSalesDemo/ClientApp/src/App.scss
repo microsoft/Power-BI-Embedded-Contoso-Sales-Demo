@@ -1,0 +1,90 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.app-name {
+	margin-left: 18px;
+}
+
+.cursor-default {
+	cursor: default;
+}
+
+.form-control {
+	box-shadow: none !important;
+	background-color: transparent;
+
+	&.light {
+		border: 1px solid #C1C1C1;
+	}
+
+	&.dark {
+		border: 1px solid #747D94;
+	}
+}
+
+.gradient-bg {
+	background: linear-gradient(135deg, #D1A2B8, #9585BE, #2F3C6B);
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.input-icon {
+	height: 16px;
+	width: 16px;
+}
+
+.input-text-icon {
+	padding-left: 3rem;
+}
+
+input[type='text']:focus,
+input[type='password']:focus {
+	border-color: #A7AEFF;
+}
+
+input[type='radio'] {
+	cursor: pointer;
+}
+
+input[type='radio']:focus {
+	outline: none;
+}
+
+.invalid-feedback {
+	position: absolute;
+}
+
+.non-selectable {
+	user-select: none;
+}
+
+.rounded-img {
+	border-radius: 50%;
+}
+
+.report-container {
+	display: flex;
+	flex: 1;
+	margin: 34px 35px;
+	min-height: 80vh;
+	height: 940px;
+	position: sticky;
+}
+
+.report-container > iframe {
+	border: 0;
+}
+
+.set-icon {
+	color: #808080;
+	opacity: 0.7;
+	z-index: 1;
+}
+
+.vertical-center {
+	top: 50%;
+	transform: translateY(-50%);
+}

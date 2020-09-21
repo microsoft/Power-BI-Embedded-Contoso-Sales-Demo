@@ -1,0 +1,39 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.dropdown-item {
+    padding-bottom: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.icon-bar {
+	margin-right: 18px;
+	position: relative;
+}
+
+.setting {
+	cursor: pointer;
+	margin-right: 30px;
+}
+
+#settings-dropdown {
+	border-radius: 0;
+	margin-top: 5px;
+	padding: 0;
+	transform: translate(-27px, 24.5px);
+	width: 209px;
+
+	&.light {
+		box-shadow: 0 0 20px #6B6B6B29;
+	}
+
+	&.dark {
+		box-shadow: 0 11px 18px #00000030;
+	}
+}
+
+.user-profile {
+	margin-right: 8px;
+}

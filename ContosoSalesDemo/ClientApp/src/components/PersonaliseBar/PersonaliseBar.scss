@@ -1,0 +1,204 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+$personalise-dropdown-shadow: 0 11px 16px #94949430;
+
+.layout-img {
+	padding: 17px;
+	height: 60px;
+	width: 60px;
+}
+
+.layouts-list-dropdown {
+	border-radius: 0;
+	border-width: 0;
+	box-shadow: $personalise-dropdown-shadow;
+	cursor: pointer;
+	display: flex;
+	flex-flow: column wrap;
+	min-width: 0;
+	transform: translate(95px, -2px);
+	width: 60px;
+}
+
+.layouts-list-dropdown,
+.visuals-list-dropdown {
+	&.light {
+		background: #FFFFFF 0 0 no-repeat padding-box;
+		box-shadow: 0 11px 16px #94949429;
+	}
+
+	&.dark {
+		background: #262830 0 0 no-repeat padding-box;
+		box-shadow: 0 11px 18px #00000030;
+	}
+
+	z-index: 1;
+}
+
+.personalise-icon-active {
+	background: #D7DAF9;
+}
+
+.personalise-bar {
+	align-content: space-between;
+	background: 0 0 no-repeat padding-box;
+	border: 0.5px solid #D4D4D4;
+	display: flex;
+	flex-flow: column wrap;
+	height: 60px;
+	margin: 34px 34px 0;
+	opacity: 1;
+
+	&.light {
+		background-color: #FFFFFF;
+		box-shadow: 0 16px 25px #D8D8D829;
+	}
+
+	&.dark {
+		background-color: #343741;
+	}
+}
+
+.personalise-icon {
+	background: transparent 0% 0% no-repeat padding-box;
+	cursor: pointer;
+	height: 59px;
+	opacity: 1;
+	padding: 17px;
+	width: 60px;
+}
+
+.personalise-icon-active {
+	background: #D7DAF9 !important;
+}
+
+.personalise-icon-close {
+	cursor: pointer;
+	padding: 22px;
+}
+
+.visual-checkbox-checkmark {
+	background: transparent;
+	border: 1px solid #CFCFCF;
+	border-radius: 0;
+	height: 20px;
+	left: 0;
+	position: absolute;
+	top: 3px;
+	width: 20px;
+}
+
+.visual-checkbox-checkmark::after {
+	content: '';
+	display: none;
+	position: absolute;
+}
+
+.visual-checkbox-li {
+	margin: 10px 1px;
+}
+
+.visual-checkbox-li>label {
+	cursor: pointer;
+	display: block;
+	font: 400 16px/21px 'Segoe UI';
+	margin-bottom: 20px;
+	padding-left: 30px;
+	position: relative;
+}
+
+.visual-checkbox-li>label>input {
+	cursor: pointer;
+	opacity: 0;
+	position: absolute;
+}
+
+.visual-checkbox-li.light>label>input:checked~.visual-checkbox-checkmark {
+	border: 0;
+	background-color: #303778;
+}
+
+.visual-checkbox-li.dark>label>input:checked~.visual-checkbox-checkmark {
+	border: 0;
+	background-color: #A7AEFF;
+}
+
+.visual-checkbox-li>label>input:checked~.visual-checkbox-checkmark::after {
+	display: block;
+}
+
+.visual-checkbox-li.light>label .visual-checkbox-checkmark::after {
+	border: 2px solid #FFF;
+	border-width: 0 1.5px 1.5px 0;
+	height: 12px;
+	left: 7px;
+	top: 2px;
+	transform: rotate(45deg);
+	width: 6px;
+}
+
+.visual-checkbox-li.dark>label .visual-checkbox-checkmark::after {
+	border: 2px solid #303778;
+	border-width: 0 1.5px 1.5px 0;
+	height: 12px;
+	left: 7px;
+	top: 2px;
+	transform: rotate(45deg);
+	width: 6px;
+}
+
+.visuals-list-dropdown {
+	border: none;
+	border-radius: 0;
+	box-shadow: $personalise-dropdown-shadow;
+	padding: 24px 32px 25px;
+	transform: translate(35px, -1px);
+	width: 325px;
+}
+
+.visual-list-title {
+	font: 700 20px/21px 'Segoe UI';
+	letter-spacing: 0;
+	text-align: left;
+	
+	&.light {
+		color: #303778;
+	}
+
+	&.dark {
+		color: #A7AEFF;
+	}
+}
+
+.visual-list-subtitle {
+	font: 400 16px/21px 'Segoe UI';
+	letter-spacing: 0;
+	padding-bottom: 17px;
+	text-align: left;
+
+	&.light {
+		color: #33384B;
+	}
+
+	&.dark {
+		color: #D8D8D8;
+	}
+}
+
+.visual-title {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	&.light {
+		color: #4A4A4A;
+	}
+	
+	&.dark {
+		color: #D8D8D8;
+	}
+}

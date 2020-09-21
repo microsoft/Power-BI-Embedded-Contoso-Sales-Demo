@@ -1,0 +1,44 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+body {
+	background: #EBEFF3 0% 0% no-repeat padding-box;
+	height: 100vh;
+	opacity: 1;
+	width: 100vw;
+}
+
+.embed-page-class {
+	height: auto;
+	min-width: 1150px;
+	width: 100%;
+
+	&.light {
+		background: #EBEFF3 0% 0% no-repeat padding-box;
+	}
+	
+	&.dark {
+		background: #1F2128 0% 0% no-repeat padding-box;
+	}
+}
+
+.preview-tag {
+	border-radius: 5px;
+	font: 700 13px/17px 'Segoe UI';
+	height: 28px;
+	letter-spacing: 0;
+	margin: 0 0 0 32px;
+	padding: 5px 13px;
+
+	&.light {
+		background: #EAEBFC 0% 0% no-repeat padding-box;
+		color: #303778;
+	}
+
+	&.dark {
+		background: #1D2347 0% 0% no-repeat padding-box;
+		color: #A6ABE6;
+	}
+}

@@ -1,0 +1,135 @@
+// ---------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+// ---------------------------------------------------------------------------
+
+.btn-submit {
+	background: #D7DAF9;
+	border-radius: 4px;
+	color: #303778;
+	font: 700 18px/24px 'Segoe UI';
+	opacity: 1;
+	padding: 6px 24px;
+}
+
+.close {
+	color: #6E6E6E;
+	opacity: 1;
+	position: relative;
+	right: 0;
+	top: -15px;
+
+	&.light {
+		color: #6E6E6E;
+		font: 400 40px 'Segoe UI';
+	}
+
+	&.dark {
+		color: #D8D8D8;
+		font: 200 40px 'Segoe UI';
+	}
+}
+
+.input-title {
+	color: #3B3B3B;
+	font: 400 18px/24px 'Segoe UI';
+	letter-spacing: 0;
+	margin-bottom: 10px;
+	opacity: 1;
+	text-align: left;
+
+	&.light {
+		color: #3B3B3B;
+	}
+
+	&.dark {
+		color: #A7AEFF;
+	}
+}
+
+.modal {
+	background: rgba(32, 32, 32, 0.64);
+}
+
+.modal-backdrop {
+	display: none;
+}
+
+.modal-body {
+	padding: 40.5px 45px;
+	
+	&.dark {
+		padding: 40px 45px 8px;
+	}
+}
+
+.modal-content {
+	border-color: transparent;
+	border-radius: 0;
+	height: 300px;
+
+	&.light {
+		background-color: #FFFFFF;
+	}
+
+	&.dark {
+		background-color: #343741;
+	}
+}
+
+.modal-dialog {
+	min-width: 600px;
+}
+
+.modal-footer {
+	border-top: 0;
+	justify-content: center;
+	padding-bottom: 31px;
+	padding-top: 0;
+}
+
+.modal-header {
+	padding: 35px 45px 0;
+
+	&.light {
+		border-bottom: 2px solid #E0E3FF;
+	}
+
+	&.dark {
+		border-bottom: 2px solid #424457;
+	}
+}
+
+.modal-tab {
+	cursor: pointer;
+	font: 400 18px 'Segoe UI';
+	letter-spacing: 0;
+	margin-bottom: -1.5px;
+	opacity: 1;
+	text-align: left;
+
+	&.light {
+		color: #707070;
+	}
+
+	&.dark {
+		color: #A7A7A7;
+	}
+}
+
+.modal-tab-active {
+	font: 700 18px 'Segoe UI';
+	letter-spacing: 0;
+	opacity: 1;
+	text-align: left;
+
+	&.light {
+		border-bottom: 2px solid #303778;
+		color: #303778;
+	}
+
+	&.dark {
+		border-bottom: 2px solid #A7AEFF;
+		color: #A7AEFF;
+	}
+}
