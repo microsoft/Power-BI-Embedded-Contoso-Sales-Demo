@@ -38,13 +38,13 @@ export function Footer(): JSX.Element {
 				className='footer-icon'
 				src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'></img>
 			<p>
-				{'Find our'}
+				{'Find the'}
 				<a
 					className='d-block'
-					href='https://github.com/microsoft/PowerBI-Developer-Samples/'
+					href='https://github.com/microsoft/Power-BI-Embedded-Contoso-Sales-Demo'
 					target='_blank'
 					rel='noreferrer noopener'>
-					sample code
+					source code
 				</a>
 			</p>
 		</div>
