@@ -39,11 +39,13 @@ import {
 	CDSAddRequestData,
 	CDSUpdateRequestData,
 	CDSUpdateAddRequestData,
+	LeadTablePowerBIData,
+	PreFilledValues,
 } from '../../models';
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 
 interface EditLeadFormProps extends FormProps {
-	preFilledValues?: object;
+	preFilledValues?: PreFilledValues;
 }
 
 export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
@@ -77,7 +79,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	);
 
 	// Lead table visual fields in embedded report
-	const leadTableFields = {
+	const leadTableFields: LeadTablePowerBIData = {
 		LeadId: { name: 'Lead Id', value: null },
 		BaseId: { name: 'crcb2_baseid', value: null },
 		AccountId: { name: 'Account Id', value: null },

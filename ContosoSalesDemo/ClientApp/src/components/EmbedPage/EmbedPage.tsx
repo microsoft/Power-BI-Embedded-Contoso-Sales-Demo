@@ -50,6 +50,7 @@ import {
 	Profile,
 	Theme,
 	ServiceAPI,
+	PreFilledValues,
 } from '../../models';
 import $ from 'jquery';
 
@@ -154,7 +155,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const [updateOpportunityFormPopup, setUpdateOpportunityFormPopup] = useState<boolean>(false);
 
 	// State hook to capture values from the visuals
-	const [visualAutofilledData, setVisualAutofilledData] = useState<object>(null);
+	const [visualAutofilledData, setVisualAutofilledData] = useState<PreFilledValues>(null);
 
 	// State hook to set qna visual index
 	const [qnaVisualIndex, setQnaVisualIndex] = useState<number>(null);

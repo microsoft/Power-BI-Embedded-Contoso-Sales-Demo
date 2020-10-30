@@ -21,7 +21,14 @@ import {
 	activityPriorityOptions,
 } from '../../constants';
 import { Icon } from '../Icon/Icon';
-import { setPreFilledValues, createTimeOptions, trimInput, removeWrappingBraces, getFormattedDate, getCalculatedTime } from '../utils';
+import {
+	setPreFilledValues,
+	createTimeOptions,
+	trimInput,
+	removeWrappingBraces,
+	getFormattedDate,
+	getCalculatedTime,
+} from '../utils';
 import { saveCDSData, CDSUpdateAddRequest, CDSUpdateRequest } from './SaveData';
 import ThemeContext from '../../themeContext';
 import {
@@ -34,11 +41,13 @@ import {
 	CDSAddRequestData,
 	CDSUpdateRequestData,
 	CDSUpdateAddRequestData,
+	OpportunityTablePowerBIData,
+	PreFilledValues,
 } from '../../models';
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 
 interface UpdateOpportunityFormProps extends FormProps {
-	preFilledValues?: object;
+	preFilledValues?: PreFilledValues;
 }
 
 export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.Element {
@@ -70,7 +79,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 	);
 
 	// Opportunity table visual fields in embedded report
-	const opportunityTableFields = {
+	const opportunityTableFields: OpportunityTablePowerBIData = {
 		OpportunityId: { name: 'Opportunity Id', value: null },
 		BaseId: { name: 'crcb2_baseid', value: null },
 		LeadId: { name: 'Lead Id', value: null },
