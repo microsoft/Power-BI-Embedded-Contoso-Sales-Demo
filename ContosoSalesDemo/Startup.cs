@@ -13,8 +13,6 @@ namespace ContosoSalesDemo
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
-	using Microsoft.Identity.Web;
-	using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 	using Microsoft.IdentityModel.Tokens;
 	using System.Text;
 	using ContosoSalesDemo.Models;
@@ -31,8 +29,7 @@ namespace ContosoSalesDemo
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMemoryCache();
-			services.AddHttpClient();
+
 			services.AddAuthentication("OAuth")
 				.AddJwtBearer("OAuth", options =>
 				{
@@ -53,27 +50,7 @@ namespace ContosoSalesDemo
 						ValidAudience = audience,
 						IssuerSigningKey = signingKey
 					};
-				})
-				.AddMicrosoftWebApiCallsWebApi(
-
-					// Populate confidential client properties
-					confidentialClientOptions =>
-					{
-						confidentialClientOptions.Instance = Configuration["AzureAd:Instance"];
-						confidentialClientOptions.ClientId = Configuration["AzureAd:ClientId"];
-						confidentialClientOptions.TenantId = Configuration["AzureAd:TenantId"];
-					},
-
-					// Load certificate in options for client assertion
-					microsoftIdentityOptions =>
-					{
-						microsoftIdentityOptions.ClientCertificates = new CertificateDescription[]
-						{
-							CertificateDescription.FromBase64Encoded(Configuration[Configuration["KeyVault:CertificateName"]])
-						};
-					}
-				)
-				.AddInMemoryTokenCaches();
+				});
 
 			// Get user roles
 			var salesManagerRole = Configuration.GetSection("Users:SalesManager:Role").Value;
@@ -118,6 +95,15 @@ namespace ContosoSalesDemo
 			{
 				configuration.RootPath = "ClientApp/build";
 			});
+
+			// Load CDS Configuration
+			services.Configure<CdsConfig>(Configuration.GetSection("Cds"));
+
+			// Load Key Vault configuration
+			services.Configure<KeyVaultConfig>(Configuration.GetSection("KeyVault"));
+
+			// Load Auth configuration
+			services.Configure<AadConfig>(Configuration.GetSection("AzureAd"));
 
 			// Load Power BI configuration
 			services.Configure<PowerBiConfig>(Configuration.GetSection("PowerBi"));

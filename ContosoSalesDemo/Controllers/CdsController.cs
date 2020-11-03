@@ -7,7 +7,8 @@ namespace ContosoSalesDemo.Controllers
 {
 	using System;
 	using System.Threading.Tasks;
-	using Microsoft.Identity.Web;
+	using Microsoft.Extensions.Options;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Identity.Client;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Authorization;
@@ -23,13 +24,19 @@ namespace ContosoSalesDemo.Controllers
 	[Authorize(Policy = Constant.FieldUserPolicyName)]
 	public class CdsController : ControllerBase
 	{
-		private readonly ITokenAcquisition TokenAcquisition;
+		private static IOptions<AadConfig> AadConfig { get; set; }
+		private static IOptions<CdsConfig> CdsConfig { get; set; }
+		private static IOptions<KeyVaultConfig> KeyVaultConfig { get; set; }
+		private static IConfiguration Configuration { get; set; }
 		private readonly ILogger<CdsController> Logger;
 
-		public CdsController(ITokenAcquisition tokenAcquisition, ILogger<CdsController> logger)
+		public CdsController(IConfiguration configuration, IOptions<AadConfig> aadConfig, IOptions<KeyVaultConfig> keyVaultConfig, ILogger<CdsController> logger, IOptions<CdsConfig> cdsConfig)
 		{
-			TokenAcquisition = tokenAcquisition;
+			Configuration = configuration;
+			AadConfig = aadConfig;
+			KeyVaultConfig = keyVaultConfig;
 			Logger = logger;
+			CdsConfig = cdsConfig;
 		}
 
 		[HttpPut("/api/data/update")]
@@ -38,10 +45,10 @@ namespace ContosoSalesDemo.Controllers
 			try
 			{
 				// Generate AAD token
-				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
-
+				// var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
+				var aadToken = await AadService.GetAadToken(Configuration[KeyVaultConfig.Value.CertificateName], AadConfig, new string[] { CdsConfig.Value.Scope });
 				// Init CDS Service
-				using (var cdsService = new CdsService(aadToken))
+				using (var cdsService = new CdsService(aadToken, CdsConfig))
 				{
 					var updateEntityName = reqBody.UpdateEntityType;
 
@@ -104,10 +111,10 @@ namespace ContosoSalesDemo.Controllers
 			try
 			{
 				// Generate AAD token
-				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
-
+				// var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
+				var aadToken = await AadService.GetAadToken(Configuration[KeyVaultConfig.Value.CertificateName], AadConfig, new string[] { CdsConfig.Value.Scope });
 				// Init CDS Service
-				using (var cdsService = new CdsService(aadToken))
+				using (var cdsService = new CdsService(aadToken, CdsConfig))
 				{
 					var addEntityName = reqBody.AddEntityType;
 
@@ -170,10 +177,10 @@ namespace ContosoSalesDemo.Controllers
 			try
 			{
 				// Generate AAD token
-				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
-
+				// var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.CdsScope });
+				var aadToken = await AadService.GetAadToken(Configuration[KeyVaultConfig.Value.CertificateName], AadConfig, new string[] { CdsConfig.Value.Scope });
 				// Init CDS Service
-				using (var cdsService = new CdsService(aadToken))
+				using (var cdsService = new CdsService(aadToken, CdsConfig))
 				{
 					var addEntityName = reqBody.AddReqBody.AddEntityType;
 

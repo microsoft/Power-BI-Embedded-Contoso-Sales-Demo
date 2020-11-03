@@ -12,7 +12,6 @@ namespace ContosoSalesDemo.Controllers
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Microsoft.Identity.Client;
-	using Microsoft.Identity.Web;
 	using Microsoft.Rest;
 	using Newtonsoft.Json.Linq;
 	using System;
@@ -28,16 +27,18 @@ namespace ContosoSalesDemo.Controllers
 	[Authorize(Policy = Constant.GeneralUserPolicyName)]
 	public class PowerBiController : ControllerBase
 	{
-		private readonly ITokenAcquisition TokenAcquisition;
+		private static IOptions<AadConfig> AadConfig { get; set; }
 		private static IConfiguration Configuration { get; set; }
+		private static IOptions<KeyVaultConfig> KeyVaultConfig { get; set; }
 		private static IOptions<PowerBiConfig> PowerBiConfig { get; set; }
 		private IMemoryCache Cache { get; set; }
 		private readonly ILogger<PowerBiController> Logger;
 
-		public PowerBiController(IConfiguration configuration, ITokenAcquisition tokenAcquisition, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache, ILogger<PowerBiController> logger)
+		public PowerBiController(IConfiguration configuration, IOptions<AadConfig> aadConfig, IOptions<KeyVaultConfig> keyVaultConfig, IOptions<PowerBiConfig> powerBiConfig, IMemoryCache cache, ILogger<PowerBiController> logger)
 		{
 			Configuration = configuration;
-			TokenAcquisition = tokenAcquisition;
+			AadConfig = aadConfig;
+			KeyVaultConfig = keyVaultConfig;
 			PowerBiConfig = powerBiConfig;
 
 			// Get service cache
@@ -79,8 +80,8 @@ namespace ContosoSalesDemo.Controllers
 			// Not found in cache or token is close to expiry, generate new embed params
 			try
 			{
-				// Get AAD token. This request will check memory cache first
-				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.PowerBiScope });
+				// Generate AAD token
+				var aadToken = await AadService.GetAadToken(Configuration[KeyVaultConfig.Value.CertificateName], AadConfig, new string[] { Constant.PowerBiScope });
 
 				// Generate Embed token
 				var embedService = new EmbedService(aadToken);
@@ -140,8 +141,8 @@ namespace ContosoSalesDemo.Controllers
 
 			try
 			{
-				// Get AAD token. This request will check memory cache first
-				var aadToken = await TokenAcquisition.GetAccessTokenForAppAsync(new string[] { Constant.PowerBiScope });
+				// Generate AAD token
+				var aadToken = await AadService.GetAadToken(Configuration[KeyVaultConfig.Value.CertificateName], AadConfig, new string[] { Constant.PowerBiScope });
 
 				// Get username and role of user 
 				var userInfo = JwtAuthHelper.GetUsernameAndRole(User.Identity as ClaimsIdentity);

@@ -11,6 +11,7 @@ namespace ContosoSalesDemo.Service
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Threading.Tasks;
+	using Microsoft.Extensions.Options;
 	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 	using ContosoSalesDemo.Models;
@@ -20,14 +21,16 @@ namespace ContosoSalesDemo.Service
 	public class CdsService : IDisposable
 	{
 		private bool disposedValue;
+		private IOptions<CdsConfig> CdsConfig { get; set; }
 		private HttpClient cdsClient;
 
-		public CdsService(string aadToken)
+		public CdsService(string aadToken, IOptions<CdsConfig> cdsConfig)
 		{
 			cdsClient = new HttpClient();
 			cdsClient.DefaultRequestHeaders.Accept.Clear();
 			cdsClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			cdsClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", aadToken);
+			CdsConfig = cdsConfig;
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -94,7 +97,7 @@ namespace ContosoSalesDemo.Service
 			// Params for select query
 			var filterUrlParam = $"$filter={Constant.baseIdFieldName} eq {baseRowGuid} and {Constant.isLatestFieldName} eq '{Constant.IsLatestTrue}'";
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = entityName;
 			requestUri.Query = $"{selectUrlParam}&{filterUrlParam}";
 
@@ -160,7 +163,7 @@ namespace ContosoSalesDemo.Service
 			// Add "Prefer" header to return the inserted row
 			cdsClient.DefaultRequestHeaders.Add("Prefer", "return=representation");
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = entityName;
 			
 			var response = await cdsClient.PostAsync(requestUri.Uri, content);
@@ -199,7 +202,7 @@ namespace ContosoSalesDemo.Service
 			content = new StringContent(jsonEntity, Encoding.UTF8, "application/json");
 
 			// Update operation
-			requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = $"{entityName}({entity.Baseid})";
 
 			response = await cdsClient.PatchAsync(requestUri.Uri, content);
@@ -230,21 +233,21 @@ namespace ContosoSalesDemo.Service
 			updateEntity.Islatest = Constant.IsLatestFalse;
 			var updateEntityJson = JsonConvert.SerializeObject(updateEntity);
 			
-			cdsRequests[0] = new CdsBatchRequest("PATCH", $"https://{Constant.CdsApiBaseUrl}/{entityName}({rowGuid})", updateEntityJson);
+			cdsRequests[0] = new CdsBatchRequest("PATCH", $"https://{CdsConfig.Value.ApiBaseUrl}/{entityName}({rowGuid})", updateEntityJson);
 
 			// 2. Insert row
 			newData.Baseid = baseId;
 			newData.Islatest = Constant.IsLatestTrue;	// Mark latest row as "1"
 			var newDataJson = JsonConvert.SerializeObject(newData);
 
-			cdsRequests[1] = new CdsBatchRequest("POST", $"https://{Constant.CdsApiBaseUrl}/{entityName}", newDataJson);
+			cdsRequests[1] = new CdsBatchRequest("POST", $"https://{CdsConfig.Value.ApiBaseUrl}/{entityName}", newDataJson);
 
 			// Build MultipartRequest content
 			var reqContent = MultipartHelper.GenerateAtomicRequestContent(batchId, changesetId, cdsRequests);
 
 			cdsClient.DefaultRequestHeaders.Accept.Clear();
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = "$batch";
 
 			// Execute Batch request
@@ -285,7 +288,7 @@ namespace ContosoSalesDemo.Service
 			// Params for select query
 			var filterUrlParam = $"$filter={Constant.baseIdFieldName} eq {baseRowGuid} and {Constant.isLatestFieldName} eq '{Constant.IsLatestTrue}'";
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = updateEntityName;
 			requestUri.Query = $"{selectUrlParam}&{filterUrlParam}";
 
@@ -349,14 +352,14 @@ namespace ContosoSalesDemo.Service
 			updateEntity.Islatest = Constant.IsLatestFalse;
 			string jsonTestEntity = JsonConvert.SerializeObject(updateEntity);
 			
-			cdsRequests[0] = new CdsBatchRequest("PATCH", $"https://{Constant.CdsApiBaseUrl}/{updateEntityName}({rowGuid})", jsonTestEntity);
+			cdsRequests[0] = new CdsBatchRequest("PATCH", $"https://{CdsConfig.Value.ApiBaseUrl}/{updateEntityName}({rowGuid})", jsonTestEntity);
 
 			// 1b. Insert updated row
 			updatedData.Baseid = baseId;
 			updatedData.Islatest = Constant.IsLatestTrue;	// Mark latest row as "1"
 			var updatedDataJson = JsonConvert.SerializeObject(updatedData);
 
-			cdsRequests[1] = new CdsBatchRequest("POST", $"https://{Constant.CdsApiBaseUrl}/{updateEntityName}", updatedDataJson);
+			cdsRequests[1] = new CdsBatchRequest("POST", $"https://{CdsConfig.Value.ApiBaseUrl}/{updateEntityName}", updatedDataJson);
 
 			// 2. Insert new row
 			newData.Islatest = Constant.IsLatestTrue;	// Mark latest row as "1"
@@ -364,14 +367,14 @@ namespace ContosoSalesDemo.Service
 
 			// NOTE: Set preferResponse = true for atmost one API request in a batch
 			var preferDataResponse = true;
-			cdsRequests[2] = new CdsBatchRequest("POST", $"https://{Constant.CdsApiBaseUrl}/{addEntityName}", newDataJson, preferDataResponse);
+			cdsRequests[2] = new CdsBatchRequest("POST", $"https://{CdsConfig.Value.ApiBaseUrl}/{addEntityName}", newDataJson, preferDataResponse);
 
 			// Build MultipartRequest content
 			var reqContent = MultipartHelper.GenerateAtomicRequestContent(batchId, changesetId, cdsRequests);
 
 			cdsClient.DefaultRequestHeaders.Accept.Clear();
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = "$batch";
 
 			// Execute Batch request
@@ -405,7 +408,7 @@ namespace ContosoSalesDemo.Service
 			var content = new StringContent(jsonEntity, Encoding.UTF8, "application/json");
 
 			// Update operation
-			requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = $"{addEntityName}({insertedRowGuid})";
 
 			response = await cdsClient.PatchAsync(requestUri.Uri, content);
@@ -430,7 +433,7 @@ namespace ContosoSalesDemo.Service
 			// Params for select query
 			var selectUrlParam = $"$select={selectQueryFields}";
 			
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = entityName;
 			requestUri.Query = $"{selectUrlParam}&$filter={filterUrlParam}";
 
@@ -485,7 +488,7 @@ namespace ContosoSalesDemo.Service
 			// Add "Prefer" header to return the inserted row
 			cdsClient.DefaultRequestHeaders.Add("Prefer", "return=representation");
 
-			UriBuilder requestUri = new UriBuilder("https", Constant.CdsApiBaseUrl);
+			UriBuilder requestUri = new UriBuilder("https", CdsConfig.Value.ApiBaseUrl);
 			requestUri.Path = queryEntityName;
 
 			var response = await cdsClient.PostAsync(requestUri.Uri, reqContent);

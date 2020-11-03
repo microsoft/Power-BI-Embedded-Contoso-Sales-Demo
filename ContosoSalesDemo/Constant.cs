@@ -14,7 +14,6 @@ public class Constant
 
 	// Used while fetching AAD token
 	public const string PowerBiScope = "https://analysis.windows.net/powerbi/api/.default";
-	public static readonly string CdsScope = $"https://{CdsBaseUrl}/.default";
 
 	// Used for naming policies
 	public const string GeneralUserPolicyName = "GeneralUser";
@@ -63,10 +62,6 @@ public class Constant
 	// Used while setting or checking for roles
 	public const string SalesPersonRole = "Sales Person";
 	public const string SalesManagerRole = "Sales Manager";
-
-	// CDS API urls
-	public const string CdsBaseUrl = "contososalesdemoorg.api.crm.dynamics.com";
-	public static readonly string CdsApiBaseUrl = $"{CdsBaseUrl}/api/data/v9.1";
 
 	// Note: These entity names should match the entity names in CDS
 	// CDS entity names
