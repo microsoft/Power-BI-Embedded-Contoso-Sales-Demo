@@ -5,10 +5,10 @@
 
 namespace ContosoSalesDemo.Models
 {
-	using System.Globalization;
 	using Newtonsoft.Json;
 	using Newtonsoft.Json.Converters;
 	using Newtonsoft.Json.Linq;
+	using System.Globalization;
 
 	public partial class CdsEntity
 	{

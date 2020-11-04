@@ -3,14 +3,13 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-$error-detail-color-light: #3B3C3D;
-$error-detail-color-dark: #D8D8D8;
+@import '../../App.scss';
 
 .btn-close {
 	background: transparent;
 	border: 1px solid #BCBFDE;
 	border-radius: 4px;
-	font: 700 16px 'Segoe UI';
+	font: 700 16px $app-font-family;
 	letter-spacing: 0;
 	margin: auto;
 	opacity: 1;
@@ -27,7 +26,7 @@ $error-detail-color-dark: #D8D8D8;
 }
 
 .error-title {
-	font: 700 14px 'Segoe UI';
+	font: 700 14px $app-font-family;
 	letter-spacing: 0;
 	margin-bottom: 2px;
 	margin-right: 10px;
@@ -42,7 +41,7 @@ $error-detail-color-dark: #D8D8D8;
 }
 
 .error-val {
-	font: 400 14px 'Segoe UI';
+	font: 400 14px $app-font-family;
 	letter-spacing: 0;
 	margin-bottom: 2px;
 
@@ -73,7 +72,7 @@ $error-detail-color-dark: #D8D8D8;
 }
 
 .modal-title {
-	font: Bold 20px/36px 'Segoe UI';
+	font: Bold 20px/36px $app-font-family;
 
 	&.light {
 		color: #E37FB7;

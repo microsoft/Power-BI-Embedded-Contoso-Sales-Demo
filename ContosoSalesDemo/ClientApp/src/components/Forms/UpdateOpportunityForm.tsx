@@ -84,7 +84,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 		BaseId: { name: 'crcb2_baseid', value: null },
 		LeadId: { name: 'Lead Id', value: null },
 		AccountName: { name: 'Account Name', value: null },
-		PrimaryContactName: { name: 'Primary Contact Name', value: null },
+		PrimaryContactName: { name: 'Contact Name', value: null },
 		Topic: { name: 'Topic', value: null },
 		EstimatedRevenue: { name: 'Estimated Revenue', value: null },
 		EstimatedCloseDate: { name: 'Estimated close date', value: null },
@@ -124,6 +124,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 				opportunityTableFields.QuoteAmount.value ?? opportunityTableFields.EstimatedRevenue.value
 			),
 		};
+
 		// Remove '{' and '}' from the id captured from report table visual
 		opportunity['originatingleadid@odata.bind'] = `leads(${removeWrappingBraces(
 			opportunityTableFields.LeadId.value
@@ -159,6 +160,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			opportunityStatus[
 				opportunityStatus.findIndex((option) => option.value === 'Meeting Scheduled')
 			].code;
+
 		// Set time for the meeting as selected by the user
 		const meetingStartTime = getCalculatedTime(formData['starttime']);
 		startDate.startDate.setHours(meetingStartTime[0]);
@@ -262,8 +264,9 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			onBlur={(event) => trimInput(event)}
 			title='Topic'
 			name='name'
+			required={true}
 			className={`form-control form-element ${errors.name && `is-invalid`}`}
-			placeHolder={`Enter Topic, e.g.,'100 Laptops'`}
+			placeHolder={`e.g.,'100 Laptops'`}
 			errorMessage={formInputErrorMessage}
 			value={opportunityTableFields.Topic.value}
 			ref={register({ required: true, minLength: 1 })}
@@ -295,6 +298,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			title: 'Title',
 			name: 'title',
 			className: 'form-control form-element',
+
 			// Show '--blank--' where applicable if empty field is fetched from the report
 			placeHolder: '--blank--',
 			value: opportunityTableFields.Topic.value,
@@ -339,6 +343,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			onBlur={(event) => trimInput(event)}
 			title='Description'
 			name='description'
+			required={true}
 			className={`form-control form-element ${errors.description && `is-invalid`}`}
 			placeHolder='Enter Description'
 			errorMessage={formInputErrorMessage}
@@ -365,7 +370,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			<div className='form-content'>
 				{meetingFormInputListBeforeDate}
 				<div>
-					<label className='input-label'>Date and Time</label>
+					<label className='input-label required'>Date and Time</label>
 					<div className='d-flex flex-row justify-content-between align-items-center date-time-container'>
 						<DatePicker
 							className={`form-control form-element date ${theme}`}
@@ -472,8 +477,9 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 		{
 			title: 'Edit Quote',
 			name: 'editquote',
+			required: true,
 			className: `form-control form-element ${errors.editquote && `is-invalid`}`,
-			placeHolder: `Enter quote amount (in $) e.g. '30000'`,
+			placeHolder: `e.g. '30000' (in $)`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
@@ -485,6 +491,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
+				required={input.required}
 				className={input.className}
 				placeHolder={input.placeHolder}
 				errorMessage={input.errorMessage}

@@ -3,9 +3,11 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 .bookmark-list-item {
 	cursor: pointer;
-	font: 400 16px/21px 'Segoe UI';
+	font: 400 16px/21px $app-font-family;
 	height: 42px;
 	margin-bottom: 0;
 	padding: 5px 0;

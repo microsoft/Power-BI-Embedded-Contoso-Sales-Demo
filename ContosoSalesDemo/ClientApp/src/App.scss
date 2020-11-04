@@ -3,6 +3,16 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+$app-font-family: 'Segoe UI', Tahoma, Arial;
+$btn-bg-color-light: #D7DAF9;
+$btn-bg-color-dark: #343741;
+$error-detail-color-light: #3B3C3D;
+$error-detail-color-dark: #D8D8D8;
+$form-element-dark-theme-font-color: #D8D8D8;
+$chevron-margin: calc(100% - 10px);
+$personalise-dropdown-shadow: 0 11px 16px #94949430;
+$userprofile-color-light: #4A4A4A;
+
 .app-name {
 	margin-left: 18px;
 }
@@ -67,8 +77,7 @@ input[type='radio']:focus {
 
 .report-container {
 	display: flex;
-	flex: 1;
-	margin: 34px 35px;
+	margin: 35px;
 	min-height: 80vh;
 	height: 940px;
 	position: sticky;

@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-$userprofile-color-light: #4A4A4A;
+@import '../../App.scss';
 
 .username {
-	font: 700 16px/21px 'Segoe UI';
+	font: 700 16px/21px $app-font-family;
 	letter-spacing: 0;
 	max-width: 93px;
 	opacity: 1;
@@ -21,7 +21,7 @@ $userprofile-color-light: #4A4A4A;
 }
 
 .profile-info {
-	font: 400 12px/16px 'Segoe UI';
+	font: 400 12px/16px $app-font-family;
 	letter-spacing: 0;
 	opacity: 1;
 

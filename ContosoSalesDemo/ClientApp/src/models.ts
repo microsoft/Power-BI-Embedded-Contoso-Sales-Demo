@@ -225,7 +225,12 @@ export interface CDSUpdateAddRequestData {
 
 interface PowerBITableField {
 	name: string;
-	value: string | Date;
+	value: string;
+}
+
+interface PowerBITableDateField {
+	name: string;
+	value: Date;
 }
 
 export interface OpportunityTablePowerBIData {
@@ -236,7 +241,7 @@ export interface OpportunityTablePowerBIData {
 	PrimaryContactName: PowerBITableField;
 	Topic: PowerBITableField;
 	EstimatedRevenue: PowerBITableField;
-	EstimatedCloseDate: PowerBITableField;
+	EstimatedCloseDate: PowerBITableDateField;
 	OpportunityStatus: PowerBITableField;
 	OpportunitySalesStage: PowerBITableField;
 	QuoteAmount: PowerBITableField;
@@ -252,7 +257,7 @@ export interface LeadTablePowerBIData {
 	Status: PowerBITableField;
 	Rating: PowerBITableField;
 	Source: PowerBITableField;
-	CreatedOn: PowerBITableField;
+	CreatedOn: PowerBITableDateField;
 }
 
 export type PreFilledValues = Record<string, unknown>;

@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 .dropdown-menu {
 	width: 200px;
 
@@ -16,7 +18,7 @@
 }
 
 .dropdown-item {
-	font: 400 18px/24px 'Segoe UI';
+	font: 400 18px/24px $app-font-family;
 	height: 50px;
 
 	&.light {

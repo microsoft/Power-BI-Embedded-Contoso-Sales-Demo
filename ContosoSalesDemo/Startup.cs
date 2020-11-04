@@ -5,6 +5,8 @@
 
 namespace ContosoSalesDemo
 {
+	using ContosoSalesDemo.Models;
+	using ContosoSalesDemo.Service;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
@@ -15,7 +17,6 @@ namespace ContosoSalesDemo
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.IdentityModel.Tokens;
 	using System.Text;
-	using ContosoSalesDemo.Models;
 
 	public class Startup
 	{
@@ -70,7 +71,14 @@ namespace ContosoSalesDemo
 				}
 			}
 
-			services.AddControllersWithViews(options => {
+			// Register AadService, CdsService, EmbedService and ExportService for dependency injection
+			services.AddScoped(typeof(AadService))
+					.AddScoped(typeof(CdsService))
+					.AddScoped(typeof(EmbedService))
+					.AddScoped(typeof(ExportService));
+
+			services.AddControllersWithViews(options =>
+			{
 				options.Filters.Add(new AuthorizeFilter(
 					new AuthorizationPolicyBuilder()
 						.RequireAuthenticatedUser()
@@ -80,7 +88,8 @@ namespace ContosoSalesDemo
 				));
 			});
 
-			services.AddAuthorization(options => {
+			services.AddAuthorization(options =>
+			{
 				// GeneralUser policy
 				options.AddPolicy(Constant.GeneralUserPolicyName,
 					policy => policy.RequireClaim("scope"));

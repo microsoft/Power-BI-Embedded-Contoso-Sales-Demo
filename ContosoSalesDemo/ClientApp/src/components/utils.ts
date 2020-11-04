@@ -7,7 +7,14 @@ import React, { MutableRefObject } from 'react';
 import { Report, Page } from 'powerbi-client';
 import { decode } from 'jsonwebtoken';
 import { storageKeyJWT, tokenExpiryKey } from '../constants';
-import { Bookmark, TabConfig, DateFormat, OpportunityTablePowerBIData, LeadTablePowerBIData, PreFilledValues } from '../models';
+import {
+	Bookmark,
+	TabConfig,
+	DateFormat,
+	OpportunityTablePowerBIData,
+	LeadTablePowerBIData,
+	PreFilledValues,
+} from '../models';
 
 /**
  * Gets current active page from the given report
@@ -359,4 +366,10 @@ export function setPreFilledValues(
 			}
 		});
 	});
+}
+
+// Returns true if current browser is Firefox
+export function isBrowserFirefox() {
+	// Refer https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#Browser_Name
+	return navigator.userAgent.includes('Firefox');
 }

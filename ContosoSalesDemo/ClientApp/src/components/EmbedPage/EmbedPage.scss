@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 body {
 	background: #EBEFF3 0% 0% no-repeat padding-box;
 	height: 100vh;
@@ -26,7 +28,7 @@ body {
 
 .preview-tag {
 	border-radius: 5px;
-	font: 700 13px/17px 'Segoe UI';
+	font: 700 13px/17px $app-font-family;
 	height: 28px;
 	letter-spacing: 0;
 	margin: 0 0 0 32px;

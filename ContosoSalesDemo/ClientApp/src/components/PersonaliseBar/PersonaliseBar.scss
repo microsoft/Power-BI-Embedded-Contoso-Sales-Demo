@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-$personalise-dropdown-shadow: 0 11px 16px #94949430;
+@import '../../App.scss';
 
 .layout-img {
 	padding: 17px;
@@ -104,7 +104,7 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 .visual-checkbox-li>label {
 	cursor: pointer;
 	display: block;
-	font: 400 16px/21px 'Segoe UI';
+	font: 400 16px/21px $app-font-family;
 	margin-bottom: 20px;
 	padding-left: 30px;
 	position: relative;
@@ -160,7 +160,7 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 }
 
 .visual-list-title {
-	font: 700 20px/21px 'Segoe UI';
+	font: 700 20px/21px $app-font-family;
 	letter-spacing: 0;
 	text-align: left;
 	
@@ -174,7 +174,7 @@ $personalise-dropdown-shadow: 0 11px 16px #94949430;
 }
 
 .visual-list-subtitle {
-	font: 400 16px/21px 'Segoe UI';
+	font: 400 16px/21px $app-font-family;
 	letter-spacing: 0;
 	padding-bottom: 17px;
 	text-align: left;

@@ -3,11 +3,13 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../../App.scss';
+
 .btn-submit {
 	background: #D7DAF9;
 	border-radius: 4px;
 	color: #303778;
-	font: 700 18px/24px 'Segoe UI';
+	font: 700 18px/24px $app-font-family;
 	opacity: 1;
 	padding: 6px 24px;
 }
@@ -21,18 +23,18 @@
 
 	&.light {
 		color: #6E6E6E;
-		font: 400 40px 'Segoe UI';
+		font: 400 40px $app-font-family;
 	}
 
 	&.dark {
 		color: #D8D8D8;
-		font: 200 40px 'Segoe UI';
+		font: 200 40px $app-font-family;
 	}
 }
 
 .input-title {
 	color: #3B3B3B;
-	font: 400 18px/24px 'Segoe UI';
+	font: 400 18px/24px $app-font-family;
 	letter-spacing: 0;
 	margin-bottom: 10px;
 	opacity: 1;
@@ -102,7 +104,7 @@
 
 .modal-tab {
 	cursor: pointer;
-	font: 400 18px 'Segoe UI';
+	font: 400 18px $app-font-family;
 	letter-spacing: 0;
 	margin-bottom: -1.5px;
 	opacity: 1;
@@ -118,7 +120,7 @@
 }
 
 .modal-tab-active {
-	font: 700 18px 'Segoe UI';
+	font: 700 18px $app-font-family;
 	letter-spacing: 0;
 	opacity: 1;
 	text-align: left;

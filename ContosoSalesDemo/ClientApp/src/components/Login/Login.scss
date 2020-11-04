@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 .auth-error-info {
 	margin-left: 68px;
 }
@@ -19,7 +21,7 @@
 	background-color: #303778;
 	border: none;
 	color: #FFFFFF;
-	font: 400 14px 'Segoe UI';
+	font: 400 14px $app-font-family;
 	height: 37px;
 	margin: 0;
 	opacity: 1;
@@ -39,7 +41,7 @@ $mar-left: 68px;
 .btn-anonymous {
 	color: #2A359A;
 	cursor: pointer;
-	font: 400 14px/19px 'Segoe UI';
+	font: 400 14px/19px $app-font-family;
 	letter-spacing: 0;
 	margin-left: $mar-left;
 	padding-top: 5px;
@@ -92,7 +94,7 @@ $input-border-radius: 3px;
 
 .text-auth-error {
 	color: #AF005E;
-	font: 600 14px/19px 'Segoe UI';
+	font: 600 14px/19px $app-font-family;
 	letter-spacing: 0;
 	opacity: 1;
 }

@@ -104,6 +104,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		formData.crcb2_enddatetime = formattedDueDate;
 		delete formData['activityaccountname'];
 		delete formData['activitycontactfullname'];
+
 		// Remove '{' and '}' from the id captured from report table visual
 		formData['crcb2_LeadId@odata.bind'] = `leads(${removeWrappingBraces(leadTableFields.LeadId.value)})`;
 
@@ -129,6 +130,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
 			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
 		};
+
 		// Remove '{' and '}' from the id captured from report table visual
 		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
 			leadTableFields.AccountId.value
@@ -145,6 +147,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			crcb2_opportunitystatus:
 				opportunityStatus[opportunityStatus.findIndex((option) => (option.value = 'New'))].code,
 		};
+
 		// Remove '{' and '}' from the id captured from report table visual
 		opportunityData['originatingleadid@odata.bind'] = `leads(${removeWrappingBraces(
 			leadTableFields.LeadId.value
@@ -181,6 +184,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
 			subject: leadTableFields.Topic.value,
 		};
+
 		// Remove '{' and '}' from the id captured from report table visual
 		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
 			leadTableFields.AccountId.value
@@ -208,6 +212,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			title: 'Account Name',
 			name: 'activityaccountname',
 			className: 'form-control form-element',
+
 			// Show '--blank--' where applicable if empty field is fetched from the report
 			placeHolder: '--blank--',
 			value: leadTableFields.AccountName.value,
@@ -241,7 +246,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				placeHolder={input.placeHolder}
 				value={input.value}
 				disabled={true}
-				// grab value from form element
+				// Grab value from form element
 				ref={input.ref}
 				key={input.name}
 			/>
@@ -253,10 +258,11 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			onBlur={(event) => trimInput(event)}
 			title='Subject'
 			name='crcb2_subject'
+			required={true}
 			className={`form-control form-element ${errors.crcb2_subject && `is-invalid`}`}
-			placeHolder={`Enter Subject, e.g., '100 Laptops'`}
+			placeHolder={`e.g., '100 Laptops'`}
 			errorMessage={formInputErrorMessage}
-			// grab value from form element
+			// Grab value from form element
 			ref={register({ required: true, minLength: 1 })}
 		/>
 	);
@@ -266,10 +272,11 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			onBlur={(event) => trimInput(event)}
 			title='Description'
 			name='crcb2_description'
+			required={true}
 			className={`form-control form-element ${errors.crcb2_description && `is-invalid`}`}
 			placeHolder='Enter Description'
 			errorMessage={formInputErrorMessage}
-			// grab value from form element
+			// Grab value from form element
 			ref={register({ required: true, minLength: 1 })}
 		/>
 	);
@@ -293,14 +300,18 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				{addActivityInputListBeforeSelect}
 
 				<div>
-					<label className='input-label'>Activity Type</label>
+					<label className='input-label required'>Activity Type</label>
 					<select
 						className={`form-control form-element ${
-							errors.activityType && `is-invalid`
+							errors.crcb2_activitytype && `is-invalid`
 						} ${theme}`}
 						name='crcb2_activitytype'
-						// grab value from form element
+						defaultValue=''
+						// Grab value from form element
 						ref={register({ required: true })}>
+						<option className={`select-list ${theme}`} value='' disabled={true}>
+							Select
+						</option>
 						{Object.keys(activityTypeOptions).map((option) => {
 							return (
 								<option
@@ -312,17 +323,24 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 							);
 						})}
 					</select>
+					<div className='invalid-feedback'>{formInputErrorMessage}</div>
 				</div>
 
 				{subjectBox}
 
 				<div>
-					<label className='input-label'>Priority</label>
+					<label className='input-label required'>Priority</label>
 					<select
-						className={`form-control form-element ${errors.priority && `is-invalid`} ${theme}`}
+						className={`form-control form-element ${
+							errors.crcb2_priority && `is-invalid`
+						} ${theme}`}
 						name='crcb2_priority'
-						// grab value from form element
+						defaultValue=''
+						// Grab value from form element
 						ref={register({ required: true })}>
+						<option className={`select-list ${theme}`} value='' disabled={true}>
+							Select
+						</option>
 						{Object.keys(activityPriorityOptions).map((option) => {
 							return (
 								<option
@@ -334,12 +352,13 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 							);
 						})}
 					</select>
+					<div className='invalid-feedback'>{formInputErrorMessage}</div>
 				</div>
 
 				{descriptionBox}
 
 				<div>
-					<label className='input-label'>Due Date</label>
+					<label className='input-label required'>Due Date</label>
 					<div className='date-container'>
 						<DatePicker
 							className={`form-control form-element date-picker ${theme}`}
@@ -388,8 +407,9 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		{
 			title: 'Estimated Revenue',
 			name: 'estimatedrevenue',
+			required: true,
 			className: `form-control form-element ${errors.estimatedrevenue && `is-invalid`}`,
-			placeHolder: `Enter Estimated Revenue (in $) e.g. '10000'`,
+			placeHolder: `e.g. '10000' (in $)`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
@@ -401,6 +421,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
+				required={input.required}
 				className={input.className}
 				placeHolder={input.placeHolder}
 				errorMessage={input.errorMessage}
@@ -429,7 +450,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			<div className='form-content'>
 				{qualifyLeadInputList}
 				<div>
-					<label className='input-label'>Estimated Close Date</label>
+					<label className='input-label required'>Estimated Close Date</label>
 					<div className='date-container'>
 						<DatePicker
 							className={`form-control form-element date-picker ${theme}`}

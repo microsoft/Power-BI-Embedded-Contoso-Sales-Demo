@@ -26,7 +26,7 @@ export interface LoginFormProps {
 /**
  * DO NOT USE BELOW LOGIN IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
  * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
- */ 
+ */
 export function Login(props: LoginProps): JSX.Element {
 	const { register, handleSubmit } = useForm();
 
@@ -133,7 +133,7 @@ export function Login(props: LoginProps): JSX.Element {
 /**
  * DO NOT USE BELOW LOGIN IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
  * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
- */ 
+ */
 
 /**
  * Authenticates the user credentials and stores the JWT token on successful authentication

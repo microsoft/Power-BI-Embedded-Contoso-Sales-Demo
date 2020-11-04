@@ -3,8 +3,7 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-$btn-bg-color-light: #D7DAF9;
-$btn-bg-color-dark: #343741;
+@import '../../App.scss';
 
 .btn-analytics {
 	background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -55,7 +54,7 @@ $btn-bg-color-dark: #343741;
 
 .btn-analytics-text {
 	display: inline-block;
-	font: 600 17px/9px 'Segoe UI';
+	font: 600 17px/9px $app-font-family;
 	letter-spacing: 0;
 	margin-left: 8px;
 	opacity: 1;
