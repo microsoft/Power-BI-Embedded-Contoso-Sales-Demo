@@ -28,6 +28,7 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 	const onSubmit = async (formData: Lead) => {
 		props.toggleWritebackProgressState();
 		formData.crcb2_leadstatus = leadStatus['New'];
+		formData['createdon'] = createdDate;
 
 		// Build request
 		const addRequestData: CDSAddRequestData = {

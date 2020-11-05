@@ -102,6 +102,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		formData.crcb2_duedatetime = formattedDueDate;
 		formData.crcb2_startdatetime = formattedDueDate;
 		formData.crcb2_enddatetime = formattedDueDate;
+		formData.crcb2_topic = leadTableFields.Topic.value;
 		delete formData['activityaccountname'];
 		delete formData['activitycontactfullname'];
 
@@ -124,8 +125,8 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	const qualifyLeadFormOnSubmit = async (formData: EditLeadFormData) => {
 		props.toggleWritebackProgressState();
 		const leadData: Lead = {
-			crcb2_primarycontactname: formData.leadcontactfullname,
-			subject: formData.leadtopic,
+			crcb2_primarycontactname: leadTableFields.ContactName.value,
+			subject: leadTableFields.Topic.value,
 			crcb2_leadstatus: leadStatus['Qualified'],
 			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
 			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
@@ -136,7 +137,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			leadTableFields.AccountId.value
 		)})`;
 		const opportunityData: Opportunity = {
-			name: formData.leadtopic,
+			name: leadTableFields.Topic.value,
 			crcb2_quoteamount: formData.estimatedrevenue,
 			estimatedclosedate: getFormattedDate(
 				estimateCloseDate.estimateCloseDate,

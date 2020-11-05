@@ -180,7 +180,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			crcb2_duedatetime: formattedEndDate,
 			crcb2_activitytype: activityTypeOptions['Appointment'],
 			crcb2_priority: activityPriorityOptions['High'],
-			crcb2_subject: formData.title,
+			crcb2_subject: opportunityTableFields.Topic.value,
 			crcb2_topic: opportunityTableFields.Topic.value,
 		};
 
