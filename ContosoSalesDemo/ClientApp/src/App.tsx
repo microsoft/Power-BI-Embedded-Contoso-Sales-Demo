@@ -9,7 +9,7 @@ import './App.scss';
 import React, { useState } from 'react';
 import { Card } from './components/Card/Card';
 import { EmbedPage } from './components/EmbedPage/EmbedPage';
-import { AnonymousUser, SalesManager, SalesPerson } from './constants';
+import { AnonymousUser, SalesManager, Salesperson } from './constants';
 import { getStoredToken, checkTokenValidity, getTokenPayload } from './components/utils';
 import { Profile } from './models';
 
@@ -42,10 +42,10 @@ export default function App(): React.FunctionComponentElement<null> {
 			profileImageName = SalesManager.profileImageName;
 			break;
 
-		case Profile.SalesPerson:
-			profileType = Profile.SalesPerson;
+		case Profile.Salesperson:
+			profileType = Profile.Salesperson;
 			if (username) {
-				profileImageName = SalesPerson.profileImageName;
+				profileImageName = Salesperson.profileImageName;
 			} else {
 				profileImageName = AnonymousUser.profileImageName;
 			}

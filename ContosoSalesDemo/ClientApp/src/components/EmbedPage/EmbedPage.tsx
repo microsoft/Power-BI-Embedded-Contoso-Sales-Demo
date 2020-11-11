@@ -163,7 +163,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// List of tabs' name
 	let tabNames: Array<Tab['name']> = [];
-	if (props.profile === Profile.SalesPerson) {
+	if (props.profile === Profile.Salesperson) {
 		tabNames = salesPersonTabs.map((tabConfig) => tabConfig.name);
 	} else if (props.profile === Profile.SalesManager) {
 		tabNames = salesManagerTabs.map((tabConfig) => tabConfig.name);
@@ -485,7 +485,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		let pageName: string;
 
 		// Get report page name corresponding to active tab
-		if (profileType === Profile.SalesPerson) {
+		if (profileType === Profile.Salesperson) {
 			pageName = salesPersonTabs.find((salesPersonTab) => {
 				return salesPersonTab.name === activeTab;
 			})?.reportPageName;

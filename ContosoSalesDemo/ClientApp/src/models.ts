@@ -142,7 +142,7 @@ export enum TabName {
 }
 
 export enum Profile {
-	SalesPerson = 'Sales Person',
+	Salesperson = 'Salesperson',
 	SalesManager = 'Sales Manager',
 }
 

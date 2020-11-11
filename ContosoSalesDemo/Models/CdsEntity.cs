@@ -129,7 +129,7 @@ namespace ContosoSalesDemo.Models
 
 		// Lookup field
 		[JsonProperty("ownerid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string SalesPersonId { get; set; }
+		public string SalespersonId { get; set; }
 
 		// Id field
 		[JsonProperty(Constant.EntityIdFieldLeads, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]

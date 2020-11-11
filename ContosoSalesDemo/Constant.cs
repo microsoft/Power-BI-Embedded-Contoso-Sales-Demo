@@ -8,8 +8,8 @@ public class Constant
 	// Used as key for reading Key Vault items from Configuration
 	public const string SalesManagerUsername = "SalesManagerUsername";
 	public const string SalesManagerPassword = "SalesManagerPassword";
-	public const string SalesPersonUsername = "SalesPersonUsername";
-	public const string SalesPersonPassword = "SalesPersonPassword";
+	public const string SalespersonUsername = "SalespersonUsername";
+	public const string SalespersonPassword = "SalespersonPassword";
 	public const string AppInsightsInstrumentationKey = "AppInsightsInstrumentationKey";
 
 	// Used while fetching AAD token
@@ -60,7 +60,7 @@ public class Constant
 	public const string InvalidRequest = "Invalid request parameters";
 
 	// Used while setting or checking for roles
-	public const string SalesPersonRole = "Sales Person";
+	public const string SalespersonRole = "Salesperson";
 	public const string SalesManagerRole = "Sales Manager";
 
 	// Note: These entity names should match the entity names in CDS

@@ -98,19 +98,19 @@ namespace ContosoSalesDemo.Controllers
 				user = userCollection.Value.SalesManager;
 				logger.LogInformation($"{user.Username}, {Constant.SalesManagerRole}");
 			}
-			else if (string.Equals(selectedRoleValue, Constant.SalesPersonRole, StringComparison.InvariantCultureIgnoreCase))
+			else if (string.Equals(selectedRoleValue, Constant.SalespersonRole, StringComparison.InvariantCultureIgnoreCase))
 			{
 				// Return anonymous user when authorization parameter is not present
 				if (string.IsNullOrWhiteSpace(authorization))
 				{
-					logger.LogInformation($"Anonymous: {Constant.SalesPersonRole}");
+					logger.LogInformation($"Anonymous: {Constant.SalespersonRole}");
 					return userCollection.Value.Anonymous;
 				}
 
-				actualUsername = configuration[Constant.SalesPersonUsername];
-				actualPassword = configuration[Constant.SalesPersonPassword];
-				user = userCollection.Value.SalesPerson;
-				logger.LogInformation($"{user.Username}, {Constant.SalesPersonRole}");
+				actualUsername = configuration[Constant.SalespersonUsername];
+				actualPassword = configuration[Constant.SalespersonPassword];
+				user = userCollection.Value.Salesperson;
+				logger.LogInformation($"{user.Username}, {Constant.SalespersonRole}");
 			}
 			else
 			{

@@ -55,7 +55,7 @@ namespace ContosoSalesDemo
 
 			// Get user roles
 			var salesManagerRole = Configuration.GetSection("Users:SalesManager:Role").Value;
-			var salesPersonRole = Configuration.GetSection("Users:SalesPerson:Role").Value;
+			var salesPersonRole = Configuration.GetSection("Users:Salesperson:Role").Value;
 
 			// Check whether telemetry is On
 			bool.TryParse(Configuration["Telemetry"], out var isTelemetryOn);
@@ -96,7 +96,7 @@ namespace ContosoSalesDemo
 
 				// FieldUser policy
 				options.AddPolicy(Constant.FieldUserPolicyName,
-					policy => policy.RequireClaim("scope", new [] {Configuration.GetSection("Users:SalesPerson:Scope").Value}));
+					policy => policy.RequireClaim("scope", new [] {Configuration.GetSection("Users:Salesperson:Scope").Value}));
 			});
 
 			// In production, the React files will be served from this directory

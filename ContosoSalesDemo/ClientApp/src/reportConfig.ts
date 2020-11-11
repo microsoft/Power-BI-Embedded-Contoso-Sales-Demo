@@ -6,7 +6,7 @@
 import { TabConfig, TabName } from './models';
 
 /**
- * List of tabs for sales person
+ * List of tabs for salesperson
  */
 export const salesPersonTabs: TabConfig[] = [
 	{
