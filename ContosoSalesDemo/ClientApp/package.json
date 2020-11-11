@@ -1,18 +1,18 @@
 {
   "name": "ContosoSalesDemo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "powerbi-client-react": "^1.2.0",
-    "react": "16.13.1",
+    "react": "^17.0.1",
     "react-datepicker": "^3.3.0",
     "react-dom": "^16.14.0",
-    "react-hook-form": "^6.10.1"
+    "react-hook-form": "^6.0.4"
   },
   "devDependencies": {
     "@popperjs/core": "^2.5.4",
     "@types/bootstrap": "^4.5.1",
-    "@types/jasmine": "^3.6.0",
+    "@types/jasmine": "^3.6.1",
     "@types/jquery": "^3.5.4",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/react": "^16.9.55",
@@ -44,7 +44,7 @@
     "sass-lint": "^1.13.1",
     "svg-url-loader": "^6.0.0",
     "ts-loader": "^7.0.5",
-    "typescript": "^3.9.7",
+    "typescript": "^4.0.5",
     "webpack-cli": "^3.3.12"
   },
   "eslintConfig": {
