@@ -7,9 +7,6 @@ namespace ContosoSalesDemo.Models
 {
 	public class CdsConfig
 	{
-		// Base URL of CDS
-		public string BaseUrl { get; set; }
-
 		// Scope of CDS used while fetching AAD Token
 		public string Scope { get; set; }
 
