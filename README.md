@@ -1,4 +1,4 @@
-[*ContosoSalesDemo*](https://contososalesdemo.azurewebsites.net/) is an application based on Power BI [embedded analytics]( https://docs.microsoft.com/power-bi/developer/embedded/), demonstrating a sales management portal. The application empowers salespeople and sale managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sale managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
+[*ContosoSalesDemo*](https://contososalesdemo.azurewebsites.net/) is an application based on Power BI [embedded analytics](https://aka.ms/powerbi-embedded), demonstrating a sales management portal. The application empowers salespeople and sale managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sale managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
 
 
 
@@ -34,17 +34,17 @@ Users can do the following in the application’s user interface:
 
 * Editing (insert/update) data in a table using writeback operations. In the *ContosoSalesDemo* application you can add data to a database directly from the UI.
 
-* Service Principal based authentication. This authentication method is recommended for accessing Power BI and [Common Data Service](https://docs.microsoft.com/powerapps/maker/common-data-service/data-platform-intro) REST APIs.
+* Service Principal based authentication. This authentication method is recommended for accessing Power BI and [Common Data Service](https://aka.ms/microsoft-dataverse) REST APIs.
 
 
 
 ### Integration
 
-*ContosoSalesDemo*  integration with other Microsoft databases and libraries:
+*ContosoSalesDemo* integration with other Microsoft databases and libraries:
 
-* Common Data Service. The application’s  integration can be extended to other databases.
+* Common Data Service. The application’s integration can be extended to other databases.
 
-* [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web/), used for service principal authentication.
+* [MSAL.NET](https://aka.ms/MSAL) used for service principal authentication.
 
 
 
@@ -55,7 +55,7 @@ Users can do the following in the application’s user interface:
 
 |Azure|Power BI|CDS|
 |-----|--------|---|
-|[App Service](https://azure.microsoft.com/en-in/services/app-service/) for hosting the application <br /><br /> [Key Vault](https://azure.microsoft.com/en-in/services/key-vault/) for storing certificates/secrets <br /><br /> [Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/what-is-application-management) app for creating [Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) object <br /><br /> [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) for telemetry|[Power BI Service license](https://powerbi.microsoft.com/en-us/pricing/) for hosting report <br /><br /> [Power BI Embedded capacity](https://azure.microsoft.com/en-in/pricing/details/power-bi-embedded/) for embedding report|[Dynamics 365 license](https://dynamics.microsoft.com/en-in/pricing/) for using CDS as data source|
+|[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating [Service Principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI Service license](https://powerbi.microsoft.com/en-us/pricing) for hosting report <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using CDS as data source|
 
 
 
@@ -77,7 +77,7 @@ Users can do the following in the application’s user interface:
 
 |Power BI|CDS|
 |--------|---|
-|[Power BI SDK](https://github.com/microsoft/PowerBI-CSharp)|[Create entity](https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/create-entity-web-api) <br /> [Update entity](https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/update-delete-entities-using-web-api)|
+|[Power BI SDK](https://github.com/microsoft/PowerBI-CSharp)|[Create entity](https://aka.ms/cds-create-entity-web-api) <br /> [Update entity](https://aka.ms/update-delete-entities-using-web-api)|
 
 
 
