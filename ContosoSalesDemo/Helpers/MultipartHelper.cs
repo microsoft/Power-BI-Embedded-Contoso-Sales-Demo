@@ -5,15 +5,16 @@
 
 namespace ContosoSalesDemo.Helpers
 {
-	using System.Text;
-	using System.Net.Http;
-	using System.Net.Http.Headers;
 	using ContosoSalesDemo.Exceptions;
 	using ContosoSalesDemo.Models;
+	using System.Globalization;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+	using System.Text;
 
 	public static class MultipartHelper
 	{
-		private readonly static string defaultReqHeaders = "Content-Type: application/json;type=entry";
+		private const string DefaultReqHeaders = "Content-Type: application/json;type=entry";
 
 		/// <summary>
 		/// Creates a multipart/mixed content for the given CDS batch requests
@@ -26,13 +27,13 @@ namespace ContosoSalesDemo.Helpers
 			MultipartContent changesetContent = new MultipartContent("mixed", changeSetId);
 
 			var reqIndex = 0;
-			foreach(var req in requests)
+			foreach (var req in requests)
 			{
 				// Building Http request as text inside body of the batch request
 				// Note: We are using batch operations API of CDS which only supports HTTP/1.1
 				// https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api
 				var httpRequest = $"{req.httpMethod} {req.requestUri} HTTP/1.1";
-				var reqHeaders = defaultReqHeaders;
+				var reqHeaders = DefaultReqHeaders;
 
 				// Get inserted row data
 				if (req.preferResponse)
@@ -53,7 +54,7 @@ namespace ContosoSalesDemo.Helpers
 				// Add other headers
 				requestMessageContent.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/http");
 				requestMessageContent.Headers.Add("Content-Transfer-Encoding", "binary");
-				requestMessageContent.Headers.Add("Content-ID", System.Convert.ToString(reqIndex + 1));
+				requestMessageContent.Headers.Add("Content-ID", System.Convert.ToString(reqIndex + 1, CultureInfo.InvariantCulture));
 
 				// Add this request to the changeset
 				changesetContent.Add(requestMessageContent);

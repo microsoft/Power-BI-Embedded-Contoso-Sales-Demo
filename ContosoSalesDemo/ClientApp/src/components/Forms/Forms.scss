@@ -3,8 +3,7 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
-$form-element-dark-theme-font-color: #D8D8D8;
-$chevron-margin: calc(100% - 10px);
+@import '../../App.scss';
 
 .popup {
 	&.light {
@@ -71,7 +70,7 @@ $chevron-margin: calc(100% - 10px);
 }
 
 .popup-form-title {
-	font: 700 20px/27px 'Segoe UI';
+	font: 700 20px/27px $app-font-family;
 	margin-bottom: 0;
 }
 
@@ -91,9 +90,13 @@ $chevron-margin: calc(100% - 10px);
 .form-element:focus {
 	border: 1px solid #C1C1C1;
 	box-shadow: none;
-	font: 400 18px 'Segoe UI';
+	font: 400 18px $app-font-family;
 	height: 50px;
 	padding: 0 20px !important;
+}
+
+.form-element.is-invalid {
+	border-color: #DC3545;
 }
 
 .form-element::placeholder {
@@ -115,7 +118,7 @@ $chevron-margin: calc(100% - 10px);
 }
 
 .input-label {
-	font: 600 18px/36px 'Segoe UI';
+	font: 600 18px/36px $app-font-family;
 }
 
 .btn-form {
@@ -123,7 +126,7 @@ $chevron-margin: calc(100% - 10px);
 	border: none;
 	border-radius: 4px;
 	color: #303778;
-	font: 700 18px 'Segoe UI';
+	font: 700 18px $app-font-family;
 	margin: 0 10px;
 	padding: 10px 35px;
 }
@@ -171,7 +174,7 @@ $chevron-margin: calc(100% - 10px);
 		margin: 4px 2px !important;
 		width: 9px;
 	}
-	font: 500 18px 'Segoe UI';
+	font: 500 18px $app-font-family;
 }
 
 .date-time-container {
@@ -230,13 +233,17 @@ $chevron-margin: calc(100% - 10px);
 		background: #6D485C 0 0 no-repeat padding-box;
 		color: #FFFFFF;
 	}
-	font: 400 20px 'Segoe UI';
+	font: 400 20px $app-font-family;
 	margin-top: 20px;
 	padding: 16px 22px;
 }
 
 .warning-message {
 	padding-left: 22px;
+}
+
+.required:after {
+	content:" *";
 }
 
 // Remove the original arrow and put the custom chevron
@@ -267,7 +274,7 @@ select:focus {
 	}
 }
 
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 1230px) {
 	.tab-container {
 		margin-left: -21px;
 	}

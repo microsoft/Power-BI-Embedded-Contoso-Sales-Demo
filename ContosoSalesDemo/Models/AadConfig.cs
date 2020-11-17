@@ -3,14 +3,14 @@
 // Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
-namespace ContosoSalesDemo
+namespace ContosoSalesDemo.Models
 {
-	using ContosoSalesDemo.Models;
-
-	public class UserCollection
+	public class AadConfig
 	{
-		public User SalesManager { get; set; }
-		public User Salesperson { get; set; }
-		public User Anonymous { get; set; }
+		// Client Id (Application Id) of the AAD app
+		public string ClientId { get; set; }
+
+		// Id of the Azure tenant in which AAD app is hosted
+		public string TenantId { get; set; }
 	}
 }

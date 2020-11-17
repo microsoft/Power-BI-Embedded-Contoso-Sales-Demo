@@ -18,16 +18,16 @@ export function Home(props: HomeProps): JSX.Element {
 
 			<button
 				id='salesperson-btn'
-				onClick={() => props.setProfileType(Profile.SalesPerson)}
+				onClick={() => props.setProfileType(Profile.Salesperson)}
 				className='btn-block col-lg-10 col-md-10 col-sm-12 offset-lg-1 offset-md-1 profile-btn'>
-				Sales Person
+				{Profile.Salesperson}
 			</button>
 
 			<button
 				id='salesmanager-btn'
 				onClick={() => props.setProfileType(Profile.SalesManager)}
 				className='btn-block col-lg-10 col-md-10 col-sm-12 offset-lg-1 offset-md-1 profile-btn'>
-				Sales Manager
+				{Profile.SalesManager}
 			</button>
 		</div>
 	);

@@ -3,11 +3,13 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 button {
 	background-color: #303778;
 	border: none;
 	color: #FFFFFF;
-	font: 400 14px 'Segoe UI';
+	font: 400 14px $app-font-family;
 	margin: 0.5rem 66px;
 	opacity: 1;
 	text-align: center;
@@ -31,7 +33,7 @@ button:focus {
 
 .card-title {
 	color: #303778;
-	font: 600 18px 'Segoe UI';
+	font: 600 18px $app-font-family;
 	margin-bottom: 1rem;
 	text-align: center;
 }

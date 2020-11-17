@@ -23,7 +23,7 @@ namespace ContosoSalesDemo.Helpers
 			userInfo.username = tokenClaims.Where(claim => claim.Type == "username").FirstOrDefault() ? .Value;
 
 			// Anonymous users' role is Sales Person and they not have an username
-			if (userInfo.username is null && string.Equals(userInfo.role, Constant.SalesPersonRole, StringComparison.InvariantCulture))
+			if (userInfo.username is null && string.Equals(userInfo.role, Constant.SalespersonRole, StringComparison.InvariantCulture))
 			{
 				userInfo.username = "anonymous";
 			}

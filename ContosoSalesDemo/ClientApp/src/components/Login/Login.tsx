@@ -26,7 +26,7 @@ export interface LoginFormProps {
 /**
  * DO NOT USE BELOW LOGIN IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
  * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
- */ 
+ */
 export function Login(props: LoginProps): JSX.Element {
 	const { register, handleSubmit } = useForm();
 
@@ -51,7 +51,7 @@ export function Login(props: LoginProps): JSX.Element {
 	function showLoginError() {
 		const authError = document.getElementsByClassName('auth-error-info')[0];
 		authError.classList.remove('d-none');
-		if (props.selectedProfile === Profile.SalesPerson) {
+		if (props.selectedProfile === Profile.Salesperson) {
 			authError.className += ' d-flex auth-error-info-salesperson';
 		} else {
 			authError.className += ' d-flex auth-error-info-salesmanager';
@@ -112,7 +112,7 @@ export function Login(props: LoginProps): JSX.Element {
 				</button>
 			</div>
 
-			{props.selectedProfile === Profile.SalesPerson ? (
+			{props.selectedProfile === Profile.Salesperson ? (
 				<div className='btn-anonymous' onClick={anonymousLoginOnClick}>
 					Enter in demo mode
 				</div>
@@ -133,7 +133,7 @@ export function Login(props: LoginProps): JSX.Element {
 /**
  * DO NOT USE BELOW LOGIN IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
  * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
- */ 
+ */
 
 /**
  * Authenticates the user credentials and stores the JWT token on successful authentication

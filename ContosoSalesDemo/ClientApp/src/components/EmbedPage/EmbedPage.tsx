@@ -20,6 +20,7 @@ import {
 	getStoredToken,
 	checkTokenValidity,
 	getPagesFromReport,
+	isBrowserFirefox,
 } from '../utils';
 import { Footer } from '../Footer/Footer';
 import { pairVisuals, getPageLayout, rearrangeVisualGroups } from '../VisualGroup';
@@ -50,6 +51,7 @@ import {
 	Profile,
 	Theme,
 	ServiceAPI,
+	PreFilledValues,
 } from '../../models';
 import $ from 'jquery';
 
@@ -154,14 +156,14 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	const [updateOpportunityFormPopup, setUpdateOpportunityFormPopup] = useState<boolean>(false);
 
 	// State hook to capture values from the visuals
-	const [visualAutofilledData, setVisualAutofilledData] = useState<object>(null);
+	const [visualAutofilledData, setVisualAutofilledData] = useState<PreFilledValues>(null);
 
 	// State hook to set qna visual index
 	const [qnaVisualIndex, setQnaVisualIndex] = useState<number>(null);
 
 	// List of tabs' name
 	let tabNames: Array<Tab['name']> = [];
-	if (props.profile === Profile.SalesPerson) {
+	if (props.profile === Profile.Salesperson) {
 		tabNames = salesPersonTabs.map((tabConfig) => tabConfig.name);
 	} else if (props.profile === Profile.SalesManager) {
 		tabNames = salesManagerTabs.map((tabConfig) => tabConfig.name);
@@ -483,7 +485,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		let pageName: string;
 
 		// Get report page name corresponding to active tab
-		if (profileType === Profile.SalesPerson) {
+		if (profileType === Profile.Salesperson) {
 			pageName = salesPersonTabs.find((salesPersonTab) => {
 				return salesPersonTab.name === activeTab;
 			})?.reportPageName;
@@ -580,6 +582,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	 * @param height
 	 */
 	function resetReportContainerHeight(height: number) {
+		// Adjust the report height in Firefox to circumvent the vertical scrollbar issue
+		if (isBrowserFirefox()) {
+			height += 25;
+		}
 		$('.report-container').height(height);
 	}
 
@@ -590,6 +596,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		// Reset the height of the report-container based on the width and ratio when activeTab is not Home
 		if (activeTab !== TabName.Home) {
 			const activePageSection = getReportPageName(activeTab, props.profile);
+			$('.report-container').css({ 'margin-top': '35px' });
 			setPageHeight(activePageSection);
 			return;
 		}
@@ -602,7 +609,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		const newReportHeight = rearrangeVisualGroups(reportVisuals, layoutType, powerbiReport);
 
 		// Reset report-container height
-		resetReportContainerHeight(newReportHeight);
+		// Remove visual shift glitch by adding 1px to the report container height
+		resetReportContainerHeight(newReportHeight + 1);
+		$('.report-container').css({ 'margin-top': '25px' });
 
 		// Get layout details for selected visuals in the custom layout
 		// You can find more information at https://github.com/Microsoft/PowerBI-JavaScript/wiki/Custom-Layout

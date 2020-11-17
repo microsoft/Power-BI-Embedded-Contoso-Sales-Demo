@@ -28,6 +28,7 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 	const onSubmit = async (formData: Lead) => {
 		props.toggleWritebackProgressState();
 		formData.crcb2_leadstatus = leadStatus['New'];
+		formData['createdon'] = createdDate;
 
 		// Build request
 		const addRequestData: CDSAddRequestData = {
@@ -47,24 +48,27 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 		{
 			title: 'Account Name',
 			name: 'parentaccountname',
+			required: true,
 			className: `form-control form-element ${errors.parentaccountname && `is-invalid`}`,
-			placeHolder: `Enter Account Name, e.g., 'Fabrikam, Inc.'`,
+			placeHolder: `e.g., 'Fabrikam, Inc.'`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
 		{
 			title: 'Contact Full Name',
 			name: 'crcb2_primarycontactname',
+			required: true,
 			className: `form-control form-element ${errors.crcb2_primarycontactname && `is-invalid`}`,
-			placeHolder: `Enter Full Name, e.g., 'John Doe'`,
+			placeHolder: `e.g., 'John Doe'`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
 		{
 			title: 'Topic',
 			name: 'subject',
+			required: true,
 			className: `form-control form-element ${errors.subject && `is-invalid`}`,
-			placeHolder: `Enter Topic, e.g.,'100 Laptops'`,
+			placeHolder: `e.g.,'100 Laptops'`,
 			errorMessage: formInputErrorMessage,
 			ref: register({ required: true, minLength: 1 }),
 		},
@@ -76,10 +80,11 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 				onBlur={(event) => trimInput(event)}
 				title={input.title}
 				name={input.name}
+				required={input.required}
 				className={input.className}
 				placeHolder={input.placeHolder}
 				errorMessage={input.errorMessage}
-				// grab value from form element
+				// Grab value from form element
 				ref={input.ref}
 				key={input.name}
 			/>
@@ -94,7 +99,7 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 			className={`form-control form-element ${errors.createdon && `is-invalid`}`}
 			placeHolder='Enter Date'
 			errorMessage={formInputErrorMessage}
-			// grab value from form element
+			// Grab value from form element
 			ref={register({ required: true, minLength: 1 })}
 			disabled={true}
 		/>
@@ -134,14 +139,18 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 						{inputListBeforeSelect}
 
 						<div>
-							<label className='input-label'>Rating</label>
+							<label className='input-label required'>Rating</label>
 							<select
 								className={`form-control form-element ${
-									errors.rating && `is-invalid`
+									errors.leadqualitycode && `is-invalid`
 								} ${theme}`}
 								name='leadqualitycode'
-								// grab value from form element
+								defaultValue=''
+								// Grab value from form element
 								ref={register({ required: true })}>
+								<option className={`select-list ${theme}`} value='' disabled={true}>
+									Select
+								</option>
 								{Object.keys(ratingOptionsSet).map((option) => {
 									return (
 										<option
@@ -153,17 +162,22 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 									);
 								})}
 							</select>
+							<div className='invalid-feedback'>{formInputErrorMessage}</div>
 						</div>
 
 						<div>
-							<label className='input-label'>Source</label>
+							<label className='input-label required'>Source</label>
 							<select
 								className={`form-control form-element ${
-									errors.source && `is-invalid`
+									errors.leadsourcecode && `is-invalid`
 								} ${theme}`}
 								name='leadsourcecode'
-								// grab value from form element
+								defaultValue=''
+								// Grab value from form element
 								ref={register({ required: true })}>
+								<option className={`select-list ${theme}`} value='' disabled={true}>
+									Select
+								</option>
 								{Object.keys(sourceOptionsSet).map((option) => {
 									return (
 										<option
@@ -175,6 +189,7 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 									);
 								})}
 							</select>
+							<div className='invalid-feedback'>{formInputErrorMessage}</div>
 						</div>
 
 						{dateBox}

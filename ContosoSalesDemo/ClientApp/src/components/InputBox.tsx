@@ -14,11 +14,12 @@ export interface InputBoxProps {
 	value?: string;
 	disabled?: boolean;
 	onBlur?: { (event): void };
+	required?: boolean;
 }
 
 export const InputBox = React.forwardRef((props: InputBoxProps, ref: React.LegacyRef<HTMLInputElement>) => (
 	<div>
-		<label className='input-label'>{props.title}</label>
+		<label className={`input-label ${props.required && `required`}`}>{props.title}</label>
 		<input
 			type='text'
 			className={props.className}

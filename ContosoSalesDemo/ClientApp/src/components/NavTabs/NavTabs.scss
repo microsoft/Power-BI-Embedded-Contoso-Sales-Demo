@@ -3,12 +3,14 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../App.scss';
+
 .m-left {
 	margin-left: 120px;
 }
 
 .active {
-	font: 700 18px/24px 'Segoe UI';
+	font: 700 18px/24px $app-font-family;
 
 	&.light {
 		border-bottom: 3px solid #303778;
@@ -22,7 +24,7 @@
 }
 
 .inactive {
-	font: 400 18px/24px 'Segoe UI';
+	font: 400 18px/24px $app-font-family;
 
 	&.light {
 		color: #707070 !important;
@@ -57,7 +59,7 @@ li {
 
 .nav-item {
 	color: #303778;
-	font: 700 18px/21px 'Segoe UI';
+	font: 700 18px/21px $app-font-family;
 	letter-spacing: 0;
 	opacity: 1;
 	text-align: left;

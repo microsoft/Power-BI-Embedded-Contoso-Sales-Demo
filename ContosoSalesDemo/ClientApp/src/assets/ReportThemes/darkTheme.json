@@ -1,5 +1,7 @@
 ﻿{
 	"name": "Dark Theme",
+	"firstLevelElements": "#D8D8D8",
+	"background": "#343741",
 	"dataColors": [
 		"#5463CE",
 		"#7ED7E9",
@@ -41,6 +43,16 @@
 		"lightLabel": {
 			"color": "#D8D8D8",
 			"fontSize": 9,
+			"fontFace": "Segoe UI"
+		},
+		"header": {
+			"color": "#D8D8D8",
+			"fontSize": 12,
+			"fontFace": "Segoe UI Semibold"
+		},
+		"label": {
+			"color": "#D8D8D8",
+			"fontSize": 10,
 			"fontFace": "Segoe UI"
 		}
 	},
@@ -217,6 +229,32 @@
 						"fillColor": {
 							"solid": {
 								"color": "#1F2128"
+							}
+						}
+					}
+				]
+			}
+		},
+		"keyDriversVisual": {
+			"*": {
+				"keyInfluencersVisual": [
+					{
+						"canvasColor": {
+							"solid": {
+								"color": "#343741"
+							}
+						}
+					}
+				]
+			}
+		},
+		"slicer": {
+			"*": {
+				"items": [
+					{
+						"background": {
+							"solid": {
+								"color": "#343741"
 							}
 						}
 					}

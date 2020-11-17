@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // ---------------------------------------------------------------------------
 
+@import '../../../App.scss';
+
 .download-anchor {
 	display: none;
 }
@@ -24,7 +26,7 @@
 
 .label-radio {
 	cursor: pointer;
-	font: 400 14px 'Segoe UI';
+	font: 400 14px $app-font-family;
 	letter-spacing: 0;
 	margin-bottom: 1.5px;
 	opacity: 1;
@@ -51,7 +53,7 @@
 
 .text-export-info {
 	color: #FFFFFF;
-	font: 400 12px/36px 'Segoe UI';
+	font: 400 12px/36px $app-font-family;
 	letter-spacing: 0;
 	margin-left: 8px;
 	opacity: 1;
@@ -62,7 +64,7 @@
 }
 
 .wait-message {
-	font: 400 18px/22px 'Segoe UI';
+	font: 400 18px/22px $app-font-family;
 	margin-bottom: 2px;
 
 	&.light {

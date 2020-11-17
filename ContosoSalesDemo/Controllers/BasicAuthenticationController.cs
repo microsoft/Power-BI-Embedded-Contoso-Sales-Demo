@@ -5,6 +5,8 @@
 
 namespace ContosoSalesDemo.Controllers
 {
+	using ContosoSalesDemo.Helpers;
+	using ContosoSalesDemo.Models;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
@@ -14,38 +16,38 @@ namespace ContosoSalesDemo.Controllers
 	using Newtonsoft.Json.Linq;
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.IdentityModel.Tokens.Jwt;
 	using System.Security.Claims;
 	using System.Text;
 	using System.Text.Json;
-	using ContosoSalesDemo.Helpers;
-	using ContosoSalesDemo.Models;
 
 	/**
 	 * DO NOT USE BELOW BASIC AUTHENTICATION IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
 	 * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
-	 */ 
+	 */
 	[ApiController]
 	[Route("[controller]")]
 	public class BasicAuthenticationController : ControllerBase
 	{
-		private static IConfiguration Configuration { get; set; }
-		private static IOptions<JwtTokenConfig> JwtTokenConfig { get; set; }
-		private static IOptions<UserCollection> UserCollection { get; set; }
-		private readonly ILogger<BasicAuthenticationController> Logger;
+		private readonly IConfiguration configuration;
+		private readonly IOptions<JwtTokenConfig> jwtTokenConfig;
+		private readonly IOptions<UserCollection> userCollection;
+		private readonly ILogger<BasicAuthenticationController> logger;
+		private readonly CultureInfo cultureInfo = CultureInfo.InvariantCulture;
 
 		public BasicAuthenticationController(IConfiguration configuration, IOptions<JwtTokenConfig> jwtTokenConfig, IOptions<UserCollection> userCollection, ILogger<BasicAuthenticationController> logger)
 		{
-			Configuration = configuration;
-			JwtTokenConfig = jwtTokenConfig;
-			UserCollection = userCollection;
-			Logger = logger;
+			this.configuration = configuration;
+			this.jwtTokenConfig = jwtTokenConfig;
+			this.userCollection = userCollection;
+			this.logger = logger;
 		}
 
 		/**
 		 * DO NOT USE BELOW BASIC AUTHENTICATION IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
 		 * THE CURRENT IMPLEMENTATION IS FOR DEMO PURPOSE ONLY!!
-		 */ 
+		 */
 		[AllowAnonymous]
 		[HttpPost("/api/auth/token")]
 		public IActionResult GetJwtToken([FromHeader] string authorization, [FromBody] JsonElement selectedRole)
@@ -63,7 +65,7 @@ namespace ContosoSalesDemo.Controllers
 			// Parse role property from selectedRole JSON object
 			if (selectedRole.TryGetProperty("role", out JsonElement roleProperty))
 			{
-				selectedRoleValue = roleProperty.ToString();
+				selectedRoleValue = Convert.ToString(roleProperty, cultureInfo);
 			}
 
 			var user = ValidateUser(authorization, selectedRoleValue);
@@ -74,7 +76,7 @@ namespace ContosoSalesDemo.Controllers
 			}
 
 			var jwtToken = GenerateJwtToken(user);
-			return Ok(jwtToken.ToString());
+			return Ok(Convert.ToString(jwtToken, cultureInfo));
 		}
 
 		/// <summary>
@@ -91,24 +93,24 @@ namespace ContosoSalesDemo.Controllers
 			// Check whether role is either Sales Person or Sales Manager
 			if (string.Equals(selectedRoleValue, Constant.SalesManagerRole, StringComparison.InvariantCultureIgnoreCase))
 			{
-				actualUsername = Configuration[Constant.SalesManagerUsername];
-				actualPassword = Configuration[Constant.SalesManagerPassword];
-				user = UserCollection.Value.SalesManager;
-				Logger.LogInformation($"{user.Username}, {Constant.SalesManagerRole}");
+				actualUsername = configuration[Constant.SalesManagerUsername];
+				actualPassword = configuration[Constant.SalesManagerPassword];
+				user = userCollection.Value.SalesManager;
+				logger.LogInformation($"{user.Username}, {Constant.SalesManagerRole}");
 			}
-			else if (string.Equals(selectedRoleValue, Constant.SalesPersonRole, StringComparison.InvariantCultureIgnoreCase))
+			else if (string.Equals(selectedRoleValue, Constant.SalespersonRole, StringComparison.InvariantCultureIgnoreCase))
 			{
 				// Return anonymous user when authorization parameter is not present
 				if (string.IsNullOrWhiteSpace(authorization))
 				{
-					Logger.LogInformation($"Anonymous: {Constant.SalesPersonRole}");
-					return UserCollection.Value.Anonymous;
+					logger.LogInformation($"Anonymous: {Constant.SalespersonRole}");
+					return userCollection.Value.Anonymous;
 				}
 
-				actualUsername = Configuration[Constant.SalesPersonUsername];
-				actualPassword = Configuration[Constant.SalesPersonPassword];
-				user = UserCollection.Value.SalesPerson;
-				Logger.LogInformation($"{user.Username}, {Constant.SalesPersonRole}");
+				actualUsername = configuration[Constant.SalespersonUsername];
+				actualPassword = configuration[Constant.SalespersonPassword];
+				user = userCollection.Value.Salesperson;
+				logger.LogInformation($"{user.Username}, {Constant.SalespersonRole}");
 			}
 			else
 			{
@@ -134,7 +136,7 @@ namespace ContosoSalesDemo.Controllers
 				!string.Equals(credential[1], actualPassword)
 			)
 			{
-				Logger.LogInformation($"{Constant.InvalidUsernamePassword}, {credential[0]}, {credential[1]}, {selectedRoleValue}");
+				logger.LogInformation($"{Constant.InvalidUsernamePassword}, {credential[0]}, {credential[1]}, {selectedRoleValue}");
 				return null;
 			}
 
@@ -157,17 +159,17 @@ namespace ContosoSalesDemo.Controllers
 				var value = prop.GetValue(user, null);
 				if (value != null)
 				{
-					claims.Add(new Claim(prop.Name.ToLower(), value.ToString()));
+					claims.Add(new Claim(prop.Name.ToLower(), Convert.ToString(value, cultureInfo)));
 				}
 			}
 
 			// Time after which JWT token will expire
-			var expirationTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(JwtTokenConfig.Value.ExpiresInMinutes));
+			var expirationTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtTokenConfig.Value.ExpiresInMinutes));
 
 			// Time before which JWT token will not be accepted for processing
 			var notBeforeTime = DateTime.UtcNow;
 
-			var signingKey = Encoding.UTF8.GetBytes(Configuration[Configuration["KeyVault:KeyName"]]);
+			var signingKey = Encoding.UTF8.GetBytes(configuration[configuration["KeyVault:KeyName"]]);
 
 			// Create token signature
 			var securityKey = new SymmetricSecurityKey(signingKey);
@@ -177,7 +179,7 @@ namespace ContosoSalesDemo.Controllers
 			var tokenHeader = new JwtHeader(signingCredentials);
 
 			// Create token payload
-			var tokenPayload = new JwtPayload(JwtTokenConfig.Value.Issuer, JwtTokenConfig.Value.Audience, claims, notBeforeTime, expirationTime);
+			var tokenPayload = new JwtPayload(jwtTokenConfig.Value.Issuer, jwtTokenConfig.Value.Audience, claims, notBeforeTime, expirationTime);
 
 			// Create token
 			var token = new JwtSecurityToken(tokenHeader, tokenPayload);

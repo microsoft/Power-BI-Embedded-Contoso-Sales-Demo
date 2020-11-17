@@ -7,7 +7,14 @@ import React, { MutableRefObject } from 'react';
 import { Report, Page } from 'powerbi-client';
 import { decode } from 'jsonwebtoken';
 import { storageKeyJWT, tokenExpiryKey } from '../constants';
-import { Bookmark, TabConfig, DateFormat } from '../models';
+import {
+	Bookmark,
+	TabConfig,
+	DateFormat,
+	OpportunityTablePowerBIData,
+	LeadTablePowerBIData,
+	PreFilledValues,
+} from '../models';
 
 /**
  * Gets current active page from the given report
@@ -348,12 +355,21 @@ export function removeWrappingBraces(inputString: string): string {
  * @param preFilledValuesObject object returned from report with values of data point
  * @param tableFieldValuesObject object to set with values returned from report
  */
-export function setPreFilledValues(preFilledValuesObject: object, tableFieldValuesObject: object): void {
+export function setPreFilledValues(
+	preFilledValuesObject: PreFilledValues,
+	tableFieldValuesObject: OpportunityTablePowerBIData | LeadTablePowerBIData
+): void {
 	Object.keys(preFilledValuesObject).map((index) => {
 		Object.keys(tableFieldValuesObject).map((key) => {
-			if (preFilledValuesObject[index].target.column === tableFieldValuesObject[key].name) {
-				return (tableFieldValuesObject[key].value = preFilledValuesObject[index].equals);
+			if (preFilledValuesObject[index]['target']['column'] === tableFieldValuesObject[key].name) {
+				tableFieldValuesObject[key].value = preFilledValuesObject[index]['equals'];
 			}
 		});
 	});
+}
+
+// Returns true if current browser is Firefox
+export function isBrowserFirefox() {
+	// Refer https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#Browser_Name
+	return navigator.userAgent.includes('Firefox');
 }

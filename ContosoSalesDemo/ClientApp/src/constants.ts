@@ -4,9 +4,9 @@
 // ---------------------------------------------------------------------------
 
 /**
- * SalesPerson details
+ * Salesperson details
  */
-export const SalesPerson = {
+export const Salesperson = {
 	profileImageName: 'salesperson-profile',
 };
 

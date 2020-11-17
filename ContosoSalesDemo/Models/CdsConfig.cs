@@ -3,14 +3,14 @@
 // Licensed under the MIT license.
 // ----------------------------------------------------------------------------
 
-namespace ContosoSalesDemo
+namespace ContosoSalesDemo.Models
 {
-	using ContosoSalesDemo.Models;
-
-	public class UserCollection
+	public class CdsConfig
 	{
-		public User SalesManager { get; set; }
-		public User Salesperson { get; set; }
-		public User Anonymous { get; set; }
+		// Scope of CDS used while fetching AAD Token
+		public string Scope { get; set; }
+
+		// API Base URL of CDS
+		public string ApiBaseUrl { get; set; }
 	}
 }
