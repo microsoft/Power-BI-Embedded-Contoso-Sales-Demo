@@ -1,10 +1,16 @@
-[*ContosoSalesDemo*](https://contososalesdemo.azurewebsites.net/) is an application based on Power BI [embedded analytics](https://aka.ms/powerbi-embedded), demonstrating a sales management portal. The application empowers salespeople and sale managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sale managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
+[Contoso Sales Demo](https://contososalesdemo.azurewebsites.net/) is an application based on Power BI [embedded analytics](https://aka.ms/powerbi-embedded), demonstrating a sales management portal. The application empowers salespeople and sale managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sales managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
 
+Follow the below steps to get a first hand experience of the demo:
+1. Open the [Contoso Sales Demo](http://contososalesdemo.azurewebsites.net/) application
+2. Click on "Salesperson" button
+3. Click on "Enter in demo mode" 
+
+This will log you in as a Salesperson as an anonymous user where you can use the app in read-only mode.
 
 
 ## Embedded analytics features
 
-This section lists the embedded analytics features demonstrated by the *ContosoSalesDemo* application.
+This section lists the embedded analytics features demonstrated by the *Contoso Sales Demo* application.
 
 
 
@@ -24,7 +30,7 @@ Users can do the following in the application’s user interface:
 
 ### Functionality
 
-*ContosoSalesDemo*  functionalities based on embedded analytics:
+*Contoso Sales Demo*  functionalities based on embedded analytics:
 
 * Exporting reports to PDF, PPT and PNG formats.
 
@@ -32,7 +38,7 @@ Users can do the following in the application’s user interface:
 
 * Binding custom actions to button clicks.
 
-* Editing (insert/update) data in a table using writeback operations. In the *ContosoSalesDemo* application you can add data to a database directly from the UI.
+* Editing (insert/update) data in a table using writeback operations. In the *Contoso Sales Demo* application you can add data to a database directly from the UI.
 
 * Service Principal based authentication. This authentication method is recommended for accessing Power BI and [Common Data Service](https://aka.ms/microsoft-dataverse) REST APIs.
 
@@ -40,7 +46,7 @@ Users can do the following in the application’s user interface:
 
 ### Integration
 
-*ContosoSalesDemo* integration with other Microsoft databases and libraries:
+*Contoso Sales Demo* integration with other Microsoft databases and libraries:
 
 * Common Data Service. The application’s integration can be extended to other databases.
 
