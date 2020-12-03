@@ -343,33 +343,33 @@ export function trimInput(event: React.FocusEvent<HTMLInputElement>): void {
 }
 
 /**
- * Function to remove '{' and '}' from entity id returned from report
- * @param inputString Entity Id
+ * Function to remove '{' and '}' from table id returned from report
+ * @param inputString Table Id
  */
 export function removeWrappingBraces(inputString: string): string {
 	return inputString.replace(/{/g, '').replace(/}/g, '');
 }
 
 /**
- * Function to set form field values with the values returned from report
+ * Function to set form column values with the values returned from report
  * @param preFilledValuesObject object returned from report with values of data point
- * @param tableFieldValuesObject object to set with values returned from report
+ * @param tableColumnValuesObject object to set with values returned from report
  */
 export function setPreFilledValues(
 	preFilledValuesObject: PreFilledValues,
-	tableFieldValuesObject: OpportunityTablePowerBIData | LeadTablePowerBIData
+	tableColumnValuesObject: OpportunityTablePowerBIData | LeadTablePowerBIData
 ): void {
 	Object.keys(preFilledValuesObject).map((index) => {
-		Object.keys(tableFieldValuesObject).map((key) => {
-			if (preFilledValuesObject[index]['target']['column'] === tableFieldValuesObject[key].name) {
-				tableFieldValuesObject[key].value = preFilledValuesObject[index]['equals'];
+		Object.keys(tableColumnValuesObject).map((key) => {
+			if (preFilledValuesObject[index]['target']['column'] === tableColumnValuesObject[key].name) {
+				tableColumnValuesObject[key].value = preFilledValuesObject[index]['equals'];
 			}
 		});
 	});
 }
 
 // Returns true if current browser is Firefox
-export function isBrowserFirefox() {
+export function isBrowserFirefox(): boolean {
 	// Refer https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#Browser_Name
 	return navigator.userAgent.includes('Firefox');
 }

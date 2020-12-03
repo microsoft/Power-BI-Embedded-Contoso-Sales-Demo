@@ -9,15 +9,15 @@ import { useForm } from 'react-hook-form';
 import { InputBox } from '../InputBox';
 import {
 	formInputErrorMessage,
-	entityNameLeads,
-	ratingOptionsSet,
-	sourceOptionsSet,
+	tableNameLeads,
+	ratingChoice,
+	sourceChoice,
 	leadStatus,
 } from '../../constants';
 import { getFormattedDate, trimInput } from '../utils';
-import { saveCDSData, CDSAddRequest } from './SaveData';
+import { saveDataverseData, DataverseAddRequest } from './SaveData';
 import ThemeContext from '../../themeContext';
-import { Lead, FormProps, DateFormat, CDSAddRequestData } from '../../models';
+import { Lead, FormProps, DateFormat, DataverseAddRequestData } from '../../models';
 import { LoadingSpinner } from '../LoadingSpinner/LoadingSpinner';
 
 const createdDate = new Date();
@@ -31,12 +31,12 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 		formData['createdon'] = createdDate;
 
 		// Build request
-		const addRequestData: CDSAddRequestData = {
+		const addRequestData: DataverseAddRequestData = {
 			newData: JSON.stringify(formData),
-			addEntityType: entityNameLeads,
+			addTableType: tableNameLeads,
 		};
-		const addRequest = new CDSAddRequest(addRequestData);
-		const result = await saveCDSData(addRequest, props.updateApp, props.setError);
+		const addRequest = new DataverseAddRequest(addRequestData);
+		const result = await saveDataverseData(addRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -151,12 +151,12 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 								<option className={`select-list ${theme}`} value='' disabled={true}>
 									Select
 								</option>
-								{Object.keys(ratingOptionsSet).map((option) => {
+								{Object.keys(ratingChoice).map((option) => {
 									return (
 										<option
 											className={`select-list ${theme}`}
-											value={ratingOptionsSet[option]}
-											key={ratingOptionsSet[option]}>
+											value={ratingChoice[option]}
+											key={ratingChoice[option]}>
 											{option}
 										</option>
 									);
@@ -178,12 +178,12 @@ export function AddLeadForm(props: FormProps): JSX.Element {
 								<option className={`select-list ${theme}`} value='' disabled={true}>
 									Select
 								</option>
-								{Object.keys(sourceOptionsSet).map((option) => {
+								{Object.keys(sourceChoice).map((option) => {
 									return (
 										<option
 											className={`select-list ${theme}`}
-											value={sourceOptionsSet[option]}
-											key={sourceOptionsSet[option]}>
+											value={sourceChoice[option]}
+											key={sourceChoice[option]}>
 											{option}
 										</option>
 									);

@@ -200,6 +200,9 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	// State hook for Analytics button background
 	const [analyticsBtnActive, setAnalyticsBtnActive] = useState<string>('');
 
+	// State hook for checking the report render
+	const [isReportRendered, setReportRendered] = useState<boolean>(false);
+
 	/* End of state hooks declaration */
 
 	// Report embedding event handlers
@@ -257,6 +260,8 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	eventHandlersMap.set('rendered', async function (event, embeddedReport: Report) {
 		console.log('Report has rendered');
+		setReportRendered(true);
+
 		// Add logic to trigger after report is rendered
 		const activePage = await getActivePage(embeddedReport);
 		const homePage = getReportPageName(TabName.Home, props.profile);
@@ -474,6 +479,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 	}
 
 	function tabOnClick(selectedTab: Tab['name']): void {
+		if (!isReportRendered) {
+			return;
+		}
+
 		// Close personalise bar when other tab is clicked
 		if (selectedTab !== TabName.Home) {
 			setShowPersonaliseBar(false);
@@ -640,8 +649,10 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 
 	// Attaches the rearrangeAndRenderCustomLayout function to resize event of window
 	// Thus whenever window is resized, visuals will get arranged as per the dimensions of the resized report-container
-	// For window.onresize the below function works as a normal function
-	window.onresize = rearrangeAndRenderCustomLayout;
+	// For window.onresize the below function works as a normal function when report is successfully rendered
+	if (isReportRendered) {
+		window.onresize = rearrangeAndRenderCustomLayout;
+	}
 
 	// Update the layout of the embedded report
 	useEffect(() => {
