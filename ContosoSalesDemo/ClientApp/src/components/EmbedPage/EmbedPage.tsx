@@ -313,7 +313,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		const msBeforeExpiration: number = minutesBeforeExpiration * 60 * 1000;
 
 		// Current UTC time in ms
-		const msCurrentTime: number = Date.now() + new Date().getTimezoneOffset() * 60 * 1000;
+		const msCurrentTime: number = Date.now();
 
 		// Time until token refresh in milliseconds
 		const msToRefresh: number = tokenExpiration - msCurrentTime - msBeforeExpiration;
@@ -322,6 +322,7 @@ export function EmbedPage(props: EmbedPageProps): JSX.Element {
 		if (msToRefresh <= 0) {
 			fetchReportConfig();
 		} else {
+			console.debug(`Embed token will be refreshed in ${msToRefresh} ms`);
 			setTimeout(fetchReportConfig, msToRefresh);
 		}
 	}
