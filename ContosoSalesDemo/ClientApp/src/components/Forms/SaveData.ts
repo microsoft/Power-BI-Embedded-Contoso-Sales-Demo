@@ -7,10 +7,10 @@ import { getStoredToken, checkTokenValidity } from '../utils';
 import {
 	ServiceAPI,
 	UpdateApp,
-	CDSRequest,
-	CDSAddRequestData,
-	CDSUpdateRequestData,
-	CDSUpdateAddRequestData,
+	DataverseRequest,
+	DataverseAddRequestData,
+	DataverseUpdateRequestData,
+	DataverseUpdateAddRequestData,
 } from '../../models';
 
 /**
@@ -19,8 +19,8 @@ import {
  * @param updateApp Callback method to re-render App component if session is expired
  * @param setError Shows the server returned error
  */
-export async function saveCDSData(
-	reqObject: CDSRequest,
+export async function saveDataverseData(
+	reqObject: DataverseRequest,
 	updateApp: UpdateApp,
 	setError: { (error: string): void }
 ): Promise<boolean> {
@@ -33,7 +33,7 @@ export async function saveCDSData(
 		return false;
 	}
 	try {
-		const serverRes = await fetch(reqObject.cdsServiceApi, {
+		const serverRes = await fetch(reqObject.dataverseServiceApi, {
 			method: reqObject.method,
 			headers: {
 				'Content-Type': 'application/json',
@@ -57,35 +57,35 @@ export async function saveCDSData(
 	return true;
 }
 
-export class CDSAddRequest implements CDSRequest {
-	cdsServiceApi: string;
+export class DataverseAddRequest implements DataverseRequest {
+	dataverseServiceApi: string;
 	method: string;
 	body: string;
-	constructor(cdsAddRequestData: CDSAddRequestData) {
-		this.cdsServiceApi = ServiceAPI.WriteBackAdd;
+	constructor(dataverseAddRequestData: DataverseAddRequestData) {
+		this.dataverseServiceApi = ServiceAPI.WriteBackAdd;
 		this.method = 'POST';
-		this.body = JSON.stringify(cdsAddRequestData);
+		this.body = JSON.stringify(dataverseAddRequestData);
 	}
 }
 
-export class CDSUpdateRequest implements CDSRequest {
-	cdsServiceApi: string;
+export class DataverseUpdateRequest implements DataverseRequest {
+	dataverseServiceApi: string;
 	method: string;
 	body: string;
-	constructor(cdsUpdateRequestData: CDSUpdateRequestData) {
-		this.cdsServiceApi = ServiceAPI.WriteBackUpdate;
+	constructor(dataverseUpdateRequestData: DataverseUpdateRequestData) {
+		this.dataverseServiceApi = ServiceAPI.WriteBackUpdate;
 		this.method = 'PUT';
-		this.body = JSON.stringify(cdsUpdateRequestData);
+		this.body = JSON.stringify(dataverseUpdateRequestData);
 	}
 }
 
-export class CDSUpdateAddRequest implements CDSRequest {
-	cdsServiceApi: string;
+export class DataverseUpdateAddRequest implements DataverseRequest {
+	dataverseServiceApi: string;
 	method: string;
 	body: string;
-	constructor(cdsUpdateAddRequestData: CDSUpdateAddRequestData) {
-		this.cdsServiceApi = ServiceAPI.WriteBackUpdateAdd;
+	constructor(dataverseUpdateAddRequestData: DataverseUpdateAddRequestData) {
+		this.dataverseServiceApi = ServiceAPI.WriteBackUpdateAdd;
 		this.method = 'POST';
-		this.body = JSON.stringify(cdsUpdateAddRequestData);
+		this.body = JSON.stringify(dataverseUpdateAddRequestData);
 	}
 }

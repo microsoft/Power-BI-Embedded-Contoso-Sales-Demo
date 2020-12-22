@@ -7,13 +7,13 @@ namespace ContosoSalesDemo.Exceptions
 {
 	using System;
 
-	public class CdsException : Exception
+	public class DataverseException : Exception
 	{
-		public CdsException()
+		public DataverseException()
 		{
 		}
 
-		public CdsException(string message)
+		public DataverseException(string message)
 			: base(message)
 		{
 		}

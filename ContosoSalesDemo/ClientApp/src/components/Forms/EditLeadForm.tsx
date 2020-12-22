@@ -13,20 +13,25 @@ import { InputBox } from '../InputBox';
 import { Icon } from '../Icon/Icon';
 import {
 	editLeadPopupTabNames,
-	entityNameLeads,
-	entityNameOpportunities,
-	entityNameActivities,
+	tableNameLeads,
+	tableNameOpportunities,
+	tableNameActivities,
 	formInputErrorMessage,
-	ratingOptionsSet,
-	sourceOptionsSet,
-	activityTypeOptions,
+	ratingChoice,
+	sourceChoice,
+	activityTypeChoice,
 	leadStatus,
-	activityPriorityOptions,
+	activityPriorityChoice,
 	opportunityStatus,
 	opportunitySalesStage,
 } from '../../constants';
 import { setPreFilledValues, getFormattedDate, trimInput, removeWrappingBraces } from '../utils';
-import { saveCDSData, CDSAddRequest, CDSUpdateAddRequest, CDSUpdateRequest } from './SaveData';
+import {
+	saveDataverseData,
+	DataverseAddRequest,
+	DataverseUpdateAddRequest,
+	DataverseUpdateRequest,
+} from './SaveData';
 import ThemeContext from '../../themeContext';
 import {
 	EditLeadFormData,
@@ -36,9 +41,9 @@ import {
 	Tab,
 	FormProps,
 	DateFormat,
-	CDSAddRequestData,
-	CDSUpdateRequestData,
-	CDSUpdateAddRequestData,
+	DataverseAddRequestData,
+	DataverseUpdateRequestData,
+	DataverseUpdateAddRequestData,
 	LeadTablePowerBIData,
 	PreFilledValues,
 } from '../../models';
@@ -78,8 +83,8 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		}
 	);
 
-	// Lead table visual fields in embedded report
-	const leadTableFields: LeadTablePowerBIData = {
+	// Lead table visual columns in embedded report
+	const leadTableColumns: LeadTablePowerBIData = {
 		LeadId: { name: 'Lead Id', value: null },
 		BaseId: { name: 'crcb2_baseid', value: null },
 		AccountId: { name: 'Account Id', value: null },
@@ -93,7 +98,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	};
 
 	// Set values from report's table visual
-	setPreFilledValues(props.preFilledValues, leadTableFields);
+	setPreFilledValues(props.preFilledValues, leadTableColumns);
 
 	const { register, handleSubmit, errors } = useForm();
 	const addActivityFormOnSubmit = async (formData: Activity) => {
@@ -102,20 +107,20 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		formData.crcb2_duedatetime = formattedDueDate;
 		formData.crcb2_startdatetime = formattedDueDate;
 		formData.crcb2_enddatetime = formattedDueDate;
-		formData.crcb2_topic = leadTableFields.Topic.value;
+		formData.crcb2_topic = leadTableColumns.Topic.value;
 		delete formData['activityaccountname'];
 		delete formData['activitycontactfullname'];
 
 		// Remove '{' and '}' from the id captured from report table visual
-		formData['crcb2_LeadId@odata.bind'] = `leads(${removeWrappingBraces(leadTableFields.LeadId.value)})`;
+		formData['crcb2_LeadId@odata.bind'] = `leads(${removeWrappingBraces(leadTableColumns.LeadId.value)})`;
 
 		// Build request
-		const addRequestData: CDSAddRequestData = {
+		const addRequestData: DataverseAddRequestData = {
 			newData: JSON.stringify(formData),
-			addEntityType: entityNameActivities,
+			addTableType: tableNameActivities,
 		};
-		const addRequest = new CDSAddRequest(addRequestData);
-		const result = await saveCDSData(addRequest, props.updateApp, props.setError);
+		const addRequest = new DataverseAddRequest(addRequestData);
+		const result = await saveDataverseData(addRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -125,19 +130,19 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 	const qualifyLeadFormOnSubmit = async (formData: EditLeadFormData) => {
 		props.toggleWritebackProgressState();
 		const leadData: Lead = {
-			crcb2_primarycontactname: leadTableFields.ContactName.value,
-			subject: leadTableFields.Topic.value,
+			crcb2_primarycontactname: leadTableColumns.ContactName.value,
+			subject: leadTableColumns.Topic.value,
 			crcb2_leadstatus: leadStatus['Qualified'],
-			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
-			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
+			leadqualitycode: ratingChoice[leadTableColumns.Rating.value],
+			leadsourcecode: sourceChoice[leadTableColumns.Source.value],
 		};
 
 		// Remove '{' and '}' from the id captured from report table visual
 		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
-			leadTableFields.AccountId.value
+			leadTableColumns.AccountId.value
 		)})`;
 		const opportunityData: Opportunity = {
-			name: leadTableFields.Topic.value,
+			name: leadTableColumns.Topic.value,
 			crcb2_quoteamount: formData.estimatedrevenue,
 			estimatedclosedate: getFormattedDate(
 				estimateCloseDate.estimateCloseDate,
@@ -151,25 +156,25 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 
 		// Remove '{' and '}' from the id captured from report table visual
 		opportunityData['originatingleadid@odata.bind'] = `leads(${removeWrappingBraces(
-			leadTableFields.LeadId.value
+			leadTableColumns.LeadId.value
 		)})`;
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: leadTableFields.BaseId.value ?? leadTableFields.LeadId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: leadTableColumns.BaseId.value ?? leadTableColumns.LeadId.value,
 			updatedData: JSON.stringify(leadData),
-			updateEntityType: entityNameLeads,
+			updateTableType: tableNameLeads,
 		};
-		const addRequestData: CDSAddRequestData = {
+		const addRequestData: DataverseAddRequestData = {
 			newData: JSON.stringify(opportunityData),
-			addEntityType: entityNameOpportunities,
+			addTableType: tableNameOpportunities,
 		};
-		const updateAddRequestData: CDSUpdateAddRequestData = {
+		const updateAddRequestData: DataverseUpdateAddRequestData = {
 			UpdateReqBody: updateRequestData,
 			AddReqBody: addRequestData,
 		};
-		const requestObject = new CDSUpdateAddRequest(updateAddRequestData);
-		const result = await saveCDSData(requestObject, props.updateApp, props.setError);
+		const requestObject = new DataverseUpdateAddRequest(updateAddRequestData);
+		const result = await saveDataverseData(requestObject, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -180,25 +185,25 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 		props.toggleWritebackProgressState();
 		const leadData: Lead = {
 			crcb2_leadstatus: leadStatus['Disqualified'],
-			crcb2_primarycontactname: leadTableFields.ContactName.value,
-			leadqualitycode: ratingOptionsSet[leadTableFields.Rating.value],
-			leadsourcecode: sourceOptionsSet[leadTableFields.Source.value],
-			subject: leadTableFields.Topic.value,
+			crcb2_primarycontactname: leadTableColumns.ContactName.value,
+			leadqualitycode: ratingChoice[leadTableColumns.Rating.value],
+			leadsourcecode: sourceChoice[leadTableColumns.Source.value],
+			subject: leadTableColumns.Topic.value,
 		};
 
 		// Remove '{' and '}' from the id captured from report table visual
 		leadData['parentaccountid@odata.bind'] = `accounts(${removeWrappingBraces(
-			leadTableFields.AccountId.value
+			leadTableColumns.AccountId.value
 		)})`;
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: leadTableFields.BaseId.value ?? leadTableFields.LeadId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: leadTableColumns.BaseId.value ?? leadTableColumns.LeadId.value,
 			updatedData: JSON.stringify(leadData),
-			updateEntityType: entityNameLeads,
+			updateTableType: tableNameLeads,
 		};
-		const updateRequest = new CDSUpdateRequest(updateRequestData);
-		const result = await saveCDSData(updateRequest, props.updateApp, props.setError);
+		const updateRequest = new DataverseUpdateRequest(updateRequestData);
+		const result = await saveDataverseData(updateRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -214,9 +219,9 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			name: 'activityaccountname',
 			className: 'form-control form-element',
 
-			// Show '--blank--' where applicable if empty field is fetched from the report
+			// Show '--blank--' where applicable if empty column is fetched from the report
 			placeHolder: '--blank--',
-			value: leadTableFields.AccountName.value,
+			value: leadTableColumns.AccountName.value,
 			ref: register,
 		},
 		{
@@ -224,7 +229,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			name: 'activitycontactfullname',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: leadTableFields.ContactName.value,
+			value: leadTableColumns.ContactName.value,
 			ref: register,
 		},
 		{
@@ -232,7 +237,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			name: 'crcb2_topic',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: leadTableFields.Topic.value,
+			value: leadTableColumns.Topic.value,
 			ref: register,
 		},
 	];
@@ -313,12 +318,12 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 						<option className={`select-list ${theme}`} value='' disabled={true}>
 							Select
 						</option>
-						{Object.keys(activityTypeOptions).map((option) => {
+						{Object.keys(activityTypeChoice).map((option) => {
 							return (
 								<option
 									className={`select-list ${theme}`}
-									value={activityTypeOptions[option]}
-									key={activityTypeOptions[option]}>
+									value={activityTypeChoice[option]}
+									key={activityTypeChoice[option]}>
 									{option}
 								</option>
 							);
@@ -342,12 +347,12 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 						<option className={`select-list ${theme}`} value='' disabled={true}>
 							Select
 						</option>
-						{Object.keys(activityPriorityOptions).map((option) => {
+						{Object.keys(activityPriorityChoice).map((option) => {
 							return (
 								<option
 									className={`select-list ${theme}`}
-									value={activityPriorityOptions[option]}
-									key={activityPriorityOptions[option]}>
+									value={activityPriorityChoice[option]}
+									key={activityPriorityChoice[option]}>
 									{option}
 								</option>
 							);
@@ -383,7 +388,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
 			errorMessage: formInputErrorMessage,
-			value: leadTableFields.AccountName.value,
+			value: leadTableColumns.AccountName.value,
 			disabled: true,
 			ref: register,
 		},
@@ -392,7 +397,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			name: 'leadcontactfullname',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: leadTableFields.ContactName.value,
+			value: leadTableColumns.ContactName.value,
 			disabled: true,
 			ref: register,
 		},
@@ -401,7 +406,7 @@ export function EditLeadForm(props: EditLeadFormProps): JSX.Element {
 			name: 'leadtopic',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: leadTableFields.Topic.value,
+			value: leadTableColumns.Topic.value,
 			disabled: true,
 			ref: register,
 		},

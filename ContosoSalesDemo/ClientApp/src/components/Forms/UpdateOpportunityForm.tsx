@@ -12,13 +12,13 @@ import { NavTabs } from '../NavTabs/NavTabs';
 import { InputBox } from '../InputBox';
 import {
 	opportunityPopupTabNames,
-	entityNameActivities,
-	entityNameOpportunities,
+	tableNameActivities,
+	tableNameOpportunities,
 	formInputErrorMessage,
-	activityTypeOptions,
+	activityTypeChoice,
 	opportunityStatus,
 	opportunitySalesStage,
-	activityPriorityOptions,
+	activityPriorityChoice,
 } from '../../constants';
 import { Icon } from '../Icon/Icon';
 import {
@@ -29,7 +29,7 @@ import {
 	getFormattedDate,
 	getCalculatedTime,
 } from '../utils';
-import { saveCDSData, CDSUpdateAddRequest, CDSUpdateRequest } from './SaveData';
+import { saveDataverseData, DataverseUpdateAddRequest, DataverseUpdateRequest } from './SaveData';
 import ThemeContext from '../../themeContext';
 import {
 	UpdateOpportunityFormData,
@@ -38,9 +38,9 @@ import {
 	Tab,
 	FormProps,
 	DateFormat,
-	CDSAddRequestData,
-	CDSUpdateRequestData,
-	CDSUpdateAddRequestData,
+	DataverseAddRequestData,
+	DataverseUpdateRequestData,
+	DataverseUpdateAddRequestData,
 	OpportunityTablePowerBIData,
 	PreFilledValues,
 } from '../../models';
@@ -78,8 +78,8 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 		}
 	);
 
-	// Opportunity table visual fields in embedded report
-	const opportunityTableFields: OpportunityTablePowerBIData = {
+	// Opportunity table visual columns in embedded report
+	const opportunityTableColumns: OpportunityTablePowerBIData = {
 		OpportunityId: { name: 'Opportunity Id', value: null },
 		BaseId: { name: 'crcb2_baseid', value: null },
 		LeadId: { name: 'Lead Id', value: null },
@@ -94,40 +94,40 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 	};
 
 	// Set values from report's table visual
-	setPreFilledValues(props.preFilledValues, opportunityTableFields);
+	setPreFilledValues(props.preFilledValues, opportunityTableColumns);
 
 	// Set status radio selection
 	const [radioSelection, setRadioSelection] = useState<string>(
 		// Set the default radio selection to the opportunity status retrieved from report
 		opportunityStatus[
 			opportunityStatus.findIndex(
-				(option) => option.value === opportunityTableFields.OpportunityStatus.value
+				(option) => option.value === opportunityTableColumns.OpportunityStatus.value
 			)
 		].id
 	);
 
 	function setOpportunityValues(): Opportunity {
-		const saleStage = opportunitySalesStage[opportunityTableFields.OpportunitySalesStage.value];
+		const saleStage = opportunitySalesStage[opportunityTableColumns.OpportunitySalesStage.value];
 		const statusIndex = opportunityStatus.findIndex(
-			(option) => option.value === opportunityTableFields.OpportunityStatus.value
+			(option) => option.value === opportunityTableColumns.OpportunityStatus.value
 		);
 		const opportunity: Opportunity = {
-			name: opportunityTableFields.Topic.value,
-			estimatedvalue: parseInt(opportunityTableFields.EstimatedRevenue.value),
+			name: opportunityTableColumns.Topic.value,
+			estimatedvalue: parseInt(opportunityTableColumns.EstimatedRevenue.value),
 			estimatedclosedate: getFormattedDate(
-				opportunityTableFields.EstimatedCloseDate.value,
+				opportunityTableColumns.EstimatedCloseDate.value,
 				DateFormat.YearMonthDay
 			),
 			crcb2_opportunitystatus: opportunityStatus[statusIndex].code,
 			crcb2_salesstage: saleStage,
 			crcb2_quoteamount: parseInt(
-				opportunityTableFields.QuoteAmount.value ?? opportunityTableFields.EstimatedRevenue.value
+				opportunityTableColumns.QuoteAmount.value ?? opportunityTableColumns.EstimatedRevenue.value
 			),
 		};
 
 		// Remove '{' and '}' from the id captured from report table visual
 		opportunity['originatingleadid@odata.bind'] = `leads(${removeWrappingBraces(
-			opportunityTableFields.LeadId.value
+			opportunityTableColumns.LeadId.value
 		)})`;
 		return opportunity;
 	}
@@ -139,13 +139,13 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 		opportunityData.name = formData.name;
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: opportunityTableFields.BaseId.value ?? opportunityTableFields.OpportunityId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: opportunityTableColumns.BaseId.value ?? opportunityTableColumns.OpportunityId.value,
 			updatedData: JSON.stringify(opportunityData),
-			updateEntityType: entityNameOpportunities,
+			updateTableType: tableNameOpportunities,
 		};
-		const updateRequest = new CDSUpdateRequest(updateRequestData);
-		const result = await saveCDSData(updateRequest, props.updateApp, props.setError);
+		const updateRequest = new DataverseUpdateRequest(updateRequestData);
+		const result = await saveDataverseData(updateRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -178,33 +178,33 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			crcb2_startdatetime: formattedStartDate,
 			crcb2_enddatetime: formattedEndDate,
 			crcb2_duedatetime: formattedEndDate,
-			crcb2_activitytype: activityTypeOptions['Appointment'],
-			crcb2_priority: activityPriorityOptions['High'],
-			crcb2_subject: opportunityTableFields.Topic.value,
-			crcb2_topic: opportunityTableFields.Topic.value,
+			crcb2_activitytype: activityTypeChoice['Appointment'],
+			crcb2_priority: activityPriorityChoice['High'],
+			crcb2_subject: opportunityTableColumns.Topic.value,
+			crcb2_topic: opportunityTableColumns.Topic.value,
 		};
 
 		// Remove '{' and '}' from the id captured from report table visual
 		activityData['crcb2_LeadId@odata.bind'] = `leads(${removeWrappingBraces(
-			opportunityTableFields.LeadId.value
+			opportunityTableColumns.LeadId.value
 		)})`;
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: opportunityTableFields.BaseId.value ?? opportunityTableFields.OpportunityId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: opportunityTableColumns.BaseId.value ?? opportunityTableColumns.OpportunityId.value,
 			updatedData: JSON.stringify(opportunityData),
-			updateEntityType: entityNameOpportunities,
+			updateTableType: tableNameOpportunities,
 		};
-		const addRequestData: CDSAddRequestData = {
+		const addRequestData: DataverseAddRequestData = {
 			newData: JSON.stringify(activityData),
-			addEntityType: entityNameActivities,
+			addTableType: tableNameActivities,
 		};
-		const updateAddRequestData: CDSUpdateAddRequestData = {
+		const updateAddRequestData: DataverseUpdateAddRequestData = {
 			UpdateReqBody: updateRequestData,
 			AddReqBody: addRequestData,
 		};
-		const requestObject = new CDSUpdateAddRequest(updateAddRequestData);
-		const result = await saveCDSData(requestObject, props.updateApp, props.setError);
+		const requestObject = new DataverseUpdateAddRequest(updateAddRequestData);
+		const result = await saveDataverseData(requestObject, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -219,13 +219,13 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 		opportunityData.crcb2_quoteamount = formData.editquote;
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: opportunityTableFields.BaseId.value ?? opportunityTableFields.OpportunityId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: opportunityTableColumns.BaseId.value ?? opportunityTableColumns.OpportunityId.value,
 			updatedData: JSON.stringify(opportunityData),
-			updateEntityType: entityNameOpportunities,
+			updateTableType: tableNameOpportunities,
 		};
-		const updateRequest = new CDSUpdateRequest(updateRequestData);
-		const result = await saveCDSData(updateRequest, props.updateApp, props.setError);
+		const updateRequest = new DataverseUpdateRequest(updateRequestData);
+		const result = await saveDataverseData(updateRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -239,17 +239,17 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			opportunityStatus[opportunityStatus.findIndex((option) => option.id === radioSelection)].code;
 		if (radioSelection === 'closedWon') {
 			opportunityData['actualvalue'] =
-				opportunityTableFields.QuoteAmount.value ?? opportunityTableFields.EstimatedRevenue.value;
+				opportunityTableColumns.QuoteAmount.value ?? opportunityTableColumns.EstimatedRevenue.value;
 		}
 
 		// Build request
-		const updateRequestData: CDSUpdateRequestData = {
-			baseId: opportunityTableFields.BaseId.value ?? opportunityTableFields.OpportunityId.value,
+		const updateRequestData: DataverseUpdateRequestData = {
+			baseId: opportunityTableColumns.BaseId.value ?? opportunityTableColumns.OpportunityId.value,
 			updatedData: JSON.stringify(opportunityData),
-			updateEntityType: entityNameOpportunities,
+			updateTableType: tableNameOpportunities,
 		};
-		const updateRequest = new CDSUpdateRequest(updateRequestData);
-		const result = await saveCDSData(updateRequest, props.updateApp, props.setError);
+		const updateRequest = new DataverseUpdateRequest(updateRequestData);
+		const result = await saveDataverseData(updateRequest, props.updateApp, props.setError);
 		if (result) {
 			props.refreshReport();
 			props.toggleFormPopup();
@@ -268,7 +268,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			className={`form-control form-element ${errors.name && `is-invalid`}`}
 			placeHolder={`e.g.,'100 Laptops'`}
 			errorMessage={formInputErrorMessage}
-			value={opportunityTableFields.Topic.value}
+			value={opportunityTableColumns.Topic.value}
 			ref={register({ required: true, minLength: 1 })}
 		/>
 	);
@@ -299,9 +299,9 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'title',
 			className: 'form-control form-element',
 
-			// Show '--blank--' where applicable if empty field is fetched from the report
+			// Show '--blank--' where applicable if empty column is fetched from the report
 			placeHolder: '--blank--',
-			value: opportunityTableFields.Topic.value,
+			value: opportunityTableColumns.Topic.value,
 			ref: register,
 		},
 		{
@@ -309,7 +309,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'meetingAccountName',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.AccountName.value,
+			value: opportunityTableColumns.AccountName.value,
 			ref: register,
 		},
 		{
@@ -317,7 +317,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'fullName',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.PrimaryContactName.value,
+			value: opportunityTableColumns.PrimaryContactName.value,
 			ref: register,
 		},
 	];
@@ -434,7 +434,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'quoteaccountname',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.AccountName.value,
+			value: opportunityTableColumns.AccountName.value,
 			disabled: true,
 			ref: register,
 		},
@@ -443,7 +443,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'contactfullname',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.PrimaryContactName.value,
+			value: opportunityTableColumns.PrimaryContactName.value,
 			disabled: true,
 			ref: register,
 		},
@@ -452,7 +452,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'quotetopic',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.Topic.value,
+			value: opportunityTableColumns.Topic.value,
 			disabled: true,
 			ref: register,
 		},
@@ -461,7 +461,7 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'estimatedrevenue',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.EstimatedRevenue.value,
+			value: opportunityTableColumns.EstimatedRevenue.value,
 			disabled: true,
 			ref: register,
 		},
@@ -470,7 +470,8 @@ export function UpdateOpportunityForm(props: UpdateOpportunityFormProps): JSX.El
 			name: 'currentquote',
 			className: 'form-control form-element',
 			placeHolder: '--blank--',
-			value: opportunityTableFields.QuoteAmount.value ?? opportunityTableFields.EstimatedRevenue.value,
+			value:
+				opportunityTableColumns.QuoteAmount.value ?? opportunityTableColumns.EstimatedRevenue.value,
 			disabled: true,
 			ref: register,
 		},

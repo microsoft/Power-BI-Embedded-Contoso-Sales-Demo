@@ -5,12 +5,12 @@
 
 namespace ContosoSalesDemo.Models
 {
-	public class CdsConfig
+	public class DataverseConfig
 	{
-		// Scope of CDS used while fetching AAD Token
+		// Scope of Dataverse used while fetching AAD Token
 		public string Scope { get; set; }
 
-		// API Base URL of CDS
+		// API Base URL of Dataverse
 		public string ApiBaseUrl { get; set; }
 	}
 }

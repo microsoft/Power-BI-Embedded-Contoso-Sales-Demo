@@ -40,7 +40,7 @@ Users can do the following in the application’s user interface:
 
 * Editing (insert/update) data in a table using writeback operations. In the *Contoso Sales Demo* application you can add data to a database directly from the UI.
 
-* Service principal based authentication. This authentication method is recommended for accessing Power BI and [Common Data Service](https://aka.ms/microsoft-dataverse) REST APIs.
+* Service principal based authentication. This authentication method is recommended for accessing Power BI and [Microsoft Dataverse](https://aka.ms/microsoft-dataverse) REST APIs.
 
 
 
@@ -48,7 +48,7 @@ Users can do the following in the application’s user interface:
 
 *Contoso Sales Demo* integration with other Microsoft databases and libraries:
 
-* Common Data Service. The application’s integration can be extended to other databases.
+* Microsoft Dataverse. The application’s integration can be extended to other databases.
 
 * [MSAL.NET](https://aka.ms/MSAL) used for service principal authentication.
 
@@ -59,9 +59,9 @@ Users can do the following in the application’s user interface:
 
 ### Cloud resources
 
-|Azure|Power BI|CDS|
+|Azure|Power BI|Microsoft Dataverse|
 |-----|--------|---|
-|[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating a [service principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI service license](https://powerbi.microsoft.com/en-us/pricing) for hosting reports <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using CDS as a data source|
+|[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating a [service principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI service license](https://powerbi.microsoft.com/en-us/pricing) for hosting reports <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using Microsoft Dataverse as a data source|
 
 
 
@@ -81,9 +81,9 @@ Users can do the following in the application’s user interface:
 
 ### SDK/ API references
 
-|Power BI|CDS|
+|Power BI|Microsoft Dataverse|
 |--------|---|
-|[Power BI SDK](https://github.com/microsoft/PowerBI-CSharp)|[Create entity](https://aka.ms/cds-create-entity-web-api) <br /> [Update entity](https://aka.ms/update-delete-entities-using-web-api)|
+|[Power BI SDK](https://github.com/microsoft/PowerBI-CSharp)|[Create table](https://aka.ms/cds-create-entity-web-api) <br /> [Update table](https://aka.ms/update-delete-entities-using-web-api)|
 
 
 

@@ -20,14 +20,14 @@ namespace ContosoSalesDemo.Controllers
 	[ApiController]
 	[Route("[controller]")]
 	[Authorize(Policy = Constant.FieldUserPolicyName)]
-	public class CdsController : ControllerBase
+	public class DataverseController : ControllerBase
 	{
-		private readonly CdsService cdsService;
-		private readonly ILogger<CdsController> logger;
+		private readonly DataverseService dataverseService;
+		private readonly ILogger<DataverseController> logger;
 
-		public CdsController(CdsService cdsService, ILogger<CdsController> logger)
+		public DataverseController(DataverseService dataverseService, ILogger<DataverseController> logger)
 		{
-			this.cdsService = cdsService;
+			this.dataverseService = dataverseService;
 			this.logger = logger;
 		}
 
@@ -36,13 +36,13 @@ namespace ContosoSalesDemo.Controllers
 		{
 			try
 			{
-				var updateEntityName = reqBody.UpdateEntityType;
+				var updateTableName = reqBody.UpdateTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads
-				var (idField, newData) = cdsService.ParseDataRowFromJson(reqBody.UpdatedData, updateEntityName);
+				var (idColumn, newData) = dataverseService.ParseDataRowFromJson(reqBody.UpdatedData, updateTableName);
 
-				// Set current UTC date in the RowCreationDate field
-				cdsService.SetRowCreationDate(newData);
+				// Set current UTC date in the RowCreationDate column
+				dataverseService.SetRowCreationDate(newData);
 
 				// Check if parsing was successful
 				if (newData is null)
@@ -50,8 +50,8 @@ namespace ContosoSalesDemo.Controllers
 					return BadRequest(Constant.InvalidReq);
 				}
 
-				// Update the given data in CDS
-				await cdsService.UpdateData(reqBody.BaseId, newData, idField, updateEntityName);
+				// Update the given data in Dataverse
+				await dataverseService.UpdateData(reqBody.BaseId, newData, idColumn, updateTableName);
 
 				return Ok();
 			}
@@ -60,7 +60,7 @@ namespace ContosoSalesDemo.Controllers
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, Constant.DataParsingFailed);
 			}
-			catch (CdsException ex)
+			catch (DataverseException ex)
 			{
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, ex.Message);
@@ -95,13 +95,13 @@ namespace ContosoSalesDemo.Controllers
 		{
 			try
 			{
-				var addEntityName = reqBody.AddEntityType;
+				var addTableName = reqBody.AddTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads
-				var (idField, newData) = cdsService.ParseDataRowFromJson(reqBody.NewData, addEntityName);
+				var (idColumn, newData) = dataverseService.ParseDataRowFromJson(reqBody.NewData, addTableName);
 
-				// Set current UTC date in the RowCreationDate field
-				cdsService.SetRowCreationDate(newData);
+				// Set current UTC date in the RowCreationDate column
+				dataverseService.SetRowCreationDate(newData);
 
 				// Check if parsing was successful
 				if (newData is null)
@@ -109,8 +109,8 @@ namespace ContosoSalesDemo.Controllers
 					return BadRequest(Constant.InvalidReq);
 				}
 
-				// Insert the given data in CDS, baseId is null as it is not known at time of insert
-				await cdsService.AddNewRow(newData, addEntityName, idField);
+				// Insert the given data in Dataverse, baseId is null as it is not known at time of insert
+				await dataverseService.AddNewRow(newData, addTableName, idColumn);
 
 				return Ok();
 			}
@@ -119,7 +119,7 @@ namespace ContosoSalesDemo.Controllers
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, Constant.DataParsingFailed);
 			}
-			catch (CdsException ex)
+			catch (DataverseException ex)
 			{
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, ex.Message);
@@ -154,21 +154,21 @@ namespace ContosoSalesDemo.Controllers
 		{
 			try
 			{
-				var addEntityName = reqBody.AddReqBody.AddEntityType;
+				var addTableName = reqBody.AddReqBody.AddTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads for add operation
-				var (addEntityIdField, newData) = cdsService.ParseDataRowFromJson(reqBody.AddReqBody.NewData, addEntityName);
+				var (addTableIdColumn, newData) = dataverseService.ParseDataRowFromJson(reqBody.AddReqBody.NewData, addTableName);
 
-				// Set current UTC date in the RowCreationDate field
-				cdsService.SetRowCreationDate(newData);
+				// Set current UTC date in the RowCreationDate column
+				dataverseService.SetRowCreationDate(newData);
 
-				var updateEntityName = reqBody.UpdateReqBody.UpdateEntityType;
+				var updateTableName = reqBody.UpdateReqBody.UpdateTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads for update operation
-				var (updateEntityIdField, updatedData) = cdsService.ParseDataRowFromJson(reqBody.UpdateReqBody.UpdatedData, updateEntityName);
+				var (updateTableIdColumn, updatedData) = dataverseService.ParseDataRowFromJson(reqBody.UpdateReqBody.UpdatedData, updateTableName);
 
-				// Set current UTC date in the RowCreationDate field
-				cdsService.SetRowCreationDate(updatedData);
+				// Set current UTC date in the RowCreationDate column
+				dataverseService.SetRowCreationDate(updatedData);
 
 				// Check if both parsing were successful
 				if (newData is null || updatedData is null)
@@ -176,8 +176,8 @@ namespace ContosoSalesDemo.Controllers
 					return BadRequest(Constant.InvalidReq);
 				}
 
-				// Insert the given data in CDS, baseId is null as it is not known at time of insert
-				await cdsService.UpdateAddData(reqBody.UpdateReqBody.BaseId, updatedData, updateEntityName, updateEntityIdField, newData, addEntityName, addEntityIdField);
+				// Insert the given data in Dataverse, baseId is null as it is not known at time of insert
+				await dataverseService.UpdateAddData(reqBody.UpdateReqBody.BaseId, updatedData, updateTableName, updateTableIdColumn, newData, addTableName, addTableIdColumn);
 
 				return Ok();
 			}
@@ -186,7 +186,7 @@ namespace ContosoSalesDemo.Controllers
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, Constant.DataParsingFailed);
 			}
-			catch (CdsException ex)
+			catch (DataverseException ex)
 			{
 				logger.LogError(ex, ex.Message);
 				return StatusCode((int)HttpStatusCode.BadRequest, ex.Message);

@@ -18,7 +18,7 @@ namespace ContosoSalesDemo.Service
 		private readonly string base64Certificate;
 		private readonly IOptions<AadConfig> aadConfig;
 
-		public AadService(IConfiguration configuration, IOptions<AadConfig> aadConfig, IOptions<KeyVaultConfig> keyVaultConfig, IOptions<CdsConfig> cdsConfig)
+		public AadService(IConfiguration configuration, IOptions<AadConfig> aadConfig, IOptions<KeyVaultConfig> keyVaultConfig, IOptions<DataverseConfig> dataverseConfig)
 		{
 			this.base64Certificate = configuration[keyVaultConfig.Value.CertificateName];
 			this.aadConfig = aadConfig;

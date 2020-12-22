@@ -16,8 +16,8 @@ namespace ContosoSalesDemo.Models
 		[JsonProperty("updatedData", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string UpdatedData { get; set; }
 
-		[JsonProperty("updateEntityType", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string UpdateEntityType { get; set; }
+		[JsonProperty("updateTableType", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		public string UpdateTableType { get; set; }
 	}
 
 	public partial class AddDataRequest
@@ -25,8 +25,8 @@ namespace ContosoSalesDemo.Models
 		[JsonProperty("newData", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string NewData { get; set; }
 
-		[JsonProperty("addEntityType", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string AddEntityType { get; set; }
+		[JsonProperty("addTableType", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		public string AddTableType { get; set; }
 	}
 
 	public partial class AddAndUpdateDataRequest
