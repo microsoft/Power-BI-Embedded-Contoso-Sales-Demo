@@ -71,9 +71,9 @@ namespace ContosoSalesDemo
 				}
 			}
 
-			// Register AadService, CdsService, EmbedService and ExportService for dependency injection
+			// Register AadService, DataverseService, EmbedService and ExportService for dependency injection
 			services.AddScoped(typeof(AadService))
-					.AddScoped(typeof(CdsService))
+					.AddScoped(typeof(DataverseService))
 					.AddScoped(typeof(EmbedService))
 					.AddScoped(typeof(ExportService));
 
@@ -105,8 +105,8 @@ namespace ContosoSalesDemo
 				configuration.RootPath = "ClientApp/build";
 			});
 
-			// Load CDS Configuration
-			services.Configure<CdsConfig>(Configuration.GetSection("Cds"));
+			// Load Dataverse Configuration
+			services.Configure<DataverseConfig>(Configuration.GetSection("Dataverse"));
 
 			// Load Key Vault configuration
 			services.Configure<KeyVaultConfig>(Configuration.GetSection("KeyVault"));

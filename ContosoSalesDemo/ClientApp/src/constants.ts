@@ -93,21 +93,21 @@ export const opportunityPopupTabNames = ['Edit Topic', 'Schedule a Meeting', 'Qu
 export const editLeadPopupTabNames = ['Add Activity', 'Qualify Lead', 'Disqualify Lead'];
 
 /**
- * Entity names on which the operations are to be performed
+ * Table names on which the operations are to be performed
  */
-export const entityNameActivities = 'crcb2_activitieses';
-export const entityNameOpportunities = 'opportunities';
-export const entityNameLeads = 'leads';
+export const tableNameActivities = 'crcb2_activitieses';
+export const tableNameOpportunities = 'opportunities';
+export const tableNameLeads = 'leads';
 
 /**
- * Leads entity rating options with corresponding values in CDS
+ * Leads table rating choice with corresponding values in Dataverse
  */
-export const ratingOptionsSet = { Hot: 1, Warm: 2, Cold: 3 };
+export const ratingChoice = { Hot: 1, Warm: 2, Cold: 3 };
 
 /**
- * Activity type options with corresponding values in CDS
+ * Activity type choice with corresponding values in Dataverse
  */
-export const activityTypeOptions = {
+export const activityTypeChoice = {
 	Appointment: 712800000,
 	Email: 712800001,
 	'Phone Call': 712800002,
@@ -115,7 +115,7 @@ export const activityTypeOptions = {
 };
 
 /**
- * Opportunity status options with corresponding values in CDS
+ * Opportunity status choice with corresponding values in Dataverse
  */
 export const opportunityStatus = [
 	{
@@ -151,7 +151,7 @@ export const opportunityStatus = [
 ];
 
 /**
- * Opportunity sales stage options with corresponding values in CDS
+ * Opportunity sales stage choice with corresponding values in Dataverse
  */
 export const opportunitySalesStage = {
 	Qualify: 712800000,
@@ -161,19 +161,19 @@ export const opportunitySalesStage = {
 };
 
 /**
- * Lead status options with corresponding values in CDS
+ * Lead status choice with corresponding values in Dataverse
  */
 export const leadStatus = { New: 712800000, Qualified: 712800001, Disqualified: 712800002 };
 
 /**
- * Activity priority options with corresponding values in CDS
+ * Activity priority choice with corresponding values in Dataverse
  */
-export const activityPriorityOptions = { Low: 712800000, Normal: 712800001, High: 712800002 };
+export const activityPriorityChoice = { Low: 712800000, Normal: 712800001, High: 712800002 };
 
 /**
- * Leads entity source options with corresponding values in CDS
+ * Leads table source choice with corresponding values in Dataverse
  */
-export const sourceOptionsSet = {
+export const sourceChoice = {
 	Advertisement: 1,
 	'Employee Referral': 2,
 	'External Referral': 3,

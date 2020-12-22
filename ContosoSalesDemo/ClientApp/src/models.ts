@@ -26,7 +26,7 @@ export interface Bookmark extends models.IReportBookmark {
 	checked?: boolean;
 }
 
-// Following are the fields names of the entities in the CDS where name starting with 'crcb2' indicates custom fields
+// Following are the columns names of the tables in the Dataverse where name starting with 'crcb2' indicates custom columns
 export interface Activity {
 	crcb2_activitytype: number;
 	crcb2_subject: string;
@@ -199,65 +199,65 @@ export enum DateFormat {
 }
 
 /**
- * CDS request interface with CDS service API endpoint, HTTP method and request body
+ * Dataverse request interface with Dataverse service API endpoint, HTTP method and request body
  */
-export interface CDSRequest {
-	cdsServiceApi: string;
+export interface DataverseRequest {
+	dataverseServiceApi: string;
 	method: string;
 	body: string;
 }
 
-export interface CDSAddRequestData {
+export interface DataverseAddRequestData {
 	newData: string;
-	addEntityType: string;
+	addTableType: string;
 }
 
-export interface CDSUpdateRequestData {
+export interface DataverseUpdateRequestData {
 	baseId: string;
 	updatedData: string;
-	updateEntityType: string;
+	updateTableType: string;
 }
 
-export interface CDSUpdateAddRequestData {
-	UpdateReqBody: CDSUpdateRequestData;
-	AddReqBody: CDSAddRequestData;
+export interface DataverseUpdateAddRequestData {
+	UpdateReqBody: DataverseUpdateRequestData;
+	AddReqBody: DataverseAddRequestData;
 }
 
-interface PowerBITableField {
+interface PowerBITableColumn {
 	name: string;
 	value: string;
 }
 
-interface PowerBITableDateField {
+interface PowerBITableDateColumn {
 	name: string;
 	value: Date;
 }
 
 export interface OpportunityTablePowerBIData {
-	OpportunityId: PowerBITableField;
-	BaseId: PowerBITableField;
-	LeadId: PowerBITableField;
-	AccountName: PowerBITableField;
-	PrimaryContactName: PowerBITableField;
-	Topic: PowerBITableField;
-	EstimatedRevenue: PowerBITableField;
-	EstimatedCloseDate: PowerBITableDateField;
-	OpportunityStatus: PowerBITableField;
-	OpportunitySalesStage: PowerBITableField;
-	QuoteAmount: PowerBITableField;
+	OpportunityId: PowerBITableColumn;
+	BaseId: PowerBITableColumn;
+	LeadId: PowerBITableColumn;
+	AccountName: PowerBITableColumn;
+	PrimaryContactName: PowerBITableColumn;
+	Topic: PowerBITableColumn;
+	EstimatedRevenue: PowerBITableColumn;
+	EstimatedCloseDate: PowerBITableDateColumn;
+	OpportunityStatus: PowerBITableColumn;
+	OpportunitySalesStage: PowerBITableColumn;
+	QuoteAmount: PowerBITableColumn;
 }
 
 export interface LeadTablePowerBIData {
-	LeadId: PowerBITableField;
-	BaseId: PowerBITableField;
-	AccountId: PowerBITableField;
-	AccountName: PowerBITableField;
-	ContactName: PowerBITableField;
-	Topic: PowerBITableField;
-	Status: PowerBITableField;
-	Rating: PowerBITableField;
-	Source: PowerBITableField;
-	CreatedOn: PowerBITableDateField;
+	LeadId: PowerBITableColumn;
+	BaseId: PowerBITableColumn;
+	AccountId: PowerBITableColumn;
+	AccountName: PowerBITableColumn;
+	ContactName: PowerBITableColumn;
+	Topic: PowerBITableColumn;
+	Status: PowerBITableColumn;
+	Rating: PowerBITableColumn;
+	Source: PowerBITableColumn;
+	CreatedOn: PowerBITableDateColumn;
 }
 
 export type PreFilledValues = Record<string, unknown>;

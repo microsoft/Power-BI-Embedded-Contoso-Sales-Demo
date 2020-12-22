@@ -69,6 +69,15 @@
 						"transparency": 0
 					}
 				],
+				"backgroundColor": [
+					{
+						"fill": {
+							"solid": {
+								"color": "#343741"
+							}
+						}
+					}
+				],
 				"labels": [
 					{
 						"color": {

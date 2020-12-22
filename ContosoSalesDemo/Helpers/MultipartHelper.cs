@@ -17,10 +17,10 @@ namespace ContosoSalesDemo.Helpers
 		private const string DefaultReqHeaders = "Content-Type: application/json;type=entry";
 
 		/// <summary>
-		/// Creates a multipart/mixed content for the given CDS batch requests
+		/// Creates a multipart/mixed content for the given Dataverse batch requests
 		/// Refer: https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api
 		/// </summary>
-		public static MultipartContent GenerateAtomicRequestContent(string batchId, string changeSetId, CdsBatchRequest[] requests)
+		public static MultipartContent GenerateAtomicRequestContent(string batchId, string changeSetId, DataverseBatchRequest[] requests)
 		{
 			MultipartContent reqContent = new MultipartContent("mixed", batchId);
 
@@ -30,7 +30,7 @@ namespace ContosoSalesDemo.Helpers
 			foreach (var req in requests)
 			{
 				// Building Http request as text inside body of the batch request
-				// Note: We are using batch operations API of CDS which only supports HTTP/1.1
+				// Note: We are using batch operations API of Dataverse which only supports HTTP/1.1
 				// https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api
 				var httpRequest = $"{req.httpMethod} {req.requestUri} HTTP/1.1";
 				var reqHeaders = DefaultReqHeaders;
@@ -42,13 +42,13 @@ namespace ContosoSalesDemo.Helpers
 				}
 
 				// Building http request message for this changeset
-				// Note: Http request is created as text as all values are either constants or result of serializing a CdsEntity model
+				// Note: Http request is created as text as all values are either constants or result of serializing a DataverseTable model
 				var requestMessage = $"{httpRequest}\n{reqHeaders}\n\n{req.reqBodyJson}\n";
 
 				// Build the http request in text format for changesetContent
 				// Purpose is to create HTTP API requests in form of text in the body of our [batch API request](https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api#example)
 				// We can only add HTTP content object to MultipartContent of .NET and it does not accept an HTTP request object
-				// Currently, there is no way to convert an HTTP request object into the required string format for making a CDS batch API call
+				// Currently, there is no way to convert an HTTP request object into the required string format for making a Dataverse batch API call
 				var requestMessageContent = new StringContent(requestMessage, Encoding.UTF8);
 
 				// Add other headers
@@ -70,7 +70,7 @@ namespace ContosoSalesDemo.Helpers
 		/*
 		The objective is to get the JSON in the response body of the last API request in the batch response.
 		.NET has [MultipartReader](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.multipartreader), 
-		but the response format of [CDS batch request](https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api#batch-requests) is as follows:
+		but the response format of [Dataverse batch request](https://docs.microsoft.com/en-us/powerapps/developer/common-data-service/webapi/execute-batch-operations-using-web-api#batch-requests) is as follows:
 		
 		--changeset_boundary
 
@@ -99,7 +99,7 @@ namespace ContosoSalesDemo.Helpers
 
 			if (startIndex == -1 || endIndex == -1)
 			{
-				throw new CdsException("Multipart response does not contain json");
+				throw new DataverseException("Multipart response does not contain json");
 			}
 
 			return multipartResponseBody.Substring(startIndex, endIndex - startIndex + 1);

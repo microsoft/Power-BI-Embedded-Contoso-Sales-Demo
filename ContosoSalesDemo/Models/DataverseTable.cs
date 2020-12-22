@@ -10,7 +10,7 @@ namespace ContosoSalesDemo.Models
 	using Newtonsoft.Json.Linq;
 	using System.Globalization;
 
-	public partial class CdsEntity
+	public partial class DataverseTable
 	{
 		[JsonProperty("crcb2_baseid", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]	// The property is not required, Ignore null values when serializing and deserializing objects
 		public string Baseid { get; set; }
@@ -19,24 +19,24 @@ namespace ContosoSalesDemo.Models
 		public string Islatest { get; set; }
 	}
 
-	public partial class CdsGetResponse
+	public partial class DataverseGetResponse
 	{
 		[JsonProperty("value", Required = Required.Always, NullValueHandling = NullValueHandling.Ignore)]	// The property is not required, Ignore null values when serializing and deserializing objects
 		public JArray Values { get; set; }
 	}
 
-	public partial class Activities : CdsEntity
+	public partial class Activities : DataverseTable
 	{
-		// Lookup field
+		// Lookup column
 		[JsonProperty("crcb2_LeadId@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string Leadid { get; set; }
 
-		// Lookup field
+		// Lookup column
 		[JsonProperty("ownerid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string Owner { get; set; }
 
-		// Id field
-		[JsonProperty(Constant.EntityIdFieldActivities, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		// Id column
+		[JsonProperty(Constant.TableIdColumnActivities, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string Id { get; set; }
 
 		[JsonProperty("crcb2_activitytype", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
@@ -63,22 +63,22 @@ namespace ContosoSalesDemo.Models
 		[JsonProperty("crcb2_topic", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public string Topic { get; set; }
 
-		[JsonProperty(Constant.RowCreationDateFieldName, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty(Constant.RowCreationDateColumnName, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string RowCreationDate { get; set; }
 	}
 
-	public partial class Opportunities : CdsEntity
+	public partial class Opportunities : DataverseTable
 	{
-		// Lookup field
+		// Lookup column
 		[JsonProperty("originatingleadid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string OriginatingLead { get; set; }
 
-		// Lookup field
+		// Lookup column
 		[JsonProperty("ownerid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string OwningUser { get; set; }
 
-		// Id field
-		[JsonProperty(Constant.EntityIdFieldOpportunities, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		// Id column
+		[JsonProperty(Constant.TableIdColumnOpportunities, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string Id { get; set; }
 
 		[JsonProperty("name", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
@@ -108,31 +108,31 @@ namespace ContosoSalesDemo.Models
 		[JsonProperty("crcb2_createdon", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string RowCreationDate { get; set; }
 
-		// Lookup field (temp)
+		// Lookup column (temp)
 		[JsonProperty("parentaccountid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string ParentAccountforlead { get; set; }
 
-		// Lookup field (temp)
+		// Lookup column (temp)
 		[JsonProperty("parentcontactid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string ParentContactforLead { get; set; }
 	}
 
-	public partial class Leads : CdsEntity
+	public partial class Leads : DataverseTable
 	{
 		// parentaccountid alternative
 		[JsonProperty("parentaccountname", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string ParentAccountName { get; set; }
 
-		// Lookup field
+		// Lookup column
 		[JsonProperty("parentaccountid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string ParentAccountforlead { get; set; }
 
-		// Lookup field
+		// Lookup column
 		[JsonProperty("ownerid@odata.bind", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string SalespersonId { get; set; }
 
-		// Id field
-		[JsonProperty(Constant.EntityIdFieldLeads, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+		// Id column
+		[JsonProperty(Constant.TableIdColumnLeads, Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string Id { get; set; }
 
 		[JsonProperty("crcb2_primarycontactname", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
@@ -156,16 +156,16 @@ namespace ContosoSalesDemo.Models
 
 	public partial class Accounts
 	{
-		[JsonProperty(Constant.EntityIdFieldAccounts, Required = Required.Always, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty(Constant.TableIdColumnAccounts, Required = Required.Always, NullValueHandling = NullValueHandling.Ignore)]
 		public string Id { get; set; }
 
-		[JsonProperty(Constant.RowCreationDateFieldName, Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty(Constant.RowCreationDateColumnName, Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public string RowCreationDate { get; set; }
 	}
 
-	public partial class CdsEntity
+	public partial class DataverseTable
 	{
-		public static CdsEntity FromJson(string json) => JsonConvert.DeserializeObject<CdsEntity>(json, ContosoSalesDemo.Models.Converter.Settings);
+		public static DataverseTable FromJson(string json) => JsonConvert.DeserializeObject<DataverseTable>(json, ContosoSalesDemo.Models.Converter.Settings);
 	}
 	public partial class Activities
 	{
@@ -180,9 +180,9 @@ namespace ContosoSalesDemo.Models
 		public new static Leads FromJson(string json) => JsonConvert.DeserializeObject<Leads>(json, ContosoSalesDemo.Models.Converter.Settings);
 	}
 
-	public partial class CdsGetResponse
+	public partial class DataverseGetResponse
 	{
-		public static CdsGetResponse FromJson(string json) => JsonConvert.DeserializeObject<CdsGetResponse>(json, ContosoSalesDemo.Models.Converter.Settings);
+		public static DataverseGetResponse FromJson(string json) => JsonConvert.DeserializeObject<DataverseGetResponse>(json, ContosoSalesDemo.Models.Converter.Settings);
 	}
 
 	public partial class Accounts
