@@ -9,6 +9,7 @@ import { Home } from '../Home/Home';
 import { Login, LoginProps } from '../Login/Login';
 import { Icon } from '../Icon/Icon';
 import { Profile } from '../../models';
+import { Footer } from '../Footer/Footer';
 
 interface CardsProps {
 	updateApp: LoginProps['updateApp'];
@@ -37,14 +38,17 @@ export function Card(props: CardsProps): JSX.Element {
 	}
 
 	return (
-		<div className='gradient-bg'>
-			<div className='card  mx-auto vertical-center'>
-				<Icon className='card-img mx-auto' iconId='app-name-light' height={40} width={112} />
+		<div className='landing-section d-flex flex-column h-100'>
+			<div className='gradient-bg'>
+				<div className='card  mx-auto vertical-center'>
+					<Icon className='card-img mx-auto' iconId='app-name-light' height={40} width={112} />
 
-				{!selectedProfile ? <div className='horizontal-separator'></div> : null}
+					{!selectedProfile ? <div className='horizontal-separator'></div> : null}
 
-				{cardBody}
+					{cardBody}
+				</div>
 			</div>
+			<Footer />
 		</div>
 	);
 }
