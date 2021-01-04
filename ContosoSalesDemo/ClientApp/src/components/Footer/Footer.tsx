@@ -13,7 +13,7 @@ export function Footer(): JSX.Element {
 	return (
 		<div className={`d-flex justify-content-center align-items-center non-selectable footer ${theme}`}>
 			<p>
-				This demo is powered by Power BI Embedded
+				This demo is powered by Power BI Embedded Analytics
 				<label className='separator-pipe'>{'|'}</label>
 			</p>
 
@@ -26,7 +26,7 @@ export function Footer(): JSX.Element {
 			<p>
 				{'Explore our'}
 				<a className='d-block' href='https://aka.ms/pbijs/' target='_blank' rel='noreferrer noopener'>
-					Embedded Playground
+					Playground
 				</a>
 				<label className='separator-pipe'>{'|'}</label>
 			</p>
