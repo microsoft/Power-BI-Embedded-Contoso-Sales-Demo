@@ -64,6 +64,11 @@ Users can do the following in the application’s user interface:
 |[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating a [service principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI service license](https://powerbi.microsoft.com/en-us/pricing) for hosting reports <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using Microsoft Dataverse as a data source|
 
 
+## Power BI report
+The report [ContosoSalesDemo.pbix](ContosoSalesDemo/PowerBIReport/) can be used as a reference for development. <br />
+**Note:** This report is connected to a cached datasource using import mode. <br />
+**Note:** As this report is not connected to a Microsoft Dataverse database using Direct Query, it will not support writeback functionality.
+
 
 ## Architecture
 
