@@ -1,4 +1,4 @@
-[Contoso Sales Demo](https://contososalesdemo.azurewebsites.net/) is an application based on Power BI [embedded analytics](https://aka.ms/powerbi-embedded), demonstrating a sales management portal. The application empowers salespeople and sale managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sales managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
+[Contoso Sales Demo](https://contososalesdemo.azurewebsites.net/) is an application based on [Power BI embedded analytics](https://aka.ms/powerbi-embedded), demonstrating a sales management portal. The application empowers salespeople and sales managers to make business decisions based on data. Salespeople can monitor and track sales, leads, opportunities and accounts, and manage their calendars. Sales managers can view a summary of the salesforce performance, including sales history and individual accounts. The application also enables managers to provide salespeople with data driven insights, assisting them with their decision making.
 
 Follow the steps below to get a first hand experience of the demo:
 1. Open the [Contoso Sales Demo](http://contososalesdemo.azurewebsites.net/) application.
@@ -48,7 +48,7 @@ Users can do the following in the application’s user interface:
 
 *Contoso Sales Demo* integration with other Microsoft databases and libraries:
 
-* Microsoft Dataverse. The application’s integration can be extended to other databases.
+* [Microsoft Dataverse](https://docs.microsoft.com/en-us/powerapps/maker/data-platform/data-platform-intro). The application’s integration can be extended to other databases.
 
 * [MSAL.NET](https://aka.ms/MSAL) used for service principal authentication.
 
@@ -63,12 +63,22 @@ Users can do the following in the application’s user interface:
 |-----|--------|---|
 |[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating a [service principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI service license](https://powerbi.microsoft.com/en-us/pricing) for hosting reports <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using Microsoft Dataverse as a data source|
 
+### Microsoft Dataverse Database
+This application is integrated with a Microsoft Dataverse database. Follow the steps below to setup your own Microsoft Dataverse database:
+1. [Setup a Microsoft Dataverse environment](ContosoSalesDemo/MicrosoftDataverseArtifacts/EnvironmentSetup.md)<br/>
+**Note:** Ensure TDS endpoint is enabled for the environment. It allows to connect to CDS using DQ in a Power BI report<br />
+**Note:** Set the prefix for the CDS Default Publisher to "crcb2"
+2. [Import the Microsoft Dataverse schema](ContosoSalesDemo/MicrosoftDataverseArtifacts/ImportSchema.md)<br />
+**Note:** Insert data as required
 
-## Power BI report
-The report [ContosoSalesDemo.pbix](ContosoSalesDemo/PowerBIReport/) can be used as a reference for development. <br />
+### Power BI report
+1. The report [ContosoSalesDemo.pbix](ContosoSalesDemo/PowerBIReport/) can be used as a reference for development. <br />
 **Note:** This report is connected to a cached datasource using import mode. <br />
 **Note:** As this report is not connected to a Microsoft Dataverse database using Direct Query, it will not support writeback functionality.
 
+2. The Power BI template [ContosoSalesDemo.pbit](ContosoSalesDemo/PowerBIReport/) can be used as a reference for development. <br /> 
+**Note:** When you open this file, you would be prompted for Server and Database information. Please enter the corresponding details for your own D365 environment created in the previous step.<br />
+**Note:** This report uses "June Smith" as the salesperson in the definition of the Roles "Anonymous" and "Salesperson". Update the definition of these roles with the user who has the writeback permissions (i.e. corresponding to the Service Principal you are using for writeback). 
 
 ## Architecture
 
