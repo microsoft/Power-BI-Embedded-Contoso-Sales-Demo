@@ -34,7 +34,7 @@
     "jasmine-core": "^3.6.0",
     "jquery": "^3.5.1",
     "jsonwebtoken": "^8.5.1",
-    "karma": "^5.2.3",
+    "karma": "^6.3.14",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^3.3.1",
     "node-sass": "^4.14.1",
