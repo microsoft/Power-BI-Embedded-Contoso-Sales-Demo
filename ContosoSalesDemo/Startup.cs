@@ -12,11 +12,13 @@ namespace ContosoSalesDemo
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Mvc.Authorization;
 	using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+	using Microsoft.Azure.KeyVault;
+	using Microsoft.Azure.Services.AppAuthentication;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.IdentityModel.Tokens;
-	using System.Text;
+	using System;
 
 	public class Startup
 	{
@@ -30,13 +32,25 @@ namespace ContosoSalesDemo
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			var keyVaultConfig = Configuration.GetSection("KeyVault").Get<KeyVaultConfig>();
+			if (string.IsNullOrWhiteSpace(keyVaultConfig?.KeyVaultName) ||
+				string.IsNullOrWhiteSpace(keyVaultConfig.KeyName) ||
+				string.IsNullOrWhiteSpace(keyVaultConfig.KeyVersion))
+			{
+				throw new InvalidOperationException("KeyVault:KeyVaultName, KeyVault:KeyName, and KeyVault:KeyVersion are required.");
+			}
+
+			var azureServiceTokenProvider = new AzureServiceTokenProvider();
+			var keyVaultClient = new KeyVaultClient(
+				new KeyVaultClient.AuthenticationCallback(
+					azureServiceTokenProvider.KeyVaultTokenCallback));
+			var keyIdentifier = $"https://{keyVaultConfig.KeyVaultName}.vault.azure.net/keys/{keyVaultConfig.KeyName}/{keyVaultConfig.KeyVersion}";
+			var keyBundle = keyVaultClient.GetKeyAsync(keyIdentifier).GetAwaiter().GetResult();
+			var jwtTokenSigner = new KeyVaultJwtTokenSigner(keyVaultClient, keyBundle);
 
 			services.AddAuthentication("OAuth")
 				.AddJwtBearer("OAuth", options =>
 				{
-					// Create signature for JWT token
-					var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[Configuration["KeyVault:KeyName"]]));
-
 					// Get validation parameters
 					var issuer = Configuration.GetSection("JwtToken:Issuer").Value;
 					var audience = Configuration.GetSection("JwtToken:Audience").Value;
@@ -47,9 +61,12 @@ namespace ContosoSalesDemo
 						ValidateIssuer = true,
 						ValidateIssuerSigningKey = true,
 						ValidateLifetime = true,
+						RequireExpirationTime = true,
+						RequireSignedTokens = true,
 						ValidIssuer = issuer,
 						ValidAudience = audience,
-						IssuerSigningKey = signingKey
+						IssuerSigningKey = jwtTokenSigner.ValidationKey,
+						ValidAlgorithms = new [] { SecurityAlgorithms.RsaSha256 }
 					};
 				});
 
@@ -75,7 +92,9 @@ namespace ContosoSalesDemo
 			services.AddScoped(typeof(AadService))
 					.AddScoped(typeof(DataverseService))
 					.AddScoped(typeof(EmbedService))
-					.AddScoped(typeof(ExportService));
+					.AddScoped(typeof(ExportService))
+					.AddSingleton<IJwtTokenSigner>(jwtTokenSigner)
+					.AddSingleton(typeof(JwtTokenService));
 
 			services.AddControllersWithViews(options =>
 			{

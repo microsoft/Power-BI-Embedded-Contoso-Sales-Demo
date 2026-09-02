@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.1145
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoSalesDemo", "ContosoSalesDemo\ContosoSalesDemo.csproj", "{07B7833D-090C-4F50-B9F6-07C8D1709338}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoSalesDemo.Tests", "ContosoSalesDemo.Tests\ContosoSalesDemo.Tests.csproj", "{EAED594F-F8BE-4F85-BACB-49A699135B69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{07B7833D-090C-4F50-B9F6-07C8D1709338}.Release|x64.Build.0 = Release|Any CPU
 		{07B7833D-090C-4F50-B9F6-07C8D1709338}.Release|x86.ActiveCfg = Release|Any CPU
 		{07B7833D-090C-4F50-B9F6-07C8D1709338}.Release|x86.Build.0 = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|x64.Build.0 = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Debug|x86.Build.0 = Debug|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|x64.ActiveCfg = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|x64.Build.0 = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|x86.ActiveCfg = Release|Any CPU
+		{EAED594F-F8BE-4F85-BACB-49A699135B69}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

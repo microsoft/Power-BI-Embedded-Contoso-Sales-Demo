@@ -6,12 +6,13 @@
 namespace ContosoSalesDemo.Models
 {
 	using Newtonsoft.Json;
+	using System;
 
 	public partial class UpdateDataRequest
 	{
 		// DataMember and DataContract can also be used as an alternative to JsonProperty for serialization & deserialization
-		[JsonProperty("baseId", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string BaseId { get; set; }
+		[JsonProperty("baseId", Required = Required.Always)]
+		public Guid BaseId { get; set; }
 
 		[JsonProperty("updatedData", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string UpdatedData { get; set; }

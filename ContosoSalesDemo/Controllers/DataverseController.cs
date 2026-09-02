@@ -36,6 +36,11 @@ namespace ContosoSalesDemo.Controllers
 		{
 			try
 			{
+				if (reqBody.BaseId == Guid.Empty)
+				{
+					return BadRequest(Constant.InvalidReq);
+				}
+
 				var updateTableName = reqBody.UpdateTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads
@@ -154,6 +159,11 @@ namespace ContosoSalesDemo.Controllers
 		{
 			try
 			{
+				if (reqBody.UpdateReqBody.BaseId == Guid.Empty)
+				{
+					return BadRequest(Constant.InvalidReq);
+				}
+
 				var addTableName = reqBody.AddReqBody.AddTableType;
 
 				// Parse row's data from Json in request as an instance of Activity/Opportunities/Leads for add operation

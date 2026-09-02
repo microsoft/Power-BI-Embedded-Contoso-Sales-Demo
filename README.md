@@ -63,6 +63,7 @@ Users can do the following in the application’s user interface:
 |-----|--------|---|
 |[App Service](https://aka.ms/AppService) for hosting the application <br /><br /> [Key Vault](https://aka.ms/AzureKeyVault) for storing certificates/secrets <br /><br /> [Azure AD](https://aka.ms/AzureAd) app for creating a [service principal](https://aka.ms/embed-service-principal-certificate) object <br /><br /> [Application Insights](https://aka.ms/app-insights-overview) for telemetry|[Power BI service license](https://powerbi.microsoft.com/en-us/pricing) for hosting reports <br /><br /> [Power BI Embedded capacity](https://aka.ms/powerbi-embedded-pricing) for embedding report|[Dynamics 365 license](https://aka.ms/dynamics365) for using Microsoft Dataverse as a data source|
 
+Configure `KeyVault:KeyName` and `KeyVault:KeyVersion` with a dedicated, versioned RSA key of at least 2048 bits. The App Service managed identity must have `get` and `sign` permissions for this key. The application uses Key Vault to produce RS256 JWT signatures and keeps the private key non-exportable. Changing the configured key version invalidates existing sessions, so users must sign in again.
 ### Microsoft Dataverse Database
 This application is integrated with a Microsoft Dataverse database. Follow the steps below to setup your own Microsoft Dataverse database:
 1. [Setup a Microsoft Dataverse environment](ContosoSalesDemo/MicrosoftDataverseArtifacts/EnvironmentSetup.md)<br/>
