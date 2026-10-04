@@ -7,20 +7,19 @@ namespace ContosoSalesDemo.Controllers
 {
 	using ContosoSalesDemo.Helpers;
 	using ContosoSalesDemo.Models;
+	using ContosoSalesDemo.Service;
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
-	using Microsoft.IdentityModel.Tokens;
 	using Newtonsoft.Json.Linq;
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
-	using System.IdentityModel.Tokens.Jwt;
 	using System.Security.Claims;
-	using System.Text;
 	using System.Text.Json;
+	using System.Threading.Tasks;
 
 	/**
 	 * DO NOT USE BELOW BASIC AUTHENTICATION IMPLEMENTATION FOR PRODUCTION APPLICATIONS,
@@ -31,17 +30,21 @@ namespace ContosoSalesDemo.Controllers
 	public class BasicAuthenticationController : ControllerBase
 	{
 		private readonly IConfiguration configuration;
-		private readonly IOptions<JwtTokenConfig> jwtTokenConfig;
 		private readonly IOptions<UserCollection> userCollection;
 		private readonly ILogger<BasicAuthenticationController> logger;
+		private readonly JwtTokenService jwtTokenService;
 		private readonly CultureInfo cultureInfo = CultureInfo.InvariantCulture;
 
-		public BasicAuthenticationController(IConfiguration configuration, IOptions<JwtTokenConfig> jwtTokenConfig, IOptions<UserCollection> userCollection, ILogger<BasicAuthenticationController> logger)
+		public BasicAuthenticationController(
+			IConfiguration configuration,
+			IOptions<UserCollection> userCollection,
+			ILogger<BasicAuthenticationController> logger,
+			JwtTokenService jwtTokenService)
 		{
 			this.configuration = configuration;
-			this.jwtTokenConfig = jwtTokenConfig;
 			this.userCollection = userCollection;
 			this.logger = logger;
+			this.jwtTokenService = jwtTokenService;
 		}
 
 		/**
@@ -50,7 +53,7 @@ namespace ContosoSalesDemo.Controllers
 		 */
 		[AllowAnonymous]
 		[HttpPost("/api/auth/token")]
-		public IActionResult GetJwtToken([FromHeader] string authorization, [FromBody] JsonElement selectedRole)
+		public async Task<IActionResult> GetJwtToken([FromHeader] string authorization, [FromBody] JsonElement selectedRole)
 		{
 			/**
 			 * `[FromHeader] string authorization` gets the Authorization value from request header
@@ -75,7 +78,7 @@ namespace ContosoSalesDemo.Controllers
 				return BadRequest(Constant.InvalidUsernamePassword);
 			}
 
-			var jwtToken = GenerateJwtToken(user);
+			var jwtToken = await GenerateJwtToken(user);
 			return Ok(Convert.ToString(jwtToken, cultureInfo));
 		}
 
@@ -147,7 +150,7 @@ namespace ContosoSalesDemo.Controllers
 		/// Generate JWT token
 		/// </summary>
 		/// <returns>JWT token as string</returns>
-		private JObject GenerateJwtToken(User user)
+		private async Task<JObject> GenerateJwtToken(User user)
 		{
 			// To capture token claims
 			var claims = new List<Claim>();
@@ -163,35 +166,7 @@ namespace ContosoSalesDemo.Controllers
 				}
 			}
 
-			// Time after which JWT token will expire
-			var expirationTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtTokenConfig.Value.ExpiresInMinutes));
-
-			// Time before which JWT token will not be accepted for processing
-			var notBeforeTime = DateTime.UtcNow;
-
-			var signingKey = Encoding.UTF8.GetBytes(configuration[configuration["KeyVault:KeyName"]]);
-
-			// Create token signature
-			var securityKey = new SymmetricSecurityKey(signingKey);
-			var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
-
-			// Create token header
-			var tokenHeader = new JwtHeader(signingCredentials);
-
-			// Create token payload
-			var tokenPayload = new JwtPayload(jwtTokenConfig.Value.Issuer, jwtTokenConfig.Value.Audience, claims, notBeforeTime, expirationTime);
-
-			// Create token
-			var token = new JwtSecurityToken(tokenHeader, tokenPayload);
-			var tokenHandler = new JwtSecurityTokenHandler();
-			var jwtToken = tokenHandler.WriteToken(token);
-
-			// Build token with necessary config here
-			var tokenParams = new JObject {
-				{ "access_token", jwtToken }
-			};
-
-			return tokenParams;
+			return await jwtTokenService.GenerateToken(claims);
 		}
 	}
 }

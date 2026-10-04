@@ -11,8 +11,6 @@ namespace ContosoSalesDemo
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Configuration.AzureKeyVault;
 	using Microsoft.Extensions.Hosting;
-	using System.Collections.Generic;
-	using System.Text;
 
 	public class Program
 	{
@@ -36,17 +34,6 @@ namespace ContosoSalesDemo
 						config.AddAzureKeyVault($"https://{builtConfig["KeyVault:KeyVaultName"]}.vault.azure.net/",
 							keyVaultClient,
 							new DefaultKeyVaultSecretManager());
-
-						// Get Key from Azure Key Vault
-						var key = keyVaultClient.GetKeyAsync($"https://{builtConfig["KeyVault:KeyVaultName"]}.vault.azure.net/keys/{builtConfig["KeyVault:KeyName"]}/{builtConfig["KeyVault:KeyVersion"]}").Result;
-						var signingKey = Encoding.UTF8.GetString(key.Key.N);
-						
-						IConfigurationRoot keyConfig = new ConfigurationBuilder()
-							.AddInMemoryCollection(new [] { new KeyValuePair<string, string>(builtConfig["KeyVault:KeyName"], signingKey) })
-							.Build();
-
-						// Add Key to configuration
-						config.AddConfiguration(keyConfig);
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{

@@ -98,22 +98,23 @@ namespace ContosoSalesDemo.Service
 		/// <returns>
 		/// Task
 		/// </returns>
-		public async Task UpdateData(string baseRowGuid, dynamic newDataRow, string idColumn, string tableName)
+		public async Task UpdateData(Guid baseRowGuid, dynamic newDataRow, string idColumn, string tableName)
 		{
+			var baseId = baseRowGuid.ToString("D");
 			string[] requiredColumns = { idColumn, Constant.baseIdColumnName, Constant.isLatestColumnName };
 
 			// Select parameter in Dataverse API accepts comma separated column names
 			var selectQueryColumns = string.Join(",", requiredColumns);
 
 			// Params for select query
-			var selectUrlParam = $"$select={selectQueryColumns}";
-
-			// Params for select query
-			var filterUrlParam = $"$filter={Constant.baseIdColumnName} eq {baseRowGuid} and {Constant.isLatestColumnName} eq '{Constant.IsLatestTrue}'";
+			var filter = $"{Constant.baseIdColumnName} eq {ODataQueryHelper.StringLiteral(baseId)} and " +
+				$"{Constant.isLatestColumnName} eq {ODataQueryHelper.StringLiteral(Constant.IsLatestTrue)}";
 
 			UriBuilder requestUri = new UriBuilder("https", dataverseConfig.Value.ApiBaseUrl);
 			requestUri.Path = tableName;
-			requestUri.Query = $"{selectUrlParam}&{filterUrlParam}";
+			requestUri.Query = ODataQueryHelper.BuildQuery(
+				("$select", selectQueryColumns),
+				("$filter", filter));
 
 			var response = await dataverseClient.GetAsync(requestUri.Uri);
 
@@ -142,7 +143,7 @@ namespace ContosoSalesDemo.Service
 
 			// 1. Mark existing record as old. Passing the record's GUID to be marked as old
 			// 2. Insert updated record as new
-			await BatchUpdate(oldStringGuid, baseRowGuid, newDataRow, tableName);
+			await BatchUpdate(oldStringGuid, baseId, newDataRow, tableName);
 		}
 
 		/// <summary>
@@ -282,7 +283,7 @@ namespace ContosoSalesDemo.Service
 		/// Task
 		/// </returns>
 		public async Task UpdateAddData(
-			string baseRowGuid,
+			Guid baseRowGuid,
 			dynamic updatedData,
 			string updateTableName,
 			string updateTableIdColumn,
@@ -290,6 +291,7 @@ namespace ContosoSalesDemo.Service
 			string addTableName,
 			string addTableIdColumn)
 		{
+			var baseId = baseRowGuid.ToString("D");
 			// 1. Get guid of row with given baseId and isLatestColumnName 1
 			string[] requiredColumns = { updateTableIdColumn, Constant.baseIdColumnName, Constant.isLatestColumnName };
 
@@ -297,14 +299,14 @@ namespace ContosoSalesDemo.Service
 			var selectQueryColumns = string.Join(",", requiredColumns);
 
 			// Params for select query
-			var selectUrlParam = $"$select={selectQueryColumns}";
-
-			// Params for select query
-			var filterUrlParam = $"$filter={Constant.baseIdColumnName} eq {baseRowGuid} and {Constant.isLatestColumnName} eq '{Constant.IsLatestTrue}'";
+			var filter = $"{Constant.baseIdColumnName} eq {ODataQueryHelper.StringLiteral(baseId)} and " +
+				$"{Constant.isLatestColumnName} eq {ODataQueryHelper.StringLiteral(Constant.IsLatestTrue)}";
 
 			UriBuilder requestUri = new UriBuilder("https", dataverseConfig.Value.ApiBaseUrl);
 			requestUri.Path = updateTableName;
-			requestUri.Query = $"{selectUrlParam}&{filterUrlParam}";
+			requestUri.Query = ODataQueryHelper.BuildQuery(
+				("$select", selectQueryColumns),
+				("$filter", filter));
 
 			var response = await dataverseClient.GetAsync(requestUri.Uri);
 
@@ -332,7 +334,7 @@ namespace ContosoSalesDemo.Service
 			var oldStringGuid = Convert.ToString(firstValue[updateTableIdColumn], cultureInfo);
 
 			// 2. Create batch request for the 3 operations
-			await BatchUpdateAdd(oldStringGuid, baseRowGuid, updatedData, updateTableName, newData, addTableIdColumn, addTableName);
+			await BatchUpdateAdd(oldStringGuid, baseId, updatedData, updateTableName, newData, addTableIdColumn, addTableName);
 		}
 
 		/// <summary>
@@ -439,17 +441,17 @@ namespace ContosoSalesDemo.Service
 		/// <returns>
 		/// Returns list of values which match the given parameters
 		/// </returns>
-		public async Task<JArray> GetValues(string tableName, string[] selectColumns, string filterUrlParam)
+		private async Task<JArray> GetValues(string tableName, string[] selectColumns, string filter)
 		{
 			// Select parameter in Dataverse API accepts comma separated column names
 			var selectQueryColumns = string.Join(",", selectColumns);
 
 			// Params for select query
-			var selectUrlParam = $"$select={selectQueryColumns}";
-
 			UriBuilder requestUri = new UriBuilder("https", dataverseConfig.Value.ApiBaseUrl);
 			requestUri.Path = tableName;
-			requestUri.Query = $"{selectUrlParam}&$filter={filterUrlParam}";
+			requestUri.Query = ODataQueryHelper.BuildQuery(
+				("$select", selectQueryColumns),
+				("$filter", filter));
 
 			var response = await dataverseClient.GetAsync(requestUri.Uri);
 
@@ -475,9 +477,10 @@ namespace ContosoSalesDemo.Service
 		/// <returns>
 		/// Returns Id of given queryColumnValue parameter
 		/// </returns>
-		public async Task<string> GetOrGenerateId(string queryTableName, string queryColumnName, string queryColumnValue, string selectIdColumnName, string getIdColumnName)
+		private async Task<string> GetOrGenerateId(string queryTableName, string queryColumnName, string queryColumnValue, string selectIdColumnName, string getIdColumnName)
 		{
-			var values = await GetValues(queryTableName, new string[] { selectIdColumnName }, $"{queryColumnName} eq '{queryColumnValue}'");
+			var filter = $"{queryColumnName} eq {ODataQueryHelper.StringLiteral(queryColumnValue)}";
+			var values = await GetValues(queryTableName, new string[] { selectIdColumnName }, filter);
 
 			// Check if columnValue already exists in table
 			if (values != null && values.Count > 0)
